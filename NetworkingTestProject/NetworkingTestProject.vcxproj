@@ -154,6 +154,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="client\Client.h" />
+    <ClInclude Include="client\ClientEventListener.h" />
     <ClInclude Include="client\ClientMrg.h" />
     <ClInclude Include="Common\Enums\MessageTypes.h" />
     <ClInclude Include="Common\Messages\BroadCastMessage.h" />

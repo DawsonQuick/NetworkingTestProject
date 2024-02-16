@@ -5,6 +5,7 @@
 // GLFW
 #include <GLFW/glfw3.h>
 #include "./Client.h"
+#include "./ClientEventListener.h"
 #include "./../Common/Utils/Logger.h"
 #include "./../OpenGL/Utils/Renderer.h"
 #include "./../OpenGL/vendor/imgui/imgui.h"
@@ -15,6 +16,7 @@
 #include "./../OpenGL/Utils/Texture.h"
 #include "./../OpenGL/vendor/glm/glm.hpp"
 #include "./../OpenGL/vendor/glm/gtc/matrix_transform.hpp"
+
 // Window dimensions
 const GLuint WIDTH = 500, HEIGHT = 500;
 GLFWwindow* window;
@@ -40,38 +42,6 @@ unsigned int indices[] = {
 * ----------------------------------
 */
 
-/*
-* -----------------------------------------------------------------------------------------
-*                                      Zoom Logic
-* -----------------------------------------------------------------------------------------
-*/
-float projHeight = 100.0;
-float projWidth = 100.0;
-int scrollSpeed = 10;
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    if (!((projWidth - scrollSpeed) <= 0) || !((projHeight - scrollSpeed) <= 0)) {
-        if (yoffset > 0) {
-            projWidth -= scrollSpeed;
-            projHeight -= scrollSpeed;
-        }
-        else if (yoffset < 0) {
-            projWidth += scrollSpeed;
-            projHeight += scrollSpeed;
-        }
-    }
-    else {
-        projWidth = scrollSpeed + 1; //Set to plus 1 so doesnt get trapped in if condition
-        projHeight = scrollSpeed + 1; //Set to plus 1 so doesnt get trapped in if condition
-        std::cout << "Cannot scroll in further!" << std::endl;
-    }
-
-    std::cout << "Width : " << projWidth << " Height: " << projHeight << std::endl;
-}
-/*
-*          The logic above changes the projection mat 4 used with the shader
-* -----------------------------------------------------------------------------------------
-*/
-
 
 
 glm::mat4 Vec3ToMat4(const glm::vec3& translation) {
@@ -87,72 +57,11 @@ private:
     std::unique_ptr<Shader> m_Shader;
     glm::mat4 projection = glm::ortho(-projWidth, projWidth, -projHeight, projHeight, -1.0f, 1.0f);
     ClientConnection client;
+    ClientEventListener eventListener;
 
-
-/*
-* -----------------------------------------------------------------------------------------
-*                                    Control Logic
-* -----------------------------------------------------------------------------------------
-*/
-    void processInput(GLFWwindow* window)
-    {
-
-
-        float prevX = PlayerDatabase::getInstance().getPlayer(playerName).getPositionX();
-        float prevY = PlayerDatabase::getInstance().getPlayer(playerName).getPositionY();
-        float prevZ = PlayerDatabase::getInstance().getPlayer(playerName).getPositionZ();
-        float playerSpeed = 0.1;
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-            PlayerDatabase::getInstance().getPlayer(playerName).setPositionY(prevY + playerSpeed);
-
-
-            UpdatePlayerDataMessage msg(MessageType::UPDATEPLAYERDATA, 3, getCurrentTimeInSeconds(), PlayerFields::POSITION, playerName, StringStreamer::createStream({prevX,prevY+playerSpeed,prevZ}));
-            std::string msgTest = msg.serialize();
-            const char* msgToSend = msgTest.c_str();
-            client.sendMsg(msgToSend);
-
-        }
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-            PlayerDatabase::getInstance().getPlayer(playerName).setPositionY(prevY - playerSpeed);
-
-            UpdatePlayerDataMessage msg(MessageType::UPDATEPLAYERDATA, 3, getCurrentTimeInSeconds(), PlayerFields::POSITION, playerName, StringStreamer::createStream({ prevX,prevY - playerSpeed,prevZ }));
-            std::string msgTest = msg.serialize();
-            const char* msgToSend = msgTest.c_str();
-            client.sendMsg(msgToSend);
-
-        }
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-            PlayerDatabase::getInstance().getPlayer(playerName).setPositionX(prevX - playerSpeed);
-
-            UpdatePlayerDataMessage msg(MessageType::UPDATEPLAYERDATA, 3, getCurrentTimeInSeconds(), PlayerFields::POSITION, playerName, StringStreamer::createStream({ prevX - playerSpeed,prevY,prevZ }));
-            std::string msgTest = msg.serialize();
-            const char* msgToSend = msgTest.c_str();
-            client.sendMsg(msgToSend);
-
-        }
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-            PlayerDatabase::getInstance().getPlayer(playerName).setPositionX(prevX + playerSpeed);
-
-            UpdatePlayerDataMessage msg(MessageType::UPDATEPLAYERDATA, 3, getCurrentTimeInSeconds(), PlayerFields::POSITION, playerName, StringStreamer::createStream({ prevX + playerSpeed,prevY,prevZ }));
-            std::string msgTest = msg.serialize();
-            const char* msgToSend = msgTest.c_str();
-            client.sendMsg(msgToSend);
-
-
-        }
-
-
-    }
-    /*
-    *        The logic above detects key presses and moved the player accordingly
-    * -----------------------------------------------------------------------------------------
-    */
-
-
-    
 
 public:
-    ClientMrg(): client("127.0.0.1", 8080) {
+    ClientMrg(): client("127.0.0.1", 8080), eventListener(client, nullptr) {
         /*
         * -----------Start Back End Processing------------
         */
@@ -178,9 +87,8 @@ public:
         // Create a GLFWwindow object that we can use for GLFW's functions
         window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", nullptr, nullptr);
         glfwMakeContextCurrent(window);
+        eventListener = ClientEventListener(client, window);
 
-        // Set the scroll wheel callback
-        glfwSetScrollCallback(window, scroll_callback);
         // Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
         glewExperimental = GL_TRUE;
         // Initialize GLEW to setup the OpenGL Function pointers
@@ -214,7 +122,7 @@ public:
             projection = glm::ortho(-projWidth, projWidth, -projHeight, projHeight, -1.0f, 1.0f);
             glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
-            processInput(window);
+            eventListener.processInput(window);
             for (const auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) {
                 Player player = playerEntry.second;
                 glm::mat4 transTest = Vec3ToMat4(glm::vec3(player.getPositionX(), player.getPositionY(), player.getPositionZ()));
@@ -223,6 +131,7 @@ public:
                     m_Shader->Bind();
                     m_Shader->SetUniformMat4f("translation", transTest);
                     m_Shader->SetUniformMat4f("projection", projection);
+                    //TODO add a view Matrix that is updated when the player clicks and drags with the mouse
                     renderer.Draw(*m_VAO, *m_IndexBuffer, *m_Shader);
                 }
             }

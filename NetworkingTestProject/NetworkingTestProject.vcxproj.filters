@@ -629,6 +629,9 @@
     <ClInclude Include="Common\Utils\Logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="client\ClientEventListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenGL\vendor\glm\detail\func_common.inl">
