@@ -5,23 +5,45 @@
 #include <iostream>
 #include <sstream>
 #include <list>
+#include <chrono>
+
+
 struct Position {
 	double X;
 	double Y;
 	double Z;
-
+	long long pointTime;
 	//Populated constructor
-	Position(double x, double y, double z)
-		:X(x), Y(y), Z(z) {};
+	Position(double x, double y, double z, long long pointTime)
+		:X(x), Y(y), Z(z), pointTime(pointTime) {};
 
 	//Empty constructor
-	Position():X(0.0),Y(0.0),Z(0.0) {};
+	Position():X(0.0),Y(0.0),Z(0.0),pointTime(getCurrentTimeInMillis()) {};
+};
+
+struct KeyPress {
+	bool keyW;
+	bool keyA;
+	bool keyS;
+	bool keyD;
+	KeyPress() : keyW(false), keyA(false), keyS(false), keyD(false) {
+	};
+	KeyPress(bool W, bool A, bool S, bool D) :keyW(W), keyA(A), keyS(S), keyD(D) {
+	};
+
+	// Define the != operator for KeyPress
+	bool operator!=(const KeyPress& other) const {
+		return (keyW != other.keyW) || (keyA != other.keyA) || (keyS != other.keyS) || (keyD != other.keyD);
+	}
+
 };
 enum PlayerFields {
 	NAME,
 	POSITION,
 	HEALTH,
-	AC
+	AC,
+	KEYPRESS,
+	MOVEMENTSPEED,
 };
 
 // Function to convert enum value to string
@@ -31,6 +53,8 @@ std::string playerFieldEnumToString(PlayerFields value) {
 	case PlayerFields::POSITION: return "POSITION";
 	case PlayerFields::HEALTH: return "HEALTH";
 	case PlayerFields::AC: return "AC";
+	case PlayerFields::KEYPRESS: return "KEYPRESS";
+	case PlayerFields::MOVEMENTSPEED: return "MOVEMENTSPEED";
 	}
 }
 
@@ -39,8 +63,10 @@ private:
 	
 	std::string name;
 	Position position;
+	KeyPress keyMap;
 	int health;
 	int AC;
+	double movementSpeed;
 
 public:
 
@@ -48,15 +74,18 @@ public:
 	Player(std::string name,double posX, double posY, double posZ, int health,int AC)
 	: name(name),
 	  health(health),
-	  position(posX,posY,posZ),AC(AC)
+	  position(posX,posY,posZ, getCurrentTimeInMillis()),AC(AC),
+	  movementSpeed(0.1)
 	{
 
 	}
+
+
 	//Default Constructor
 	Player()
 	: name("Frodo"),
 	  health(5),
-	  position(0.0,0.0,0.0),AC(10) {}
+	  position(0.0,0.0,0.0, getCurrentTimeInMillis()),AC(10), movementSpeed(0.1) {}
 
 
 /*
@@ -68,10 +97,11 @@ public:
 	void setHealth(int health) {
 		this->health = health;
 	}
-	void setPosition(double posX,double posY, double posZ) {
+	void setPosition(double posX,double posY, double posZ , long long tmpPointTime) {
 		this->position.X = posX;
 		this->position.Y = posY;
 		this->position.Z = posZ;
+		this->position.pointTime = tmpPointTime;
 	}
 	void setPositionX(double positionX) {
 		this->position.X = positionX;
@@ -85,6 +115,12 @@ public:
 	void setAC(int AC) {
 		this->AC = AC;
 	}
+	void setKeyPress(KeyPress tmpKeyMap) {
+		keyMap = tmpKeyMap;
+	}
+	void setMovementSpeed(double tmpSpeed) {
+		movementSpeed = tmpSpeed;
+	}
 
 /*
 * -------------------------GETTERS--------------------------------
@@ -95,20 +131,26 @@ public:
 	int getHealth() {
 		return health;
 	}
-	Position setPosition() {
-		return position;
+	Position getPosition() {
+		return this->position;
 	}
 	double getPositionX() {
-		return position.X;
+		return this->position.X;
 	}
 	double getPositionY() {
-		return position.Y;
+		return this->position.Y;
 	}
 	double getPositionZ() {
-		return position.Z;
+		return this->position.Z;
 	}
 	int getAC() {
 		return AC;
+	}
+	KeyPress getKeyPress() {
+		return keyMap;
+	}
+	double getMovementSpeed() {
+		return movementSpeed;
 	}
 
 /*
@@ -130,7 +172,7 @@ public:
 */
 	std::string serialize() const {
 		std::stringstream ss;
-		ss << name << "|" << position.X << "|" <<position.Y << "|" <<position.Z<<"|"<<health<<"|"<<AC;
+		ss << name << "|" << position.X << "|" <<position.Y << "|" <<position.Z<< "|" << health << "|" << AC;
 		return ss.str();
 	}
 
@@ -141,7 +183,7 @@ public:
 		int health,AC;
 		char delimiter='|';
 		std::getline(ss, name, delimiter);
-		ss >> posX >> delimiter >> posY >> delimiter >> posZ >> delimiter >> health>>delimiter>>AC;
+		ss >> posX >> delimiter >> posY >> delimiter >> posZ>>delimiter >> health>>delimiter>>AC;
 		return Player(name,posX,posY,posZ,health,AC);
 	}
 

@@ -7,6 +7,10 @@
 #include "./Message.h"
 #include "./../Enums/MessageTypes.h"
 #include "./../Objects/Player.h"
+#include <chrono>
+
+
+
 class UpdatePlayerDataMessage : public Message {
 
 private:
@@ -48,6 +52,11 @@ private:
 	*/
 	std::stringstream dataSS;
 
+	/*
+	* Time of update message creation
+	*/
+	long long pointTime;
+
 
 public:
 	/*
@@ -59,6 +68,17 @@ public:
 		creationTime = tmpcreationTime;
 		fieldType = field;
 		name = tmpName;
+		pointTime = getCurrentTimeInMillis();
+		dataSS = std::move(tmpSS);
+	}
+
+	UpdatePlayerDataMessage(MessageType tempType, int tmpUID, double tmpcreationTime, PlayerFields field, std::string tmpName, long long tmpPointTime, std::stringstream&& tmpSS) {
+		type = tempType;
+		UID = tmpUID;
+		creationTime = tmpcreationTime;
+		fieldType = field;
+		name = tmpName;
+		pointTime = tmpPointTime;
 		dataSS = std::move(tmpSS);
 	}
 
@@ -77,6 +97,10 @@ public:
 		return fieldType;
 	}
 
+	long long getPointTime() {
+		return pointTime;
+	}
+
 
 	/*
 	* --------------Print MSG to Screen----------------
@@ -88,6 +112,7 @@ public:
 			<< " creationTime: " << creationTime << " \n"
 			<< " Player field: " << playerFieldEnumToString(fieldType) << "\n"
 			<< " Player name: " << name << "\n"
+			<< " Point Time: "<<pointTime << "\n"
 			<< " stringstream field: " << dataSS.str() << std::endl;
 	}	
 
@@ -97,7 +122,7 @@ public:
 	//Serialize the message
 	std::string serialize() const {
 		std::stringstream ss;
-		ss << static_cast<int>(type) << "|" << UID << "|" << creationTime << "|" << static_cast<int>(fieldType) << "|" << name << "|";
+		ss << static_cast<int>(type) << "|" << UID << "|" << creationTime<<"|"<<pointTime << "|" << static_cast<int>(fieldType) << "|" << name  << "|";
 		ss << dataSS.rdbuf();
 		return ss.str();
 	}
@@ -110,18 +135,19 @@ public:
 		std::string name;
 		int enumID , fieldTypeID;
 		int UID;
+		long long pointTime;
 		double creationTime;
 		int commandInt;
 		char delimiter;
 
-		ss >> enumID >> delimiter >> UID >> delimiter >> creationTime >> delimiter >> fieldTypeID >> delimiter ;
+		ss >> enumID >> delimiter >> UID >> delimiter >> creationTime >> delimiter >> pointTime >> delimiter >> fieldTypeID >> delimiter ;
 		std::getline(ss, name, delimiter);
 		ss>> tempdataSS;
 
 		std::stringstream tempSS(tempdataSS);
 		MessageType type = static_cast<MessageType>(enumID);
 		PlayerFields fieldType = static_cast<PlayerFields>(fieldTypeID);
-		return new UpdatePlayerDataMessage(type, UID, creationTime,fieldType, name,std::move(tempSS));
+		return new UpdatePlayerDataMessage(type, UID, creationTime,fieldType, name,pointTime,std::move(tempSS));
 	}
 	/*
 	* ---------------------------------------------------------------------------------------------------------------

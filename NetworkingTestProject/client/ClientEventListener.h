@@ -11,8 +11,8 @@
 * -----------------------------------------------------------------------------------------
 */
 //TODO change this to be inside the class so these variables are not accessible from the entire program
-float projHeight = 100.0;
-float projWidth = 100.0;
+float projHeight = 70.0;
+float projWidth = 70.0;
 int scrollSpeed = 10;
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
     if (!((projWidth - scrollSpeed) <= 0) || !((projHeight - scrollSpeed) <= 0)) {
@@ -88,10 +88,11 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
 
     }
 }
-
+float simulatedLagThreshold;
 class ClientEventListener {
 
 private:
+    long long timeSinceLastMessage = 0.0;
     ClientConnection client;
 public:
 	//Constructor
@@ -111,52 +112,26 @@ public:
 */
     void processInput(GLFWwindow* windowLocal)
     {
+        bool isWPressed = glfwGetKey(windowLocal, GLFW_KEY_W) == GLFW_PRESS;
+        bool isAPressed = glfwGetKey(windowLocal, GLFW_KEY_A) == GLFW_PRESS;
+        bool isSPressed = glfwGetKey(windowLocal, GLFW_KEY_S) == GLFW_PRESS;
+        bool isDPressed = glfwGetKey(windowLocal, GLFW_KEY_D) == GLFW_PRESS;
 
+        KeyPress currentPlayerKeyPress(isWPressed, isAPressed, isSPressed, isDPressed);
+        KeyPress previousPlayerKeyPress = PlayerDatabase::getInstance().getPlayer(playerName).getKeyPress();
 
-        float prevX = PlayerDatabase::getInstance().getPlayer(playerName).getPositionX();
-        float prevY = PlayerDatabase::getInstance().getPlayer(playerName).getPositionY();
-        float prevZ = PlayerDatabase::getInstance().getPlayer(playerName).getPositionZ();
-        float playerSpeed = 0.1;
-        if (glfwGetKey(windowLocal, GLFW_KEY_W) == GLFW_PRESS) {
-            PlayerDatabase::getInstance().getPlayer(playerName).setPositionY(prevY + playerSpeed);
-
-
-            UpdatePlayerDataMessage msg(MessageType::UPDATEPLAYERDATA, 3, getCurrentTimeInSeconds(), PlayerFields::POSITION, playerName, StringStreamer::createStream({ prevX,prevY + playerSpeed,prevZ }));
-            std::string msgTest = msg.serialize();
-            const char* msgToSend = msgTest.c_str();
-            client.sendMsg(msgToSend);
-
-        }
-        if (glfwGetKey(windowLocal, GLFW_KEY_S) == GLFW_PRESS) {
-            PlayerDatabase::getInstance().getPlayer(playerName).setPositionY(prevY - playerSpeed);
-
-            UpdatePlayerDataMessage msg(MessageType::UPDATEPLAYERDATA, 3, getCurrentTimeInSeconds(), PlayerFields::POSITION, playerName, StringStreamer::createStream({ prevX,prevY - playerSpeed,prevZ }));
-            std::string msgTest = msg.serialize();
-            const char* msgToSend = msgTest.c_str();
-            client.sendMsg(msgToSend);
-
-        }
-        if (glfwGetKey(windowLocal, GLFW_KEY_A) == GLFW_PRESS) {
-            PlayerDatabase::getInstance().getPlayer(playerName).setPositionX(prevX - playerSpeed);
-
-            UpdatePlayerDataMessage msg(MessageType::UPDATEPLAYERDATA, 3, getCurrentTimeInSeconds(), PlayerFields::POSITION, playerName, StringStreamer::createStream({ prevX - playerSpeed,prevY,prevZ }));
-            std::string msgTest = msg.serialize();
-            const char* msgToSend = msgTest.c_str();
-            client.sendMsg(msgToSend);
-
-        }
-        if (glfwGetKey(windowLocal, GLFW_KEY_D) == GLFW_PRESS) {
-            PlayerDatabase::getInstance().getPlayer(playerName).setPositionX(prevX + playerSpeed);
-
-            UpdatePlayerDataMessage msg(MessageType::UPDATEPLAYERDATA, 3, getCurrentTimeInSeconds(), PlayerFields::POSITION, playerName, StringStreamer::createStream({ prevX + playerSpeed,prevY,prevZ }));
+        if (currentPlayerKeyPress != previousPlayerKeyPress) {
+            std::cout << "Change in key press" << std::endl;
+            PlayerDatabase::getInstance().getPlayer(playerName).setKeyPress(currentPlayerKeyPress);
+            Position pos = PlayerDatabase::getInstance().getPlayer(playerName).getPosition();
+            UpdatePlayerDataMessage msg(MessageType::UPDATEPLAYERDATA, 3, getCurrentTimeInSeconds(), PlayerFields::KEYPRESS, playerName, StringStreamer::createStream(currentPlayerKeyPress , pos));
             std::string msgTest = msg.serialize();
             const char* msgToSend = msgTest.c_str();
             client.sendMsg(msgToSend);
 
 
+
         }
-
-
     }
     /*
     *        The logic above detects key presses and moved the player accordingly

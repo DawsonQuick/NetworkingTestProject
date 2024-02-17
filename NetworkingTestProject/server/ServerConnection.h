@@ -138,6 +138,28 @@ public:
 		//Currently does nothing , just keeps from returning out of the function call
 		while (serverRunning) {
 
+			for (auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) {
+				std::string name = playerEntry.first;
+					KeyPress keyPress = PlayerDatabase::getInstance().getPlayer(name).getKeyPress();
+					Position prevPos = PlayerDatabase::getInstance().getPlayer(name).getPosition();
+					double playerSpeed = PlayerDatabase::getInstance().getPlayer(name).getMovementSpeed();
+					Position newPos;
+					if (keyPress.keyW) {
+						PlayerDatabase::getInstance().getPlayer(name).setPositionY((prevPos.Y + playerSpeed));
+					}
+					if (keyPress.keyA) {
+						PlayerDatabase::getInstance().getPlayer(name).setPositionX((prevPos.X - playerSpeed));
+					}
+					if (keyPress.keyS) {
+						PlayerDatabase::getInstance().getPlayer(name).setPositionY((prevPos.Y - playerSpeed));
+					}
+					if (keyPress.keyD) {
+						PlayerDatabase::getInstance().getPlayer(name).setPositionX((prevPos.X + playerSpeed));
+					}
+				
+			
+			}
+
 		}
 	}
 
@@ -154,6 +176,7 @@ public:
 
 void processMessage(int clientSocket, const char* inMsg) {
 	Message* msg = msgFactory.createMessage(inMsg);
+	
 	if (HandShakeMessage* testMsg = dynamic_cast<HandShakeMessage*>(msg)) {
 		HandShakeMessage& msg = *testMsg;
 		Logger::getInstance().info("Received a HandShakeMessage: \n"+msg.toString());
@@ -198,10 +221,11 @@ void processMessage(int clientSocket, const char* inMsg) {
 		closesocket(clientSocket);
 	}
 	else if (UpdatePlayerDataMessage* testMsg = dynamic_cast<UpdatePlayerDataMessage*>(msg)) {
-		//std::cout << "Received a UpdatePlayerDataMessage" << std::endl; //Commented out due to console spam
 		UpdatePlayerDataMessage& msg = *testMsg;
-		Player& player = PlayerDatabase::getInstance().getPlayer(msg.getName());
 
+		std::cout << "Received a UpdatePlayerDataMessage" << std::endl; 
+		msg.toString();
+		Player& player = PlayerDatabase::getInstance().getPlayer(msg.getName());
 		switch (msg.getField()) {
 		case PlayerFields::AC: {
 			std::stringstream ss = msg.getStringStream();
@@ -226,7 +250,15 @@ void processMessage(int clientSocket, const char* inMsg) {
 			double posX, posY, posZ;
 			char deliminter;
 			ss >> posX >> deliminter >> posY >> deliminter >> posZ >> deliminter;
-			player.setPosition(posX, posY, posZ);
+			player.setPosition(posX, posY, posZ,msg.getPointTime());
+			break;
+		}
+		case PlayerFields::KEYPRESS: {
+			std::stringstream ss = msg.getStringStream();
+			bool W, A, S, D;
+			ss >> W >> A >> S >> D;
+			KeyPress keyMap(W, A, S, D);
+			player.setKeyPress(keyMap);
 			break;
 		}
 		}

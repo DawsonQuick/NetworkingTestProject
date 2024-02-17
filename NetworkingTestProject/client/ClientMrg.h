@@ -16,9 +16,11 @@
 #include "./../OpenGL/Utils/Texture.h"
 #include "./../OpenGL/vendor/glm/glm.hpp"
 #include "./../OpenGL/vendor/glm/gtc/matrix_transform.hpp"
+#include "./../OpenGL/vendor/imgui/imgui.h"
+#include "./../OpenGL/vendor/imgui/imgui_impl_glfw_gl3.h"
 
 // Window dimensions
-const GLuint WIDTH = 500, HEIGHT = 500;
+const GLuint WIDTH = 1000, HEIGHT = 1000;
 GLFWwindow* window;
 
 /*
@@ -42,6 +44,25 @@ unsigned int indices[] = {
 * ----------------------------------
 */
 
+
+void UpdatePlayerPosition(std::string name) {
+    KeyPress keyPress = PlayerDatabase::getInstance().getPlayer(name).getKeyPress();
+    Position prevPos = PlayerDatabase::getInstance().getPlayer(name).getPosition();
+    double playerSpeed = PlayerDatabase::getInstance().getPlayer(name).getMovementSpeed();
+    Position newPos;
+    if (keyPress.keyW) {
+        PlayerDatabase::getInstance().getPlayer(name).setPositionY((prevPos.Y + playerSpeed));
+    }
+    if (keyPress.keyA) {
+        PlayerDatabase::getInstance().getPlayer(name).setPositionX((prevPos.X - playerSpeed));
+    }
+    if (keyPress.keyS) {
+        PlayerDatabase::getInstance().getPlayer(name).setPositionY((prevPos.Y - playerSpeed));
+    }
+    if (keyPress.keyD) {
+        PlayerDatabase::getInstance().getPlayer(name).setPositionX(( prevPos.X + playerSpeed));
+    }
+}
 
 
 glm::mat4 Vec3ToMat4(const glm::vec3& translation) {
@@ -104,6 +125,10 @@ public:
      
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        ImGui::CreateContext();
+        ImGui_ImplGlfwGL3_Init(window, true);
+        ImGui::StyleColorsDark();
         m_Shader = std::make_unique<Shader>("./OpenGL/resources/Basic.shader", 1);
         m_VAO = std::make_unique<VertexArray>();
         m_VertexBuffer = std::make_unique<VertexBuffer>(vertices, sizeof(vertices));
@@ -123,8 +148,14 @@ public:
             glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
             eventListener.processInput(window);
-            for (const auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) {
-                Player player = playerEntry.second;
+            for (auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) {
+               UpdatePlayerPosition(playerEntry.first);
+             
+            }
+
+
+            for (auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) {
+                Player player = PlayerDatabase::getInstance().getPlayer(playerEntry.first);
                 glm::mat4 transTest = Vec3ToMat4(glm::vec3(player.getPositionX(), player.getPositionY(), player.getPositionZ()));
                 Renderer renderer;
                 {
@@ -135,12 +166,25 @@ public:
                     //TODO add a view Matrix that is updated when the player clicks and drags with the mouse
                     renderer.Draw(*m_VAO, *m_IndexBuffer, *m_Shader);
                 }
+              
             }
+            ImGui_ImplGlfwGL3_NewFrame();
+            ImGui::Begin("Test");
+            ImGui::SliderFloat("lagSimulationTime (ms)", &lagSimulationTime, 0.0f, 100.0f);
+            ImGui::SliderFloat("Zoom", &projHeight, 15.0f, 100.0f);
+            ImGui::SliderFloat("Zoom", &projWidth, 15.0f, 100.0f);
+
+            ImGui::End();
+            ImGui::Render();
+            ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
             // Swap the screen buffers
             glfwSwapBuffers(window);
             // Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
             glfwPollEvents();
         }
+
+        ImGui_ImplGlfwGL3_Shutdown();
+        ImGui::DestroyContext();
         ClientDisconnectMessage msg(MessageType::CLIENTDISCONNECT, 3, getCurrentTimeInSeconds(), playerName);
         std::string msgTest = msg.serialize();
         const char* msgToSend = msgTest.c_str();

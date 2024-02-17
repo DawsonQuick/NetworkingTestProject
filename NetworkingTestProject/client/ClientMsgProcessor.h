@@ -6,6 +6,9 @@
 #include <sstream>
 #include "./../Common/Messages/Utils/MessageFactory.h"
 #include "./../Common/Utils/PlayerDatabase.h"
+
+
+float lagSimulationTime;
 class ClientMessageProcessor {
 
 private:
@@ -20,6 +23,7 @@ public:
 
 	void processMessage(const char* inMsg) {
 		Message* msg = msgFactory.createMessage(inMsg);
+		Sleep(lagSimulationTime);
 		if (HandShakeMessage* testMsg = dynamic_cast<HandShakeMessage*>(msg)) {
 			std::cout << "Received a TestMessage: " << std::endl;
 			HandShakeMessage& msg = *testMsg;
@@ -45,6 +49,7 @@ public:
 		else if (UpdatePlayerDataMessage* testMsg = dynamic_cast<UpdatePlayerDataMessage*>(msg)) {
 			//std::cout << "Received a UpdatePlayerDataMessage" << std::endl; //Commented out due to console spam
 			UpdatePlayerDataMessage& msg = *testMsg;
+			//msg.toString();
 			Player& player = PlayerDatabase::getInstance().getPlayer(msg.getName());
 
 			switch (msg.getField()) {
@@ -71,7 +76,19 @@ public:
 				double posX, posY, posZ;
 				char deliminter;
 				ss >> posX >> deliminter >> posY >> deliminter >> posZ >> deliminter;
-				player.setPosition(posX,posY,posZ);
+				player.setPosition(posX,posY,posZ,msg.getPointTime());
+				break;
+			}
+			case PlayerFields::KEYPRESS: {
+				std::stringstream ss = msg.getStringStream();
+				bool W, A, S, D;
+				float posX, posY;
+				char delimiter;
+				ss >> W >> delimiter >> A >> delimiter >> S >> delimiter >> D >> delimiter>>posX>>delimiter>>posY;
+				KeyPress keyMap(W, A, S, D);
+				player.setKeyPress(keyMap);
+				player.setPositionX(posX);
+				player.setPositionY(posY);
 				break;
 			}
 			}

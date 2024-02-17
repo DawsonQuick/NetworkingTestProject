@@ -1,3 +1,5 @@
+#ifndef STRINGSTREAMER_H
+#define STRINGSTREAMER_H
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -67,5 +69,19 @@ public:
         return ss;
     }
 
+    // Create stringstream from a double
+    static std::stringstream createStream(KeyPress data, Position pos) {
+        std::stringstream ss;
+        ss << data.keyW<<"|"<< data.keyA << "|" << data.keyS << "|" << data.keyD <<"|"<< pos.X <<"|"<<pos.Y;
+        return ss;
+    }
+
+    static std::stringstream createStream(KeyPress data) {
+        std::stringstream ss;
+        ss << data.keyW << "|" << data.keyA << "|" << data.keyS << "|" << data.keyD;
+        return ss;
+    }
+
     // Add more createStream methods for other types as needed
 };
+#endif
