@@ -131,6 +131,7 @@ public:
                     m_Shader->Bind();
                     m_Shader->SetUniformMat4f("translation", transTest);
                     m_Shader->SetUniformMat4f("projection", projection);
+                    m_Shader->SetUniformMat4f("view", view);
                     //TODO add a view Matrix that is updated when the player clicks and drags with the mouse
                     renderer.Draw(*m_VAO, *m_IndexBuffer, *m_Shader);
                 }
