@@ -137,29 +137,6 @@ public:
 		//Main loop for the server class
 		//Currently does nothing , just keeps from returning out of the function call
 		while (serverRunning) {
-
-			for (auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) {
-				std::string name = playerEntry.first;
-					KeyPress keyPress = PlayerDatabase::getInstance().getPlayer(name).getKeyPress();
-					Position prevPos = PlayerDatabase::getInstance().getPlayer(name).getPosition();
-					double playerSpeed = PlayerDatabase::getInstance().getPlayer(name).getMovementSpeed();
-					Position newPos;
-					if (keyPress.keyW) {
-						PlayerDatabase::getInstance().getPlayer(name).setPositionY((prevPos.Y + playerSpeed));
-					}
-					if (keyPress.keyA) {
-						PlayerDatabase::getInstance().getPlayer(name).setPositionX((prevPos.X - playerSpeed));
-					}
-					if (keyPress.keyS) {
-						PlayerDatabase::getInstance().getPlayer(name).setPositionY((prevPos.Y - playerSpeed));
-					}
-					if (keyPress.keyD) {
-						PlayerDatabase::getInstance().getPlayer(name).setPositionX((prevPos.X + playerSpeed));
-					}
-				
-			
-			}
-
 		}
 	}
 

@@ -45,6 +45,7 @@ unsigned int indices[] = {
 */
 
 
+//Updates all players positions based on if the player has a key pressed, distance moved is determined by that players movement speed
 void UpdatePlayerPosition(std::string name) {
     KeyPress keyPress = PlayerDatabase::getInstance().getPlayer(name).getKeyPress();
     Position prevPos = PlayerDatabase::getInstance().getPlayer(name).getPosition();
@@ -127,7 +128,7 @@ public:
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         ImGui::CreateContext();
-        ImGui_ImplGlfwGL3_Init(window, true);
+        ImGui_ImplGlfwGL3_Init(window, false);
         ImGui::StyleColorsDark();
         m_Shader = std::make_unique<Shader>("./OpenGL/resources/Basic.shader", 1);
         m_VAO = std::make_unique<VertexArray>();
@@ -144,39 +145,59 @@ public:
 
         while (!glfwWindowShouldClose(window))
         {
-            projection = glm::ortho(-projWidth, projWidth, -projHeight, projHeight, -1.0f, 1.0f);
             glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
+
+            //Interface with the event listeners
             eventListener.processInput(window);
-            for (auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) {
-               UpdatePlayerPosition(playerEntry.first);
-             
-            }
+            projection = glm::ortho(-projWidth, projWidth, -projHeight, projHeight, -1.0f, 1.0f);
 
+            //Update all player positions
+            for (auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) { UpdatePlayerPosition(playerEntry.first); }
 
+            //Draw each player to the screen
             for (auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) {
                 Player player = PlayerDatabase::getInstance().getPlayer(playerEntry.first);
                 glm::mat4 transTest = Vec3ToMat4(glm::vec3(player.getPositionX(), player.getPositionY(), player.getPositionZ()));
                 Renderer renderer;
-                {
-                    m_Shader->Bind();
-                    m_Shader->SetUniformMat4f("translation", transTest);
-                    m_Shader->SetUniformMat4f("projection", projection);
-                    m_Shader->SetUniformMat4f("view", view);
-                    //TODO add a view Matrix that is updated when the player clicks and drags with the mouse
-                    renderer.Draw(*m_VAO, *m_IndexBuffer, *m_Shader);
-                }
+                m_Shader->Bind();
+                m_Shader->SetUniformMat4f("translation", transTest);
+                m_Shader->SetUniformMat4f("projection", projection);
+                m_Shader->SetUniformMat4f("view", view);
+                renderer.Draw(*m_VAO, *m_IndexBuffer, *m_Shader);
               
             }
+
+            //Render ImGUI menu
             ImGui_ImplGlfwGL3_NewFrame();
             ImGui::Begin("Test");
+            for(auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) {
+                ImGui::Text("Players: %s",playerEntry.first.c_str());
+                ImGui::Text("X: %f Y: %f",playerEntry.second.getPositionX(),playerEntry.second.getPositionY());
+                ImGui::Text("KeyBoard Press: ");
+                ImGui::Text("W:");ImGui::SameLine();
+                if (playerEntry.second.getKeyPress().keyW) { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); ImGui::Text("Pressed"); ImGui::PopStyleColor();}
+                else { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f)); ImGui::Text("Not Pressed"); ImGui::PopStyleColor(); }
+                ImGui::Text("A:"); ImGui::SameLine();
+                if (playerEntry.second.getKeyPress().keyA) { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); ImGui::Text("Pressed"); ImGui::PopStyleColor();}
+                else { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f)); ImGui::Text("Not Pressed"); ImGui::PopStyleColor();}
+                ImGui::Text("S:"); ImGui::SameLine();
+                if (playerEntry.second.getKeyPress().keyS) { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); ImGui::Text("Pressed"); ImGui::PopStyleColor();}
+                else { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f)); ImGui::Text("Not Pressed"); ImGui::PopStyleColor(); }
+                ImGui::Text("D:"); ImGui::SameLine();
+                if (playerEntry.second.getKeyPress().keyD) { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); ImGui::Text("Pressed");ImGui::PopStyleColor(); }
+                else { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f)); ImGui::Text("Not Pressed"); ImGui::PopStyleColor(); }
+
+                
+            }
             ImGui::SliderFloat("lagSimulationTime (ms)", &lagSimulationTime, 0.0f, 100.0f);
             ImGui::SliderFloat("Zoom", &projHeight, 15.0f, 100.0f);
             ImGui::SliderFloat("Zoom", &projWidth, 15.0f, 100.0f);
-
             ImGui::End();
             ImGui::Render();
             ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
+
+
             // Swap the screen buffers
             glfwSwapBuffers(window);
             // Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
