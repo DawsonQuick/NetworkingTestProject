@@ -23,18 +23,72 @@
 const GLuint WIDTH = 1000, HEIGHT = 1000;
 GLFWwindow* window;
 
+
+/*---------------------------------------------------------------------------------------
+*               Code to generate grid NEED TO MOVE TO OWN CLASS
+ ---------------------------------------------------------------------------------------*/
+
+void generateGrid(float maxSize, float gridSize, std::vector<float>& vertices) {
+    // Calculate the number of tiles along one side of the grid
+    int numTiles = static_cast<int>(maxSize / gridSize);
+
+    // Generate horizontal lines
+    for (int i = 0; i <= numTiles; ++i) {
+        float y = -maxSize / 2.0f + i * gridSize;
+        vertices.push_back(-maxSize / 2.0f); // x-coordinate of the start point
+        vertices.push_back(y);               // y-coordinate of the start point
+        vertices.push_back(0.0f);            // z-coordinate
+        vertices.push_back(maxSize / 2.0f);  // x-coordinate of the end point
+        vertices.push_back(y);               // y-coordinate of the end point
+        vertices.push_back(0.0f);            // z-coordinate
+    }
+
+    // Generate vertical lines
+    for (int i = 0; i <= numTiles; ++i) {
+        float x = -maxSize / 2.0f + i * gridSize;
+        vertices.push_back(x);               // x-coordinate of the start point
+        vertices.push_back(-maxSize / 2.0f); // y-coordinate of the start point
+        vertices.push_back(0.0f);            // z-coordinate
+        vertices.push_back(x);               // x-coordinate of the end point
+        vertices.push_back(maxSize / 2.0f);  // y-coordinate of the end point
+        vertices.push_back(0.0f);            // z-coordinate
+    }
+}
+//---------------------------------------------------------------------------------------
+
+
+
+
+
 /*
 * ----------------------------------
 *     Sprite Diminesion Info
 * ----------------------------------
 */
+// Width and height of the entire texture
+float textureWidth = 1920.0f;
+float textureHeight = 1080.0f;
+
+float onePixelWidth = 1 / textureWidth;
+float onePixelHeight = 1 / textureHeight;
+// Width and height of the sub-texture
+float subTextureWidth = 64.0f;
+float subTextureHeight = 64.0f;
+float row = 0.0f;
+float column = 1.0f;
+
+// Calculate texture coordinates for the sub-texture
+float texCoordLeft = (subTextureWidth* column) / textureWidth; // Left edge of the sub-texture
+float texCoordRight = ((column +1)*subTextureWidth) / textureWidth; // Right edge of the sub-texture
+float texCoordTop = 1.0f - ((subTextureHeight* row)/ textureHeight); // Top edge of the sub-texture
+float texCoordBottom = 1.0f - (((row +1)*(subTextureHeight)) / textureHeight); // Bottom edge of the sub-texture
+
 GLfloat vertices[] = {
-
-    -0.5f,-0.5f, 0.0f,   // 0
-     0.5f,-0.5f, 0.0f,   // 1
-     0.5f, 0.5f, 0.0f,   // 2
-    -0.5f, 0.5f, 0.0f,   // 3
-
+    // Position        Texture coordinates
+    -0.5f, -0.5f, 0.0f,  texCoordLeft  + onePixelWidth,  texCoordBottom + onePixelHeight,    // 0
+     0.5f, -0.5f, 0.0f,  texCoordRight - onePixelWidth,  texCoordBottom + onePixelHeight,    // 1
+     0.5f,  0.5f, 0.0f,  texCoordRight - onePixelWidth,  texCoordTop    - onePixelHeight,       // 2
+    -0.5f,  0.5f, 0.0f,  texCoordLeft  + onePixelWidth,  texCoordTop    - onePixelHeight        // 3
 };
 unsigned int indices[] = {
     0,1,2,
@@ -77,6 +131,12 @@ private:
     std::unique_ptr<VertexBuffer> m_VertexBuffer;
     std::unique_ptr<IndexBuffer> m_IndexBuffer;
     std::unique_ptr<Shader> m_Shader;
+    std::unique_ptr<Texture> m_Texture;
+
+    std::unique_ptr<VertexArray> m_GridVAO;
+    std::unique_ptr<VertexBuffer> m_GridVertexBuffer;
+    std::unique_ptr<Shader> m_GridShader;
+
     glm::mat4 projection = glm::ortho(-projWidth, projWidth, -projHeight, projHeight, -1.0f, 1.0f);
     ClientConnection client;
     ClientEventListener eventListener;
@@ -116,6 +176,22 @@ public:
         // Initialize GLEW to setup the OpenGL Function pointers
         glewInit();
 
+
+        /*---------------------------------------------------------------------------------------
+        *               Code to generate grid NEED TO MOVE TO OWN CLASS
+        ---------------------------------------------------------------------------------------*/
+        float maxSize = 500.0f; // Maximum size of the grid
+        float gridSize = 1.0f;  // Size of each grid spot
+        std::vector<float> Gridvertices;
+        generateGrid(maxSize, gridSize, Gridvertices);
+        m_GridShader = std::make_unique<Shader>("./OpenGL/resources/Grid.shader", 2);
+        m_GridVAO = std::make_unique<VertexArray>();
+        m_GridVertexBuffer = std::make_unique<VertexBuffer>(Gridvertices.data(), Gridvertices.size() * sizeof(float));
+        VertexBufferLayout gridLayout;
+        gridLayout.Push<float>(3); // Position
+        m_GridVAO->AddBuffer(*m_GridVertexBuffer, gridLayout);
+        //-----------------------------------------------------------------------------------------
+
         // Define the viewport dimensions
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
@@ -134,10 +210,12 @@ public:
         m_VAO = std::make_unique<VertexArray>();
         m_VertexBuffer = std::make_unique<VertexBuffer>(vertices, sizeof(vertices));
         VertexBufferLayout layout;
-        layout.Push<float>(3);
+        layout.Push<float>(3); //Position
+        layout.Push<float>(2); //Texture Coords
         m_VAO->AddBuffer(*m_VertexBuffer, layout);
         m_IndexBuffer = std::make_unique<IndexBuffer>(indices, 6);
-
+        m_Texture = std::make_unique<Texture>("./OpenGL/resources/PixelArtTest2.png");
+        
         m_Shader->Bind();
         m_VertexBuffer->UnBind();
         m_IndexBuffer->UnBind();
@@ -147,10 +225,20 @@ public:
         {
             glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
-
+            Renderer renderer;
             //Interface with the event listeners
             eventListener.processInput(window);
             projection = glm::ortho(-projWidth, projWidth, -projHeight, projHeight, -1.0f, 1.0f);
+
+            //TODO: Draw BackGround Textures
+
+            //TODO: Draw Spacing Grid
+            glm::mat4 GridModel = Vec3ToMat4(glm::vec3(1.0f,1.0f,1.0f));
+            m_GridShader->Bind();
+            m_GridShader->SetUniformMat4f("translation", GridModel);
+            m_GridShader->SetUniformMat4f("projection", projection);
+            m_GridShader->SetUniformMat4f("view", view);
+            renderer.DrawGrid(*m_GridVAO, *m_GridShader, Gridvertices.size()/3);
 
             //Update all player positions
             for (auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) { UpdatePlayerPosition(playerEntry.first); }
@@ -159,10 +247,12 @@ public:
             for (auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) {
                 Player player = PlayerDatabase::getInstance().getPlayer(playerEntry.first);
                 glm::mat4 transTest = Vec3ToMat4(glm::vec3(player.getPositionX(), player.getPositionY(), player.getPositionZ()));
-                Renderer renderer;
+                
                 m_Shader->Bind();
+                m_Texture->Bind();
                 m_Shader->SetUniformMat4f("translation", transTest);
                 m_Shader->SetUniformMat4f("projection", projection);
+                m_Shader->SetUniform1i("u_Texture", 0);
                 m_Shader->SetUniformMat4f("view", view);
                 renderer.Draw(*m_VAO, *m_IndexBuffer, *m_Shader);
               
@@ -193,6 +283,9 @@ public:
             ImGui::SliderFloat("lagSimulationTime (ms)", &lagSimulationTime, 0.0f, 100.0f);
             ImGui::SliderFloat("Zoom", &projHeight, 15.0f, 100.0f);
             ImGui::SliderFloat("Zoom", &projWidth, 15.0f, 100.0f);
+            ImGui::Text("Camera Position:");
+            ImGui::Text("X: %f", eventListener.getCameraXTranslation());
+            ImGui::Text("Y: %f", eventListener.getCameraYTranslation());
             ImGui::End();
             ImGui::Render();
             ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());

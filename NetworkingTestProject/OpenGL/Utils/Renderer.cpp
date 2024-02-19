@@ -37,3 +37,10 @@ void Renderer::DrawInstanced(const VertexArray& va, const IndexBuffer& ib, const
 
     GLCALL(glDrawElementsInstanced(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, NULL, count));
 }
+
+void Renderer::DrawGrid(const VertexArray& va, const Shader& shader, const unsigned int count) const {
+    shader.Bind();
+    va.Bind();
+
+    glDrawArrays(GL_LINES, 0, count);
+}

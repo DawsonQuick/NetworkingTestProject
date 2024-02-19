@@ -968,5 +968,11 @@
       <Filter>Header Files</Filter>
     </None>
     <None Include="OpenGL\resources\Basic.shader" />
+    <None Include="OpenGL\resources\Grid.shader" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="OpenGL\resources\PixelArtTest2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

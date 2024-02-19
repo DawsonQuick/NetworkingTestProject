@@ -4,7 +4,7 @@
 #include "./Client.h"
 #include "./../OpenGL/vendor/glm/glm.hpp"
 #include "./../OpenGL/vendor/glm/gtc/matrix_transform.hpp"
-
+#include "./../OpenGL/vendor/imgui/imgui.h"
 /*
 * -----------------------------------------------------------------------------------------
 *                                      Zoom Logic
@@ -14,6 +14,7 @@
 float projHeight = 70.0;
 float projWidth = 70.0;
 int scrollSpeed = 10;
+bool isGUIClicked;
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
     if (!((projWidth - scrollSpeed) <= 0) || !((projHeight - scrollSpeed) <= 0)) {
         if (yoffset > 0) {
@@ -48,6 +49,11 @@ const float panningSpeed = 0.1f;
 float totalDistanceTraveledPerHold = 0.0;
 // Mouse button callback
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+    //Disable this callback if interacting with a ImGUI element
+    if (ImGui::IsMouseHoveringAnyWindow() || ImGui::IsAnyItemActive()) {
+        return;
+    }
+
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
         if (action == GLFW_PRESS) {
             isDragging = true;
@@ -56,7 +62,27 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
         else if (action == GLFW_RELEASE) {
             isDragging = false;
             if (totalDistanceTraveledPerHold < 15) {
-                std::cout << "Click Detected" << std::endl;
+                
+                double tempX, tempY;
+                glfwGetCursorPos(window, &tempX, &tempY);
+                float clipX = (2.0f * tempX) / 1000 - 1.0f;
+                float clipY = 1.0f - (2.0f * tempY) / 1000;
+
+                glm::vec4 clipPos(clipX, clipY, 0.0f, 1.0f);
+                glm::mat4 tmpProjection = glm::ortho(-projWidth, projWidth, -projHeight, projHeight, -1.0f, 1.0f);
+                // Apply inverse projection matrix to convert from clip space to NDC
+                glm::mat4 inverseProjection = glm::inverse(tmpProjection);
+                glm::vec4 ndcPos = inverseProjection * clipPos;
+                ndcPos /= ndcPos.w; // Divide by w to get normalized device coordinates
+
+                // Apply inverse view matrix to convert from NDC to world space
+                glm::mat4 inverseView = glm::inverse(view);
+                glm::vec4 worldPos = inverseView * ndcPos;
+
+                std::cout << "Click Detected at: X: "<< worldPos.x <<" Y: "<< worldPos.y << std::endl;
+                Player newPlayer;
+                newPlayer.setPosition(worldPos.x,worldPos.y,0.0,0.0L);
+                PlayerDatabase::getInstance().addPlayer("NPCTest:"+std::to_string(worldPos.x), newPlayer);
                 //TODO: Add events for clicks
             }
             totalDistanceTraveledPerHold = 0.0;
@@ -72,7 +98,6 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
         double deltaY = (ypos - lastY);
         double distance = sqrt(deltaX * deltaX + deltaY * deltaY);
         totalDistanceTraveledPerHold += distance;
-
         // Calculate mouse movement
         deltaX = (xpos - lastX) * panningSpeed;
         deltaY = (ypos - lastY) * panningSpeed;
@@ -137,5 +162,12 @@ public:
     *        The logic above detects key presses and moved the player accordingly
     * -----------------------------------------------------------------------------------------
     */
+
+    float getCameraXTranslation() {
+        return -(view[3][0]);
+    }
+    float getCameraYTranslation() {
+        return -(view[3][1]);
+    }
 };
 #endif

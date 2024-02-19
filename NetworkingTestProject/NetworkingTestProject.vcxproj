@@ -340,6 +340,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenGL\resources\Basic.shader" />
+    <None Include="OpenGL\resources\Grid.shader" />
     <None Include="OpenGL\vendor\glm\detail\func_common.inl" />
     <None Include="OpenGL\vendor\glm\detail\func_common_simd.inl" />
     <None Include="OpenGL\vendor\glm\detail\func_exponential.inl" />
@@ -451,6 +452,9 @@
     <None Include="OpenGL\vendor\glm\gtx\vector_angle.inl" />
     <None Include="OpenGL\vendor\glm\gtx\vector_query.inl" />
     <None Include="OpenGL\vendor\glm\gtx\wrap.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="OpenGL\resources\PixelArtTest2.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
