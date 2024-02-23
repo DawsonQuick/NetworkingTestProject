@@ -21,24 +21,6 @@
     <ClCompile Include="OpenGL\Utils\Camera\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OpenGL\Utils\ComputeThread\ComputeThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGL\Utils\TerrainBuilder\PerlinTessellation\Generation\PerlinNoiseTessellation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGL\Utils\TerrainBuilder\PerlinTessellation\PerlinTessellationManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGL\Utils\TerrainBuilder\PerlinNoiseGeneration.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGL\Utils\TerrainBuilder\SkyBoxManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGL\Utils\TerrainBuilder\TerrainBuilder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="OpenGL\Utils\IndexBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -123,24 +105,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="OpenGL\Utils\Camera\Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGL\Utils\ComputeThread\ComputeThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGL\Utils\TerrainBuilder\PerlinTessellation\Generation\PerlinNoiseTessellation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGL\Utils\TerrainBuilder\PerlinTessellation\PerlinTessellationManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGL\Utils\TerrainBuilder\PerlinNoiseGeneration.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGL\Utils\TerrainBuilder\SkyBoxManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGL\Utils\TerrainBuilder\TerrainBuilder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="OpenGL\Utils\IndexBuffer.h">
@@ -632,6 +596,9 @@
     <ClInclude Include="client\ClientEventListener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Common\Utils\json.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenGL\vendor\glm\detail\func_common.inl">
@@ -969,6 +936,8 @@
     </None>
     <None Include="OpenGL\resources\Basic.shader" />
     <None Include="OpenGL\resources\Grid.shader" />
+    <None Include="Test.json" />
+    <None Include="OpenGL\resources\Map.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="OpenGL\resources\PixelArtTest2.png">

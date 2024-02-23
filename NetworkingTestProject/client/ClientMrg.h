@@ -20,8 +20,10 @@
 #include "./../OpenGL/vendor/imgui/imgui_impl_glfw_gl3.h"
 
 // Window dimensions
-const GLuint WIDTH = 1000, HEIGHT = 1000;
+
 GLFWwindow* window;
+
+
 
 
 /*---------------------------------------------------------------------------------------
@@ -56,6 +58,41 @@ void generateGrid(float maxSize, float gridSize, std::vector<float>& vertices) {
 }
 //---------------------------------------------------------------------------------------
 
+void generateGridQuads(float maxSize, float gridSize, std::vector<float>& vertices, std::vector<unsigned int>& indices) {
+    // Calculate the number of tiles along one side of the grid
+    int numTiles = static_cast<int>(maxSize / gridSize);
+
+    // Generate quads in the middle of each grid square
+    for (int i = 0; i < numTiles; ++i) {
+        for (int j = 0; j < numTiles; ++j) {
+            float x = -maxSize / 2.0f + j * gridSize;
+            float y = -maxSize / 2.0f + i * gridSize;
+            float quadSize = gridSize * 0.5f; // Half the size of each grid square
+            // Define vertices for the quad
+            vertices.push_back(x - quadSize); // Bottom-left
+            vertices.push_back(y - quadSize);
+            vertices.push_back(0.0f);
+            vertices.push_back(x + quadSize); // Bottom-right
+            vertices.push_back(y - quadSize);
+            vertices.push_back(0.0f);
+            vertices.push_back(x + quadSize); // Top-right
+            vertices.push_back(y + quadSize);
+            vertices.push_back(0.0f);
+            vertices.push_back(x - quadSize); // Top-left
+            vertices.push_back(y + quadSize);
+            vertices.push_back(0.0f);
+            // Define indices for the quad
+            unsigned int baseIndex = static_cast<unsigned int>(vertices.size() / 3) - 4; // Index of the first vertex of the quad
+            indices.push_back(baseIndex);     // Bottom-left
+            indices.push_back(baseIndex + 1); // Bottom-right
+            indices.push_back(baseIndex + 2); // Top-right
+            indices.push_back(baseIndex);     // Bottom-left
+            indices.push_back(baseIndex + 2); // Top-right
+            indices.push_back(baseIndex + 3); // Top-left
+        }
+    }
+}
+
 
 
 
@@ -84,9 +121,9 @@ float texCoordTop = 1.0f - ((subTextureHeight* row)/ textureHeight); // Top edge
 float texCoordBottom = 1.0f - (((row +1)*(subTextureHeight)) / textureHeight); // Bottom edge of the sub-texture
 
 GLfloat vertices[] = {
-    // Position        Texture coordinates
-    -0.5f, -0.5f, 0.0f,  texCoordLeft  + onePixelWidth,  texCoordBottom + onePixelHeight,    // 0
-     0.5f, -0.5f, 0.0f,  texCoordRight - onePixelWidth,  texCoordBottom + onePixelHeight,    // 1
+//   Position            Texture coordinates
+    -0.5f, -0.5f, 0.0f,  texCoordLeft  + onePixelWidth,  texCoordBottom + onePixelHeight,       // 0
+     0.5f, -0.5f, 0.0f,  texCoordRight - onePixelWidth,  texCoordBottom + onePixelHeight,       // 1
      0.5f,  0.5f, 0.0f,  texCoordRight - onePixelWidth,  texCoordTop    - onePixelHeight,       // 2
     -0.5f,  0.5f, 0.0f,  texCoordLeft  + onePixelWidth,  texCoordTop    - onePixelHeight        // 3
 };
@@ -104,19 +141,23 @@ void UpdatePlayerPosition(std::string name) {
     KeyPress keyPress = PlayerDatabase::getInstance().getPlayer(name).getKeyPress();
     Position prevPos = PlayerDatabase::getInstance().getPlayer(name).getPosition();
     double playerSpeed = PlayerDatabase::getInstance().getPlayer(name).getMovementSpeed();
-    Position newPos;
+    Position newPos = prevPos;
     if (keyPress.keyW) {
-        PlayerDatabase::getInstance().getPlayer(name).setPositionY((prevPos.Y + playerSpeed));
+        newPos.Y = prevPos.Y + playerSpeed;
     }
     if (keyPress.keyA) {
-        PlayerDatabase::getInstance().getPlayer(name).setPositionX((prevPos.X - playerSpeed));
+        newPos.X = prevPos.X - playerSpeed;
     }
     if (keyPress.keyS) {
-        PlayerDatabase::getInstance().getPlayer(name).setPositionY((prevPos.Y - playerSpeed));
+        newPos.Y = prevPos.Y - playerSpeed;
     }
     if (keyPress.keyD) {
-        PlayerDatabase::getInstance().getPlayer(name).setPositionX(( prevPos.X + playerSpeed));
+        newPos.X = prevPos.X + playerSpeed;
     }
+    
+    //TODO: Add logic for colision detection, 
+    //If player hits something, set to previous position
+    PlayerDatabase::getInstance().getPlayer(name).setPosition(newPos.X, newPos.Y, newPos.Z, getCurrentTimeInMillis());
 }
 
 
@@ -130,6 +171,13 @@ private:
     std::unique_ptr<VertexArray> m_VAO;
     std::unique_ptr<VertexBuffer> m_VertexBuffer;
     std::unique_ptr<IndexBuffer> m_IndexBuffer;
+
+
+    std::unique_ptr<VertexArray> m_MapVAO;
+    std::unique_ptr<VertexBuffer> m_MapVertexBuffer;
+    std::unique_ptr<IndexBuffer> m_MapIndexBuffer;
+    std::unique_ptr<Shader> m_MapShader;
+
     std::unique_ptr<Shader> m_Shader;
     std::unique_ptr<Texture> m_Texture;
 
@@ -137,9 +185,11 @@ private:
     std::unique_ptr<VertexBuffer> m_GridVertexBuffer;
     std::unique_ptr<Shader> m_GridShader;
 
-    glm::mat4 projection = glm::ortho(-projWidth, projWidth, -projHeight, projHeight, -1.0f, 1.0f);
+    glm::mat4 projection = glm::ortho(-projWidth * aspectRatio, projWidth * aspectRatio, -projHeight * aspectRatio, projHeight * aspectRatio, -1.0f, 1.0f);
     ClientConnection client;
     ClientEventListener eventListener;
+
+    int dynamicLightingFlag = 0;
 
 
 public:
@@ -191,6 +241,16 @@ public:
         gridLayout.Push<float>(3); // Position
         m_GridVAO->AddBuffer(*m_GridVertexBuffer, gridLayout);
         //-----------------------------------------------------------------------------------------
+        std::vector<float> mapVertices;
+        std::vector<unsigned int> mapIndicies;
+        generateGridQuads(maxSize, gridSize, mapVertices, mapIndicies);
+        m_MapShader = std::make_unique<Shader>("./OpenGL/resources/Map.shader",5);
+        m_MapVAO = std::make_unique<VertexArray>();
+        m_MapVertexBuffer = std::make_unique<VertexBuffer>(mapVertices.data(), mapVertices.size()*sizeof(float));
+        VertexBufferLayout mapLayout;
+        mapLayout.Push<float>(3);
+        m_MapVAO->AddBuffer(*m_MapVertexBuffer, mapLayout);
+        m_MapIndexBuffer = std::make_unique<IndexBuffer>(mapIndicies.data(), mapIndicies.size());
 
         // Define the viewport dimensions
         int width, height;
@@ -216,7 +276,6 @@ public:
         m_IndexBuffer = std::make_unique<IndexBuffer>(indices, 6);
         m_Texture = std::make_unique<Texture>("./OpenGL/resources/PixelArtTest2.png");
         
-        m_Shader->Bind();
         m_VertexBuffer->UnBind();
         m_IndexBuffer->UnBind();
         m_VAO->UnBind();
@@ -228,9 +287,32 @@ public:
             Renderer renderer;
             //Interface with the event listeners
             eventListener.processInput(window);
-            projection = glm::ortho(-projWidth, projWidth, -projHeight, projHeight, -1.0f, 1.0f);
-
+            projection = glm::ortho(-projWidth * aspectRatio, projWidth * aspectRatio, -projHeight, projHeight, -1.0f, 1.0f);
+            glm::mat4 MapModel = Vec3ToMat4(glm::vec3(1.0f, 1.0f, 1.0f));
             //TODO: Draw BackGround Textures
+
+            /*----------------------------------------------------------------------------------------------*
+             *                                   Render The Map                                             *
+             *----------------------------------------------------------------------------------------------*/
+            m_MapShader->Bind();
+            int index = 0;
+            if (dynamicLightingFlag == 1) {
+                for (auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) {
+                    m_MapShader->SetUniform3f("lightPos[" + std::to_string(index) + "]", playerEntry.second.getPositionX(), playerEntry.second.getPositionY(), playerEntry.second.getPositionZ());
+                    index++;
+                }
+                m_MapShader->SetUniform1i("numberOfLights", index);
+            }
+            m_MapShader->SetUniform1i("isDynamicLightingOn", dynamicLightingFlag);
+            m_MapShader->SetUniformMat4f("translation", MapModel);
+            m_MapShader->SetUniformMat4f("projection", projection);
+            m_MapShader->SetUniformMat4f("view", view);
+            renderer.Draw(*m_MapVAO, *m_MapIndexBuffer, *m_MapShader);
+
+
+            /*----------------------------------------------------------------------------------------------*
+             *                                   Render The Grid                                            *
+             *----------------------------------------------------------------------------------------------*/
 
             //TODO: Draw Spacing Grid
             glm::mat4 GridModel = Vec3ToMat4(glm::vec3(1.0f,1.0f,1.0f));
@@ -240,6 +322,10 @@ public:
             m_GridShader->SetUniformMat4f("view", view);
             renderer.DrawGrid(*m_GridVAO, *m_GridShader, Gridvertices.size()/3);
 
+
+            /*----------------------------------------------------------------------------------------------*
+             *                                   Render The Players                                         *
+             *----------------------------------------------------------------------------------------------*/
             //Update all player positions
             for (auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) { UpdatePlayerPosition(playerEntry.first); }
 
@@ -261,6 +347,8 @@ public:
             //Render ImGUI menu
             ImGui_ImplGlfwGL3_NewFrame();
             ImGui::Begin("Test");
+            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+            ImGui::Checkbox("Dynamic Lighting", reinterpret_cast<bool*>(&dynamicLightingFlag));
             for(auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) {
                 ImGui::Text("Players: %s",playerEntry.first.c_str());
                 ImGui::Text("X: %f Y: %f",playerEntry.second.getPositionX(),playerEntry.second.getPositionY());

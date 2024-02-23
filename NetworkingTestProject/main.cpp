@@ -4,7 +4,7 @@
 #include "./client/ClientMrg.h"
 #include "./OpenGL/vendor/glm/glm.hpp"
 #include "./Common/Messages/Message.h"
-
+#include "./Common/Utils/json.hpp"
 SOCKET serverSocket;
 
 const int BUFFER_SIZE = 1024;
@@ -24,6 +24,18 @@ int main() {
     else if (choice == 1) {
         ClientMrg mrg;
         mrg.StartOpenGL();
+    }
+    else if (choice == 2) {
+
+        //Example of loading in a json file.
+        //TODO: need to turn this into a utility class used for loading texture atlas meta data
+        // and general configuration data for the application
+        std::ifstream fJson("Test.json");
+
+        std::stringstream buffer;
+        buffer << fJson.rdbuf();
+        auto json = nlohmann::json::parse(buffer.str());
+        std::cout << json["PerTextureHeight"] << std::endl;
     }
     else {
 

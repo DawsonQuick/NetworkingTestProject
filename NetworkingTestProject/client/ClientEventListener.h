@@ -5,14 +5,31 @@
 #include "./../OpenGL/vendor/glm/glm.hpp"
 #include "./../OpenGL/vendor/glm/gtc/matrix_transform.hpp"
 #include "./../OpenGL/vendor/imgui/imgui.h"
+int WIDTH = 1000, HEIGHT = 1000;
+float projHeight = 70.0;
+float projWidth = 70.0;
+float aspectRatio = static_cast<float>(WIDTH) / HEIGHT;
+// Define a window resize callback function
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+    // Update OpenGL viewport size
+    glViewport(0, 0, width, height);
+
+    std::cout << "Deteting resize: Width: " << width << " Height: " << height << std::endl;
+    WIDTH = width;
+    HEIGHT = height;
+    // Additional resize handling code if needed
+    aspectRatio = static_cast<float>(width) / height;
+}
+
+
+
 /*
 * -----------------------------------------------------------------------------------------
 *                                      Zoom Logic
 * -----------------------------------------------------------------------------------------
 */
 //TODO change this to be inside the class so these variables are not accessible from the entire program
-float projHeight = 70.0;
-float projWidth = 70.0;
+
 int scrollSpeed = 10;
 bool isGUIClicked;
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
@@ -65,11 +82,11 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
                 
                 double tempX, tempY;
                 glfwGetCursorPos(window, &tempX, &tempY);
-                float clipX = (2.0f * tempX) / 1000 - 1.0f;
-                float clipY = 1.0f - (2.0f * tempY) / 1000;
+                float clipX = (2.0f * tempX) / WIDTH - 1.0f;
+                float clipY = 1.0f - (2.0f * tempY) / HEIGHT;
 
                 glm::vec4 clipPos(clipX, clipY, 0.0f, 1.0f);
-                glm::mat4 tmpProjection = glm::ortho(-projWidth, projWidth, -projHeight, projHeight, -1.0f, 1.0f);
+                glm::mat4 tmpProjection = glm::ortho(-projWidth * aspectRatio, projWidth * aspectRatio, -projHeight, projHeight, -1.0f, 1.0f);
                 // Apply inverse projection matrix to convert from clip space to NDC
                 glm::mat4 inverseProjection = glm::inverse(tmpProjection);
                 glm::vec4 ndcPos = inverseProjection * clipPos;
@@ -80,10 +97,17 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
                 glm::vec4 worldPos = inverseView * ndcPos;
 
                 std::cout << "Click Detected at: X: "<< worldPos.x <<" Y: "<< worldPos.y << std::endl;
+
+                
+                 // Test Spawns a new player at click location
                 Player newPlayer;
                 newPlayer.setPosition(worldPos.x,worldPos.y,0.0,0.0L);
                 PlayerDatabase::getInstance().addPlayer("NPCTest:"+std::to_string(worldPos.x), newPlayer);
+                
+
                 //TODO: Add events for clicks
+
+
             }
             totalDistanceTraveledPerHold = 0.0;
         }
@@ -128,6 +152,8 @@ public:
         glfwSetMouseButtonCallback(window, mouse_button_callback);
         // Set cursor position callback
         glfwSetCursorPosCallback(window, cursor_position_callback);
+
+        glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	}
 
     /*

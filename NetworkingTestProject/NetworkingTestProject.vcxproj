@@ -132,17 +132,11 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OpenGL\Utils\Camera\Camera.cpp" />
-    <ClCompile Include="OpenGL\Utils\ComputeThread\ComputeThread.cpp" />
     <ClCompile Include="OpenGL\Utils\IndexBuffer.cpp" />
     <ClCompile Include="OpenGL\Utils\Renderer.cpp" />
     <ClCompile Include="OpenGL\Utils\Shader.cpp" />
     <ClCompile Include="OpenGL\Utils\ShaderV2.cpp" />
     <ClCompile Include="OpenGL\Utils\stb_image.cpp" />
-    <ClCompile Include="OpenGL\Utils\TerrainBuilder\PerlinNoiseGeneration.cpp" />
-    <ClCompile Include="OpenGL\Utils\TerrainBuilder\PerlinTessellation\Generation\PerlinNoiseTessellation.cpp" />
-    <ClCompile Include="OpenGL\Utils\TerrainBuilder\PerlinTessellation\PerlinTessellationManager.cpp" />
-    <ClCompile Include="OpenGL\Utils\TerrainBuilder\SkyBoxManager.cpp" />
-    <ClCompile Include="OpenGL\Utils\TerrainBuilder\TerrainBuilder.cpp" />
     <ClCompile Include="OpenGL\Utils\Texture.cpp" />
     <ClCompile Include="OpenGL\Utils\VertexArray.cpp" />
     <ClCompile Include="OpenGL\Utils\VertexBuffer.cpp" />
@@ -166,21 +160,16 @@
     <ClInclude Include="Common\Messages\Utils\MessageFactory.h" />
     <ClInclude Include="Common\Objects\Player.h" />
     <ClInclude Include="client\ClientMsgProcessor.h" />
+    <ClInclude Include="Common\Utils\json.hpp" />
     <ClInclude Include="Common\Utils\Logger.h" />
     <ClInclude Include="Common\Utils\StringStreamer.h" />
     <ClInclude Include="Common\Utils\PlayerDatabase.h" />
     <ClInclude Include="OpenGL\Utils\Camera\Camera.h" />
-    <ClInclude Include="OpenGL\Utils\ComputeThread\ComputeThread.h" />
     <ClInclude Include="OpenGL\Utils\IndexBuffer.h" />
     <ClInclude Include="OpenGL\Utils\Renderer.h" />
     <ClInclude Include="OpenGL\Utils\Shader.h" />
     <ClInclude Include="OpenGL\Utils\ShaderV2.h" />
     <ClInclude Include="OpenGL\Utils\stb_image.h" />
-    <ClInclude Include="OpenGL\Utils\TerrainBuilder\PerlinNoiseGeneration.h" />
-    <ClInclude Include="OpenGL\Utils\TerrainBuilder\PerlinTessellation\Generation\PerlinNoiseTessellation.h" />
-    <ClInclude Include="OpenGL\Utils\TerrainBuilder\PerlinTessellation\PerlinTessellationManager.h" />
-    <ClInclude Include="OpenGL\Utils\TerrainBuilder\SkyBoxManager.h" />
-    <ClInclude Include="OpenGL\Utils\TerrainBuilder\TerrainBuilder.h" />
     <ClInclude Include="OpenGL\Utils\Texture.h" />
     <ClInclude Include="OpenGL\Utils\VertexArray.h" />
     <ClInclude Include="OpenGL\Utils\VertexBuffer.h" />
@@ -341,6 +330,7 @@
   <ItemGroup>
     <None Include="OpenGL\resources\Basic.shader" />
     <None Include="OpenGL\resources\Grid.shader" />
+    <None Include="OpenGL\resources\Map.shader" />
     <None Include="OpenGL\vendor\glm\detail\func_common.inl" />
     <None Include="OpenGL\vendor\glm\detail\func_common_simd.inl" />
     <None Include="OpenGL\vendor\glm\detail\func_exponential.inl" />
@@ -452,6 +442,7 @@
     <None Include="OpenGL\vendor\glm\gtx\vector_angle.inl" />
     <None Include="OpenGL\vendor\glm\gtx\vector_query.inl" />
     <None Include="OpenGL\vendor\glm\gtx\wrap.inl" />
+    <None Include="Test.json" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="OpenGL\resources\PixelArtTest2.png" />
