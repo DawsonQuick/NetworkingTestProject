@@ -4,9 +4,13 @@
 #include <GL/glew.h>
 // GLFW
 #include <GLFW/glfw3.h>
+#include <thread>
 #include "./Client.h"
+#include "./OnUpdate.h"
 #include "./ClientEventListener.h"
+#include "./ImGuiRenderContent.h"
 #include "./../Common/Utils/Logger.h"
+#include "./../Common/Utils/MapAndGridGenerator.h"
 #include "./../OpenGL/Utils/Renderer.h"
 #include "./../OpenGL/vendor/imgui/imgui.h"
 #include "./../OpenGL/vendor/glm/glm.hpp"
@@ -23,102 +27,31 @@
 
 GLFWwindow* window;
 
-
-
-
-/*---------------------------------------------------------------------------------------
-*               Code to generate grid NEED TO MOVE TO OWN CLASS
- ---------------------------------------------------------------------------------------*/
-
-void generateGrid(float maxSize, float gridSize, std::vector<float>& vertices) {
-    // Calculate the number of tiles along one side of the grid
-    int numTiles = static_cast<int>(maxSize / gridSize);
-
-    // Generate horizontal lines
-    for (int i = 0; i <= numTiles; ++i) {
-        float y = -maxSize / 2.0f + i * gridSize;
-        vertices.push_back(-maxSize / 2.0f); // x-coordinate of the start point
-        vertices.push_back(y);               // y-coordinate of the start point
-        vertices.push_back(0.0f);            // z-coordinate
-        vertices.push_back(maxSize / 2.0f);  // x-coordinate of the end point
-        vertices.push_back(y);               // y-coordinate of the end point
-        vertices.push_back(0.0f);            // z-coordinate
-    }
-
-    // Generate vertical lines
-    for (int i = 0; i <= numTiles; ++i) {
-        float x = -maxSize / 2.0f + i * gridSize;
-        vertices.push_back(x);               // x-coordinate of the start point
-        vertices.push_back(-maxSize / 2.0f); // y-coordinate of the start point
-        vertices.push_back(0.0f);            // z-coordinate
-        vertices.push_back(x);               // x-coordinate of the end point
-        vertices.push_back(maxSize / 2.0f);  // y-coordinate of the end point
-        vertices.push_back(0.0f);            // z-coordinate
-    }
-}
-//---------------------------------------------------------------------------------------
-
-void generateGridQuads(float maxSize, float gridSize, std::vector<float>& vertices, std::vector<unsigned int>& indices) {
-    // Calculate the number of tiles along one side of the grid
-    int numTiles = static_cast<int>(maxSize / gridSize);
-
-    // Generate quads in the middle of each grid square
-    for (int i = 0; i < numTiles; ++i) {
-        for (int j = 0; j < numTiles; ++j) {
-            float x = -maxSize / 2.0f + j * gridSize;
-            float y = -maxSize / 2.0f + i * gridSize;
-            float quadSize = gridSize * 0.5f; // Half the size of each grid square
-            // Define vertices for the quad
-            vertices.push_back(x - quadSize); // Bottom-left
-            vertices.push_back(y - quadSize);
-            vertices.push_back(0.0f);
-            vertices.push_back(x + quadSize); // Bottom-right
-            vertices.push_back(y - quadSize);
-            vertices.push_back(0.0f);
-            vertices.push_back(x + quadSize); // Top-right
-            vertices.push_back(y + quadSize);
-            vertices.push_back(0.0f);
-            vertices.push_back(x - quadSize); // Top-left
-            vertices.push_back(y + quadSize);
-            vertices.push_back(0.0f);
-            // Define indices for the quad
-            unsigned int baseIndex = static_cast<unsigned int>(vertices.size() / 3) - 4; // Index of the first vertex of the quad
-            indices.push_back(baseIndex);     // Bottom-left
-            indices.push_back(baseIndex + 1); // Bottom-right
-            indices.push_back(baseIndex + 2); // Top-right
-            indices.push_back(baseIndex);     // Bottom-left
-            indices.push_back(baseIndex + 2); // Top-right
-            indices.push_back(baseIndex + 3); // Top-left
-        }
-    }
-}
-
-
-
-
-
 /*
 * ----------------------------------
 *     Sprite Diminesion Info
 * ----------------------------------
 */
 // Width and height of the entire texture
-float textureWidth = 1920.0f;
+float textureWidth  = 1920.0f;
 float textureHeight = 1080.0f;
 
-float onePixelWidth = 1 / textureWidth;
+float onePixelWidth  = 1 / textureWidth;
 float onePixelHeight = 1 / textureHeight;
+
 // Width and height of the sub-texture
-float subTextureWidth = 64.0f;
+float subTextureWidth  = 64.0f;
 float subTextureHeight = 64.0f;
-float row = 0.0f;
-float column = 1.0f;
+
+//Location of the sub-texture (Starting from top-left)
+float row    = 0.0f;
+float column = 0.0f;
 
 // Calculate texture coordinates for the sub-texture
-float texCoordLeft = (subTextureWidth* column) / textureWidth; // Left edge of the sub-texture
-float texCoordRight = ((column +1)*subTextureWidth) / textureWidth; // Right edge of the sub-texture
-float texCoordTop = 1.0f - ((subTextureHeight* row)/ textureHeight); // Top edge of the sub-texture
-float texCoordBottom = 1.0f - (((row +1)*(subTextureHeight)) / textureHeight); // Bottom edge of the sub-texture
+float texCoordLeft   = (subTextureWidth * column) / textureWidth;               // Left edge of the sub-texture
+float texCoordRight  = ((column + 1) * subTextureWidth) / textureWidth;         // Right edge of the sub-texture
+float texCoordTop    = 1.0f - ((subTextureHeight* row) / textureHeight);        // Top edge of the sub-texture
+float texCoordBottom = 1.0f - (((row + 1)*(subTextureHeight)) / textureHeight); // Bottom edge of the sub-texture
 
 GLfloat vertices[] = {
 //   Position            Texture coordinates
@@ -136,35 +69,18 @@ unsigned int indices[] = {
 */
 
 
-//Updates all players positions based on if the player has a key pressed, distance moved is determined by that players movement speed
-void UpdatePlayerPosition(std::string name) {
-    KeyPress keyPress = PlayerDatabase::getInstance().getPlayer(name).getKeyPress();
-    Position prevPos = PlayerDatabase::getInstance().getPlayer(name).getPosition();
-    double playerSpeed = PlayerDatabase::getInstance().getPlayer(name).getMovementSpeed();
-    Position newPos = prevPos;
-    if (keyPress.keyW) {
-        newPos.Y = prevPos.Y + playerSpeed;
-    }
-    if (keyPress.keyA) {
-        newPos.X = prevPos.X - playerSpeed;
-    }
-    if (keyPress.keyS) {
-        newPos.Y = prevPos.Y - playerSpeed;
-    }
-    if (keyPress.keyD) {
-        newPos.X = prevPos.X + playerSpeed;
-    }
-    
-    //TODO: Add logic for colision detection, 
-    //If player hits something, set to previous position
-    PlayerDatabase::getInstance().getPlayer(name).setPosition(newPos.X, newPos.Y, newPos.Z, getCurrentTimeInMillis());
-}
+
 
 
 glm::mat4 Vec3ToMat4(const glm::vec3& translation) {
     return glm::translate(glm::mat4(1.0f), translation);
 }
 
+/*
+*This is the central location of all of the client information and connections
+* 
+*Host of the main renderloop
+*/
 class ClientMrg {
 
 private:
@@ -172,6 +88,10 @@ private:
     std::unique_ptr<VertexBuffer> m_VertexBuffer;
     std::unique_ptr<IndexBuffer> m_IndexBuffer;
 
+    std::unique_ptr<VertexArray> m_PlayerVAO;
+    std::unique_ptr<VertexBuffer> m_PlayerVertexBuffer;
+    std::unique_ptr<IndexBuffer> m_PlayerIndexBuffer;
+    std::unique_ptr<Shader> m_PlayerShader;
 
     std::unique_ptr<VertexArray> m_MapVAO;
     std::unique_ptr<VertexBuffer> m_MapVertexBuffer;
@@ -190,6 +110,8 @@ private:
     ClientEventListener eventListener;
 
     int dynamicLightingFlag = 0;
+
+    long long previousTime = getCurrentTimeInMillis();
 
 
 public:
@@ -244,7 +166,7 @@ public:
         std::vector<float> mapVertices;
         std::vector<unsigned int> mapIndicies;
         generateGridQuads(maxSize, gridSize, mapVertices, mapIndicies);
-        m_MapShader = std::make_unique<Shader>("./OpenGL/resources/Map.shader",5);
+        m_MapShader = std::make_unique<Shader>("./OpenGL/resources/Map.shader",2);
         m_MapVAO = std::make_unique<VertexArray>();
         m_MapVertexBuffer = std::make_unique<VertexBuffer>(mapVertices.data(), mapVertices.size()*sizeof(float));
         VertexBufferLayout mapLayout;
@@ -266,22 +188,42 @@ public:
         ImGui::CreateContext();
         ImGui_ImplGlfwGL3_Init(window, false);
         ImGui::StyleColorsDark();
+        
+        m_PlayerVAO = std::make_unique<VertexArray>();
+        m_PlayerVertexBuffer = std::make_unique<VertexBuffer>(vertices, sizeof(vertices));
+        VertexBufferLayout playerlayout;
+        playerlayout.Push<float>(3); //Position
+        playerlayout.Push<float>(2); //Texture Coords
+        m_PlayerVAO->AddBuffer(*m_PlayerVertexBuffer, playerlayout);
+        m_PlayerIndexBuffer = std::make_unique<IndexBuffer>(indices, 6);
+        m_Texture = std::make_unique<Texture>("./OpenGL/resources/PixelArtTest2.png");
+        m_PlayerShader = std::make_unique<Shader>("./OpenGL/resources/Player.shader", 1);
+
+
+        std::thread updateThread(OnUpdateThread);
+        updateThread.detach();
+        GLuint ssbo;
+
+       
         m_Shader = std::make_unique<Shader>("./OpenGL/resources/Basic.shader", 1);
+
+        int numOfParticles = 8000;
         m_VAO = std::make_unique<VertexArray>();
-        m_VertexBuffer = std::make_unique<VertexBuffer>(vertices, sizeof(vertices));
+        m_VertexBuffer = std::make_unique<VertexBuffer>(nullptr, ((numOfParticles)*(16)) * sizeof(float));
         VertexBufferLayout layout;
         layout.Push<float>(3); //Position
         layout.Push<float>(2); //Texture Coords
+        layout.Push<float>(3); //Translation
         m_VAO->AddBuffer(*m_VertexBuffer, layout);
-        m_IndexBuffer = std::make_unique<IndexBuffer>(indices, 6);
-        m_Texture = std::make_unique<Texture>("./OpenGL/resources/PixelArtTest2.png");
-        
-        m_VertexBuffer->UnBind();
-        m_IndexBuffer->UnBind();
-        m_VAO->UnBind();
+        m_IndexBuffer = std::make_unique<IndexBuffer>(nullptr, ((numOfParticles)*(6)));
+
 
         while (!glfwWindowShouldClose(window))
         {
+            long long tmpTime = getCurrentTimeInMillis();
+            float delta = static_cast<float>(tmpTime-previousTime);
+            previousTime = tmpTime;
+            OnUpdate(delta);
             glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
             Renderer renderer;
@@ -290,25 +232,33 @@ public:
             projection = glm::ortho(-projWidth * aspectRatio, projWidth * aspectRatio, -projHeight, projHeight, -1.0f, 1.0f);
             glm::mat4 MapModel = Vec3ToMat4(glm::vec3(1.0f, 1.0f, 1.0f));
             //TODO: Draw BackGround Textures
-
+            std::vector<float> testInput = ParticalDatabase::getInstance().getParticalsRAW();
             /*----------------------------------------------------------------------------------------------*
              *                                   Render The Map                                             *
              *----------------------------------------------------------------------------------------------*/
             m_MapShader->Bind();
-            int index = 0;
             if (dynamicLightingFlag == 1) {
-                for (auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) {
-                    m_MapShader->SetUniform3f("lightPos[" + std::to_string(index) + "]", playerEntry.second.getPositionX(), playerEntry.second.getPositionY(), playerEntry.second.getPositionZ());
-                    index++;
-                }
-                m_MapShader->SetUniform1i("numberOfLights", index);
+                GLuint bindingPoint = 0; 
+                glGenBuffers(1, &ssbo);
+                size_t bufferSize = testInput.size() * (sizeof(float));
+                glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+                glBufferData(GL_SHADER_STORAGE_BUFFER, bufferSize, testInput.data(), GL_DYNAMIC_DRAW);
+                glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bindingPoint, ssbo);
+                glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0); // Unbind SSBO
+
+
+                 // Should match the binding specified in the shader
+                GLuint shader = 0;
+                GLuint ssboIndex = glGetProgramResourceIndex(shader, GL_SHADER_STORAGE_BLOCK, "ParticlesBuffer");
+                glShaderStorageBlockBinding(shader, ssboIndex, bindingPoint);
+                m_MapShader->SetUniform1i("numberOfLights", testInput.size());
             }
             m_MapShader->SetUniform1i("isDynamicLightingOn", dynamicLightingFlag);
             m_MapShader->SetUniformMat4f("translation", MapModel);
             m_MapShader->SetUniformMat4f("projection", projection);
             m_MapShader->SetUniformMat4f("view", view);
             renderer.Draw(*m_MapVAO, *m_MapIndexBuffer, *m_MapShader);
-
+            
 
             /*----------------------------------------------------------------------------------------------*
              *                                   Render The Grid                                            *
@@ -326,56 +276,51 @@ public:
             /*----------------------------------------------------------------------------------------------*
              *                                   Render The Players                                         *
              *----------------------------------------------------------------------------------------------*/
-            //Update all player positions
-            for (auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) { UpdatePlayerPosition(playerEntry.first); }
+          
 
             //Draw each player to the screen
+            
             for (auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) {
                 Player player = PlayerDatabase::getInstance().getPlayer(playerEntry.first);
                 glm::mat4 transTest = Vec3ToMat4(glm::vec3(player.getPositionX(), player.getPositionY(), player.getPositionZ()));
-                
-                m_Shader->Bind();
+                transTest = glm::scale(transTest,glm::vec3(1));
+                m_PlayerShader->Bind();
                 m_Texture->Bind();
-                m_Shader->SetUniformMat4f("translation", transTest);
+                m_PlayerShader->SetUniformMat4f("translation", transTest);
+                m_PlayerShader->SetUniformMat4f("projection", projection);
+                m_PlayerShader->SetUniform1i("u_Texture", 0);
+                m_PlayerShader->SetUniformMat4f("view", view);
+                renderer.Draw(*m_PlayerVAO, *m_PlayerIndexBuffer, *m_PlayerShader);
+              
+            }
+            
+            std::vector<float> tmpVerticies = ParticalDatabase::getInstance().getVerticies();
+            std::vector<unsigned int> tmpIndicies = ParticalDatabase::getInstance().getIndicies();
+            if (!(tmpVerticies.empty())) {
+                m_VertexBuffer->Bind();
+                glBufferData(GL_ARRAY_BUFFER, tmpVerticies.size() * sizeof(float), tmpVerticies.data(), GL_DYNAMIC_DRAW); // Orphan the buffer and allocate new data
+                m_VertexBuffer->UnBind();
+
+                m_IndexBuffer->Bind();
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, tmpIndicies.size() * sizeof(unsigned int), tmpIndicies.data(), GL_DYNAMIC_DRAW); // Orphan the buffer and allocate new data
+                m_IndexBuffer->UnBind();
+
+
+                m_Shader->Bind();
                 m_Shader->SetUniformMat4f("projection", projection);
                 m_Shader->SetUniform1i("u_Texture", 0);
                 m_Shader->SetUniformMat4f("view", view);
                 renderer.Draw(*m_VAO, *m_IndexBuffer, *m_Shader);
-              
             }
+
+                
+            
+            
+            
 
             //Render ImGUI menu
             ImGui_ImplGlfwGL3_NewFrame();
-            ImGui::Begin("Test");
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-            ImGui::Checkbox("Dynamic Lighting", reinterpret_cast<bool*>(&dynamicLightingFlag));
-            for(auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) {
-                ImGui::Text("Players: %s",playerEntry.first.c_str());
-                ImGui::Text("X: %f Y: %f",playerEntry.second.getPositionX(),playerEntry.second.getPositionY());
-                ImGui::Text("KeyBoard Press: ");
-                ImGui::Text("W:");ImGui::SameLine();
-                if (playerEntry.second.getKeyPress().keyW) { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); ImGui::Text("Pressed"); ImGui::PopStyleColor();}
-                else { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f)); ImGui::Text("Not Pressed"); ImGui::PopStyleColor(); }
-                ImGui::Text("A:"); ImGui::SameLine();
-                if (playerEntry.second.getKeyPress().keyA) { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); ImGui::Text("Pressed"); ImGui::PopStyleColor();}
-                else { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f)); ImGui::Text("Not Pressed"); ImGui::PopStyleColor();}
-                ImGui::Text("S:"); ImGui::SameLine();
-                if (playerEntry.second.getKeyPress().keyS) { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); ImGui::Text("Pressed"); ImGui::PopStyleColor();}
-                else { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f)); ImGui::Text("Not Pressed"); ImGui::PopStyleColor(); }
-                ImGui::Text("D:"); ImGui::SameLine();
-                if (playerEntry.second.getKeyPress().keyD) { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); ImGui::Text("Pressed");ImGui::PopStyleColor(); }
-                else { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f)); ImGui::Text("Not Pressed"); ImGui::PopStyleColor(); }
-
-                
-            }
-            ImGui::SliderFloat("lagSimulationTime (ms)", &lagSimulationTime, 0.0f, 100.0f);
-            ImGui::SliderFloat("Zoom", &projHeight, 15.0f, 100.0f);
-            ImGui::SliderFloat("Zoom", &projWidth, 15.0f, 100.0f);
-            ImGui::Text("Camera Position:");
-            ImGui::Text("X: %f", eventListener.getCameraXTranslation());
-            ImGui::Text("Y: %f", eventListener.getCameraYTranslation());
-            ImGui::End();
-            ImGui::Render();
+            imGuiRender(dynamicLightingFlag, eventListener);
             ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
 
 

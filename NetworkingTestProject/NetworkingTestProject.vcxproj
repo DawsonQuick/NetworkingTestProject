@@ -105,6 +105,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\Dawson Quick\Downloads\glew-2.1.0-win32\glew-2.1.0\include;C:\Users\Dawson Quick\Downloads\glfw-3.3.8.bin.WIN64\glfw-3.3.8.bin.WIN64\include;C:\Users\Dawson Quick\source\repos\OpenGLTest\OpenGLTest\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -150,6 +151,8 @@
     <ClInclude Include="client\Client.h" />
     <ClInclude Include="client\ClientEventListener.h" />
     <ClInclude Include="client\ClientMrg.h" />
+    <ClInclude Include="client\ImGuiRenderContent.h" />
+    <ClInclude Include="client\OnUpdate.h" />
     <ClInclude Include="Common\Enums\MessageTypes.h" />
     <ClInclude Include="Common\Messages\BroadCastMessage.h" />
     <ClInclude Include="Common\Messages\ClientDisconnectMessage.h" />
@@ -158,10 +161,15 @@
     <ClInclude Include="Common\Messages\HandShakeMessage.h" />
     <ClInclude Include="Common\Messages\UpdatePlayerDataMessage.h" />
     <ClInclude Include="Common\Messages\Utils\MessageFactory.h" />
+    <ClInclude Include="Common\Objects\Particles\GuidedParticle.h" />
+    <ClInclude Include="Common\Objects\Particles\Particle.h" />
     <ClInclude Include="Common\Objects\Player.h" />
     <ClInclude Include="client\ClientMsgProcessor.h" />
+    <ClInclude Include="Common\Objects\Particles\TestPartical.h" />
     <ClInclude Include="Common\Utils\json.hpp" />
     <ClInclude Include="Common\Utils\Logger.h" />
+    <ClInclude Include="Common\Utils\MapAndGridGenerator.h" />
+    <ClInclude Include="Common\Utils\ParticalDataBase.h" />
     <ClInclude Include="Common\Utils\StringStreamer.h" />
     <ClInclude Include="Common\Utils\PlayerDatabase.h" />
     <ClInclude Include="OpenGL\Utils\Camera\Camera.h" />
@@ -331,6 +339,7 @@
     <None Include="OpenGL\resources\Basic.shader" />
     <None Include="OpenGL\resources\Grid.shader" />
     <None Include="OpenGL\resources\Map.shader" />
+    <None Include="OpenGL\resources\Player.shader" />
     <None Include="OpenGL\vendor\glm\detail\func_common.inl" />
     <None Include="OpenGL\vendor\glm\detail\func_common_simd.inl" />
     <None Include="OpenGL\vendor\glm\detail\func_exponential.inl" />

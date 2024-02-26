@@ -7,6 +7,7 @@
 #include <winsock2.h>
 #include "./ClientMsgProcessor.h"
 #include "./../Common/Utils/PlayerDatabase.h"
+#include "./../Common/Utils/ParticalDataBase.h"
 #include "./../Common/Utils/StringStreamer.h"
 //GLOBAL VARIABLES HERE
 SOCKET clientSocket;
@@ -61,18 +62,6 @@ public:
 
         std::cout << "Connected to the server." << std::endl;
 
-        // Send data to the server
-        const char* message = "Hello, server!";
-        HandShakeMessage msg(MessageType::HANDSHAKE ,1, getCurrentTimeInSeconds());
-
-
-
-        std::string msgTest = msg.serialize();
-
-        const char* msgToSend = msgTest.c_str();
-
-        sendMsg(msgToSend);
-
 	}
     /*
     * Deconstructor
@@ -87,14 +76,11 @@ public:
 	void Start() {
         std::thread clientSes(&ClientConnection::clientReceiver, this);
         clientSes.detach();
-
-       
-
-       
         
         HandShakeMessage msg(MessageType::HANDSHAKE,1, getCurrentTimeInSeconds());
         std::string msgTest = msg.serialize();
         const char* msgToSend = msgTest.c_str();
+        sendMsg(msgToSend);
 
         std::cout << "Please enter your charaters name: ";
         std::cin >> playerName;
@@ -105,61 +91,6 @@ public:
         msgToSend = msgTest.c_str();
         sendMsg(msgToSend);
 
-
-
-        /* 
-        std::string input;
-        //THIS LOOP IS SIMULATING THE MAIN GAME LOOP
-        while (true) {
-            std::cout << "Type '1' to send a handshake message" << std::endl;
-            std::cout << "Type '2' followed by a space(' ') and then a message to broadcast to other connections" << std::endl;
-            std::cout << "Type '3' to send an example message to add a new player to the session" << std::endl;
-            std::cout << "Type '4' to show current player list" << std::endl;
-            std::cout << "Type '5' to update player field" << std::endl;
-            std::cout << "Type '6' to show players info" << std::endl;
-            std::cin >> input;
-            if (input == "1") {
-                sendMsg(msgToSend);
-            }
-            else if (input == "2") {
-                std::string msgIn;
-                std::getline(std::cin,msgIn);
-                BroadCastMessage msg(MessageType::BROADCAST,1, getCurrentTimeInSeconds(), msgIn);
-                std::string msgTest = msg.serialize();
-                const char* msgToSend = msgTest.c_str();
-                sendMsg(msgToSend);
-            }
-            else if (input == "3") {
-                std::cout << "Please enter your charaters name: ";
-                std::cin >> playerName;
-                Player player(playerName,55.0,100.0,0.0,55,15);
-                PlayerDatabase::getInstance().addPlayer(playerName, player);
-                AddPlayerMessage msg(MessageType::ADDPLAYER, 3, getCurrentTimeInSeconds(), player);
-                std::string msgTest = msg.serialize();
-                const char* msgToSend = msgTest.c_str();
-                sendMsg(msgToSend);
-            }
-            else if (input == "4") {
-                PlayerDatabase::getInstance().printCurrentPlayers();
-            }
-            else if (input == "5") {
-                UpdatePlayerDataMessage msg(MessageType::UPDATEPLAYERDATA, 3, getCurrentTimeInSeconds(), PlayerFields::HEALTH, playerName, StringStreamer::createStream(150));
-                Player& player = PlayerDatabase::getInstance().getPlayer(playerName);
-                player.setHealth(150);
-                std::string msgTest = msg.serialize();
-                const char* msgToSend = msgTest.c_str();
-                sendMsg(msgToSend);
-            }
-            else if (input == "6") {
-                std::string name;
-                std::cout << "Enter Players Name: ";
-                std::cin >> name;
-                Player& player = PlayerDatabase::getInstance().getPlayer(name);
-                player.toString();
-
-            }
-
-        }*/
 	}
 	void Stop() {
         closesocket(clientSocket);

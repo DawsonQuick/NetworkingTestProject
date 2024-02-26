@@ -9,6 +9,9 @@
 
 
 float lagSimulationTime;
+/*
+* Classes is used to generate and process messages coming in from the TCP connection to the Client
+*/
 class ClientMessageProcessor {
 
 private:
@@ -22,22 +25,25 @@ public:
 	}
 
 	void processMessage(const char* inMsg) {
+		//Pass the incoming byte stream to the msgFactory to reconstruct message
 		Message* msg = msgFactory.createMessage(inMsg);
 		Sleep(lagSimulationTime);
+
+		//Next step is to see what type of message was send and preform the appropriate actions
+
 		if (HandShakeMessage* testMsg = dynamic_cast<HandShakeMessage*>(msg)) {
-			std::cout << "Received a TestMessage: " << std::endl;
+			//std::cout << "Received a TestMessage: " << std::endl;
 			HandShakeMessage& msg = *testMsg;
 			msg.toString();
 		}
 		else if (BroadCastMessage* testMsg = dynamic_cast<BroadCastMessage*>(msg)) {
-			std::cout << "Received a BroadCastMessage" << std::endl;
+			//std::cout << "Received a BroadCastMessage" << std::endl;
 			BroadCastMessage& msg = *testMsg;
 			msg.toString();
 		}
 		else if (AddPlayerMessage* testMsg = dynamic_cast<AddPlayerMessage*>(msg)) {
-			std::cout << "Received a AddPlayerMessage" << std::endl;
+			//std::cout << "Received a AddPlayerMessage" << std::endl;
 			AddPlayerMessage& msg = *testMsg;
-			msg.toString();
 			PlayerDatabase::getInstance().addPlayer(msg.getPlayer().getName(),msg.getPlayer());
 		}
 		else if (ClientDisconnectMessage* testMsg = dynamic_cast<ClientDisconnectMessage*>(msg)) {
@@ -47,9 +53,7 @@ public:
 
 		}
 		else if (UpdatePlayerDataMessage* testMsg = dynamic_cast<UpdatePlayerDataMessage*>(msg)) {
-			//std::cout << "Received a UpdatePlayerDataMessage" << std::endl; //Commented out due to console spam
 			UpdatePlayerDataMessage& msg = *testMsg;
-			//msg.toString();
 			Player& player = PlayerDatabase::getInstance().getPlayer(msg.getName());
 
 			switch (msg.getField()) {

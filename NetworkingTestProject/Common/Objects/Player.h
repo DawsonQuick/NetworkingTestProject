@@ -75,7 +75,7 @@ public:
 	: name(name),
 	  health(health),
 	  position(posX,posY,posZ, getCurrentTimeInMillis()),AC(AC),
-	  movementSpeed(0.1)
+	  movementSpeed(0.01)
 	{
 
 	}
@@ -85,7 +85,7 @@ public:
 	Player()
 	: name("Frodo"),
 	  health(5),
-	  position(0.0,0.0,0.0, getCurrentTimeInMillis()),AC(10), movementSpeed(0.1) {}
+	  position(0.0,0.0,0.0, getCurrentTimeInMillis()),AC(10), movementSpeed(0.01) {}
 
 
 /*

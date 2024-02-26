@@ -5,6 +5,7 @@
 #include "./../OpenGL/vendor/glm/glm.hpp"
 #include "./../OpenGL/vendor/glm/gtc/matrix_transform.hpp"
 #include "./../OpenGL/vendor/imgui/imgui.h"
+#include "./../Common/Objects/Particles/GuidedParticle.h"
 int WIDTH = 1000, HEIGHT = 1000;
 float projHeight = 70.0;
 float projWidth = 70.0;
@@ -64,6 +65,7 @@ bool isDragging = false;
 glm::mat4 view = glm::mat4(1.0f);
 const float panningSpeed = 0.1f;
 float totalDistanceTraveledPerHold = 0.0;
+int shotsFired = 0;
 // Mouse button callback
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
     //Disable this callback if interacting with a ImGUI element
@@ -100,10 +102,19 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
                 
                  // Test Spawns a new player at click location
-                Player newPlayer;
-                newPlayer.setPosition(worldPos.x,worldPos.y,0.0,0.0L);
-                PlayerDatabase::getInstance().addPlayer("NPCTest:"+std::to_string(worldPos.x), newPlayer);
-                
+
+                long long before = getCurrentTimeInMillis();
+                /*
+                for (int i = 0; i <= 2000; i++) {
+                    std::unique_ptr<Particle> particle = std::make_unique<TestPartical>(worldPos.x, worldPos.y);
+                    ParticalDatabase::getInstance().addPartical("Test"+std::to_string(i), std::move(particle));
+                }
+                */
+
+                std::unique_ptr<Particle> particle = std::make_unique<GuidedParticle>(PlayerDatabase::getInstance().getPlayer(playerName).getPositionX(), PlayerDatabase::getInstance().getPlayer(playerName).getPositionY(), worldPos.x, worldPos.y);
+                ParticalDatabase::getInstance().addParticle("Shot"+std::to_string(shotsFired++), std::move(particle));
+                float delta = static_cast<float>(getCurrentTimeInMillis() - before);
+                std::cout <<"Time taken to generate particles: "<< delta << std::endl;
 
                 //TODO: Add events for clicks
 

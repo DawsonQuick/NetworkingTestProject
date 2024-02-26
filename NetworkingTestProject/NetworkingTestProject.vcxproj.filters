@@ -599,6 +599,27 @@
     <ClInclude Include="Common\Utils\json.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Common\Utils\MapAndGridGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="client\ImGuiRenderContent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="client\OnUpdate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\TestPartical.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Utils\ParticalDataBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\Particle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\GuidedParticle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenGL\vendor\glm\detail\func_common.inl">
@@ -938,6 +959,7 @@
     <None Include="OpenGL\resources\Grid.shader" />
     <None Include="Test.json" />
     <None Include="OpenGL\resources\Map.shader" />
+    <None Include="OpenGL\resources\Player.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="OpenGL\resources\PixelArtTest2.png">
