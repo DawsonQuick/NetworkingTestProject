@@ -1,9 +1,15 @@
 #include <chrono>
 #include <thread>
+#include <vector>
+#include <memory>
 #include "./server/ServerConnection.h"
 #include "./client/ClientMrg.h"
 #include "./OpenGL/vendor/glm/glm.hpp"
 #include "./Common/Messages/Message.h"
+#include "./Common/Objects/Spells/MagicMissle.h"
+#include "./Common/Objects/Spells/FireBall.h"
+#include "./Common/Objects/Armour/BreastPlate.h"
+#include "./Common/Utils/TextureMapping.h"
 #include "./Common/Utils/json.hpp"
 SOCKET serverSocket;
 
@@ -12,6 +18,7 @@ const int BUFFER_SIZE = 1024;
 // main.cpp
 
 int main() {
+    setPositions();
     int choice;
     std::cout << "Enter 0 for server or 1 for client: ";
     std::cin >> choice;
@@ -37,8 +44,24 @@ int main() {
         auto json = nlohmann::json::parse(buffer.str());
         std::cout << json["PerTextureHeight"] << std::endl;
     }
-    else {
+    else if (choice == 3) {
+        std::vector<std::shared_ptr<Spell>> spells;
+        spells.push_back(std::make_unique<MagicMissle>());
+        spells.push_back(std::make_unique<Fireball>());
+        std::vector<std::shared_ptr<Armour>> armour;
+        armour.push_back(std::make_unique<BreastPlate>(spells));
 
+        for (auto& armourPeice : armour) {
+            if (armourPeice->hasSpells()) {
+                for (auto& spell : armourPeice->getSpells()) {
+                    spell->print();
+                }
+            }
+        }
+
+    }
+    else {
+        
     }
    
     return 0;

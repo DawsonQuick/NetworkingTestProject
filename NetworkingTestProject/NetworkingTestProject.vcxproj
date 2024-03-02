@@ -161,17 +161,26 @@
     <ClInclude Include="Common\Messages\HandShakeMessage.h" />
     <ClInclude Include="Common\Messages\UpdatePlayerDataMessage.h" />
     <ClInclude Include="Common\Messages\Utils\MessageFactory.h" />
+    <ClInclude Include="Common\Objects\Armour\Armour.h" />
+    <ClInclude Include="Common\Objects\Armour\BreastPlate.h" />
     <ClInclude Include="Common\Objects\Particles\GuidedParticle.h" />
+    <ClInclude Include="Common\Objects\Particles\ImplosionParticle.h" />
     <ClInclude Include="Common\Objects\Particles\Particle.h" />
     <ClInclude Include="Common\Objects\Player.h" />
     <ClInclude Include="client\ClientMsgProcessor.h" />
     <ClInclude Include="Common\Objects\Particles\TestPartical.h" />
+    <ClInclude Include="Common\Objects\Spells\Fireball.h" />
+    <ClInclude Include="Common\Objects\Spells\MagicMissle.h" />
+    <ClInclude Include="Common\Objects\Spells\Spell.h" />
+    <ClInclude Include="Common\Utils\GlobalConfigurations.h" />
     <ClInclude Include="Common\Utils\json.hpp" />
     <ClInclude Include="Common\Utils\Logger.h" />
     <ClInclude Include="Common\Utils\MapAndGridGenerator.h" />
     <ClInclude Include="Common\Utils\ParticalDataBase.h" />
     <ClInclude Include="Common\Utils\StringStreamer.h" />
     <ClInclude Include="Common\Utils\PlayerDatabase.h" />
+    <ClInclude Include="Common\Utils\TextureManager.h" />
+    <ClInclude Include="Common\Utils\TextureMapping.h" />
     <ClInclude Include="OpenGL\Utils\Camera\Camera.h" />
     <ClInclude Include="OpenGL\Utils\IndexBuffer.h" />
     <ClInclude Include="OpenGL\Utils\Renderer.h" />
@@ -454,6 +463,7 @@
     <None Include="Test.json" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="OpenGL\resources\Map.jpg" />
     <Image Include="OpenGL\resources\PixelArtTest2.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

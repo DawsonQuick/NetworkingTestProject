@@ -1,7 +1,6 @@
 #pragma once
 #include <queue>
-float timeToLast = 5000.0; //Time in milliseconds (5 seconds)
-float instanceTime = 0.0;
+
 std::queue<float> updateRequest;
 //Updates all players positions based on if the player has a key pressed, distance moved is determined by that players movement speed
 void UpdatePlayerPosition(std::string name,float deltaTime) {
@@ -10,16 +9,16 @@ void UpdatePlayerPosition(std::string name,float deltaTime) {
     double playerSpeed = PlayerDatabase::getInstance().getPlayer(name).getMovementSpeed();
     Position newPos = prevPos;
     if (keyPress.keyW) {
-        newPos.Y = prevPos.Y + (playerSpeed * deltaTime);
+        newPos.Y = prevPos.Y + (playerSpeed * deltaTime * GlobalConfigurations::getInstance().getScale());
     }
     if (keyPress.keyA) {
-        newPos.X = prevPos.X - (playerSpeed * deltaTime);
+        newPos.X = prevPos.X - (playerSpeed * deltaTime * GlobalConfigurations::getInstance().getScale());
     }
     if (keyPress.keyS) {
-        newPos.Y = prevPos.Y - (playerSpeed * deltaTime);
+        newPos.Y = prevPos.Y - (playerSpeed * deltaTime * GlobalConfigurations::getInstance().getScale());
     }
     if (keyPress.keyD) {
-        newPos.X = prevPos.X + (playerSpeed * deltaTime);
+        newPos.X = prevPos.X + (playerSpeed * deltaTime * GlobalConfigurations::getInstance().getScale());
     }
     
     //TODO: Add logic for colision detection, 

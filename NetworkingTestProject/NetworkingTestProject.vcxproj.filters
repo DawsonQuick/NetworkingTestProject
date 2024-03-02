@@ -620,6 +620,33 @@
     <ClInclude Include="Common\Objects\Particles\GuidedParticle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Common\Objects\Spells\Spell.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Spells\MagicMissle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Spells\Fireball.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Armour\Armour.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Armour\BreastPlate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\ImplosionParticle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Utils\TextureManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Utils\TextureMapping.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Utils\GlobalConfigurations.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenGL\vendor\glm\detail\func_common.inl">
@@ -963,6 +990,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="OpenGL\resources\PixelArtTest2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="OpenGL\resources\Map.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

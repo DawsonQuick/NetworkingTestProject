@@ -22,7 +22,7 @@
 #include "./../OpenGL/vendor/glm/gtc/matrix_transform.hpp"
 #include "./../OpenGL/vendor/imgui/imgui.h"
 #include "./../OpenGL/vendor/imgui/imgui_impl_glfw_gl3.h"
-
+#include "./../Common/Utils/GlobalConfigurations.h"
 // Window dimensions
 
 GLFWwindow* window;
@@ -45,7 +45,7 @@ float subTextureHeight = 64.0f;
 
 //Location of the sub-texture (Starting from top-left)
 float row    = 0.0f;
-float column = 0.0f;
+float column = 1.0f;
 
 // Calculate texture coordinates for the sub-texture
 float texCoordLeft   = (subTextureWidth * column) / textureWidth;               // Left edge of the sub-texture
@@ -67,6 +67,9 @@ unsigned int indices[] = {
 /*
 * ----------------------------------
 */
+
+
+
 
 
 
@@ -97,7 +100,7 @@ private:
     std::unique_ptr<VertexBuffer> m_MapVertexBuffer;
     std::unique_ptr<IndexBuffer> m_MapIndexBuffer;
     std::unique_ptr<Shader> m_MapShader;
-
+    std::unique_ptr<Texture> m_MApTexture;
     std::unique_ptr<Shader> m_Shader;
     std::unique_ptr<Texture> m_Texture;
 
@@ -105,9 +108,14 @@ private:
     std::unique_ptr<VertexBuffer> m_GridVertexBuffer;
     std::unique_ptr<Shader> m_GridShader;
 
+    std::unique_ptr<VertexArray> m_CoursorVAO;
+    std::unique_ptr<VertexBuffer> m_CoursorVertexBuffer;
+
     glm::mat4 projection = glm::ortho(-projWidth * aspectRatio, projWidth * aspectRatio, -projHeight * aspectRatio, projHeight * aspectRatio, -1.0f, 1.0f);
     ClientConnection client;
     ClientEventListener eventListener;
+
+    std::vector<float> m_Gridvertices;
 
     int dynamicLightingFlag = 0;
 
@@ -124,6 +132,22 @@ public:
         /*
         * ------------------------------------------------
         */
+    }
+
+    void genGrid() {
+        float gridSize = GlobalConfigurations::getInstance().getScale();  // Size of each grid spot
+        std::vector<float> Gridvertices;
+        int mapWidth = m_MApTexture->GetWidth();
+        int mapHeight = m_MApTexture->GetHeigth();
+        generateGrid(mapWidth, mapHeight, gridSize, gridSize, Gridvertices);
+        m_GridShader = std::make_unique<Shader>("./OpenGL/resources/Grid.shader", 2);
+        m_GridVAO = std::make_unique<VertexArray>();
+        m_GridVertexBuffer = std::make_unique<VertexBuffer>(Gridvertices.data(), Gridvertices.size() * sizeof(float));
+        VertexBufferLayout gridLayout;
+        gridLayout.Push<float>(3); // Position
+        m_GridVAO->AddBuffer(*m_GridVertexBuffer, gridLayout);
+
+        m_Gridvertices = Gridvertices;
     }
 
 
@@ -148,31 +172,46 @@ public:
         // Initialize GLEW to setup the OpenGL Function pointers
         glewInit();
 
+        m_MApTexture = std::make_unique<Texture>("./OpenGL/resources/map2.jpg");
+        int mapWidth =m_MApTexture->GetWidth();
+        int mapHeight =m_MApTexture->GetHeigth();
 
         /*---------------------------------------------------------------------------------------
         *               Code to generate grid NEED TO MOVE TO OWN CLASS
         ---------------------------------------------------------------------------------------*/
-        float maxSize = 500.0f; // Maximum size of the grid
-        float gridSize = 1.0f;  // Size of each grid spot
-        std::vector<float> Gridvertices;
-        generateGrid(maxSize, gridSize, Gridvertices);
-        m_GridShader = std::make_unique<Shader>("./OpenGL/resources/Grid.shader", 2);
-        m_GridVAO = std::make_unique<VertexArray>();
-        m_GridVertexBuffer = std::make_unique<VertexBuffer>(Gridvertices.data(), Gridvertices.size() * sizeof(float));
-        VertexBufferLayout gridLayout;
-        gridLayout.Push<float>(3); // Position
-        m_GridVAO->AddBuffer(*m_GridVertexBuffer, gridLayout);
+        genGrid();
+
         //-----------------------------------------------------------------------------------------
-        std::vector<float> mapVertices;
-        std::vector<unsigned int> mapIndicies;
-        generateGridQuads(maxSize, gridSize, mapVertices, mapIndicies);
+       // std::vector<float> mapVertices;
+        //std::vector<unsigned int> mapIndicies;
+       // generateGridQuads(maxSize, gridSize, mapVertices, mapIndicies);
         m_MapShader = std::make_unique<Shader>("./OpenGL/resources/Map.shader",2);
+
+        GLfloat mapVertices[] = {
+            //   Position            Texture coordinates
+                -(float)(mapWidth/2), -(float)(mapHeight / 2), 0.0f,  0.0f,0.0f,       // 0
+                (float)(mapWidth / 2), -(float)(mapHeight / 2), 0.0f,  1.0f,0.0f,       // 1
+                 (float)(mapWidth / 2),  (float)(mapHeight / 2), 0.0f,  1.0f,1.0f,       // 2
+                -(float)(mapWidth / 2),  (float)(mapHeight / 2), 0.0f,  0.0f,1.0f        // 3
+        };
+        unsigned int mapIndices[] = {
+            0,1,2,
+            2,3,0
+        };
+
+
+
+
         m_MapVAO = std::make_unique<VertexArray>();
-        m_MapVertexBuffer = std::make_unique<VertexBuffer>(mapVertices.data(), mapVertices.size()*sizeof(float));
+        m_MapVertexBuffer = std::make_unique<VertexBuffer>(mapVertices, sizeof(mapVertices));
         VertexBufferLayout mapLayout;
         mapLayout.Push<float>(3);
+        mapLayout.Push<float>(2);
         m_MapVAO->AddBuffer(*m_MapVertexBuffer, mapLayout);
-        m_MapIndexBuffer = std::make_unique<IndexBuffer>(mapIndicies.data(), mapIndicies.size());
+        m_MapIndexBuffer = std::make_unique<IndexBuffer>(mapIndices, 6);
+
+
+
 
         // Define the viewport dimensions
         int width, height;
@@ -231,7 +270,7 @@ public:
             eventListener.processInput(window);
             projection = glm::ortho(-projWidth * aspectRatio, projWidth * aspectRatio, -projHeight, projHeight, -1.0f, 1.0f);
             glm::mat4 MapModel = Vec3ToMat4(glm::vec3(1.0f, 1.0f, 1.0f));
-            //TODO: Draw BackGround Textures
+      
             std::vector<float> testInput = ParticalDatabase::getInstance().getParticalsRAW();
             /*----------------------------------------------------------------------------------------------*
              *                                   Render The Map                                             *
@@ -253,6 +292,8 @@ public:
                 glShaderStorageBlockBinding(shader, ssboIndex, bindingPoint);
                 m_MapShader->SetUniform1i("numberOfLights", testInput.size());
             }
+            m_MApTexture->Bind();
+            m_MapShader->SetUniform1i("u_texture", 0);
             m_MapShader->SetUniform1i("isDynamicLightingOn", dynamicLightingFlag);
             m_MapShader->SetUniformMat4f("translation", MapModel);
             m_MapShader->SetUniformMat4f("projection", projection);
@@ -270,7 +311,19 @@ public:
             m_GridShader->SetUniformMat4f("translation", GridModel);
             m_GridShader->SetUniformMat4f("projection", projection);
             m_GridShader->SetUniformMat4f("view", view);
-            renderer.DrawGrid(*m_GridVAO, *m_GridShader, Gridvertices.size()/3);
+            renderer.DrawGrid(*m_GridVAO, *m_GridShader, m_Gridvertices.size()/3);
+
+
+            std::vector<float> tmpCoursorPos = eventListener.getCursor();
+
+
+            m_CoursorVAO = std::make_unique<VertexArray>();
+            m_CoursorVertexBuffer = std::make_unique<VertexBuffer>(tmpCoursorPos.data(), tmpCoursorPos.size() * sizeof(float));
+            VertexBufferLayout coursorLayout;
+            coursorLayout.Push<float>(3); // Position
+            m_CoursorVAO->AddBuffer(*m_CoursorVertexBuffer, coursorLayout);
+            renderer.DrawGrid(*m_CoursorVAO, *m_GridShader, tmpCoursorPos.size() / 3);
+
 
 
             /*----------------------------------------------------------------------------------------------*
@@ -283,7 +336,7 @@ public:
             for (auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) {
                 Player player = PlayerDatabase::getInstance().getPlayer(playerEntry.first);
                 glm::mat4 transTest = Vec3ToMat4(glm::vec3(player.getPositionX(), player.getPositionY(), player.getPositionZ()));
-                transTest = glm::scale(transTest,glm::vec3(1));
+                transTest = glm::scale(transTest,glm::vec3(GlobalConfigurations::getInstance().getScale()));
                 m_PlayerShader->Bind();
                 m_Texture->Bind();
                 m_PlayerShader->SetUniformMat4f("translation", transTest);
@@ -294,6 +347,10 @@ public:
               
             }
             
+            /*----------------------------------------------------------------------------------------------*
+             *                                   Render Particles                                           *
+             *----------------------------------------------------------------------------------------------*/
+
             std::vector<float> tmpVerticies = ParticalDatabase::getInstance().getVerticies();
             std::vector<unsigned int> tmpIndicies = ParticalDatabase::getInstance().getIndicies();
             if (!(tmpVerticies.empty())) {

@@ -2,15 +2,17 @@
 #version 430 core
 
 layout (location = 0) in vec3 position;
+layout (location = 1) in vec2 texCoord;
 uniform mat4 translation;
 uniform mat4 projection;
 uniform mat4 view;
-
+out vec2 TexCoords;
 out vec4 fragPosition;
 void main()
 {
 	gl_Position = projection*view *translation * vec4(position,1.0);
 	fragPosition = translation*vec4(position,1.0);
+	TexCoords = texCoord;
 };
 
 #shader fragment
@@ -24,13 +26,14 @@ layout(binding = 0,std430) buffer ParticlesBuffer {
 out vec4 FragColor;
 uniform int numberOfLights;
 uniform int isDynamicLightingOn;
+uniform sampler2D u_texture;
 in vec4 fragPosition;
-
+in vec2 TexCoords;
 void main()
 {
 	
 	float normal = 255.0;
-	vec4 textureColor = vec4((24/normal), (190/normal), (245/normal), 1.0);
+	vec4 textureColor = texture(u_texture,TexCoords);
 
 	if(isDynamicLightingOn == 1){
 		float maxLightDistance = 2.0;

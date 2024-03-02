@@ -8,10 +8,14 @@
 #include <map>
 #include "./../Objects/Particles/Particle.h"
 #include "./../Objects/Particles/TestPartical.h"
+#include "./../Objects/Particles/ImplosionParticle.h"
 #include "./../../OpenGL/vendor/glm/glm.hpp"
+#include "./TextureManager.h"
 #include <algorithm>
 #include <execution>
 #include <mutex>
+
+
 class ParticalDatabase {
 private:
 	std::map<std::string, std::unique_ptr<Particle>> particalMap;
@@ -28,28 +32,6 @@ private:
 	ParticalDatabase(const ParticalDatabase&) = delete;
 	ParticalDatabase& operator=(const ParticalDatabase&) = delete;
 
-
-	//TEMP CODE
-	// Width and height of the entire texture
-	float textureWidth = 1920.0f;
-	float textureHeight = 1080.0f;
-
-	float onePixelWidth = 1 / textureWidth;
-	float onePixelHeight = 1 / textureHeight;
-
-	// Width and height of the sub-texture
-	float subTextureWidth = 64.0f;
-	float subTextureHeight = 64.0f;
-
-	//Location of the sub-texture (Starting from top-left)
-	float row = 0.0f;
-	float column = 1.0f;
-
-	// Calculate texture coordinates for the sub-texture
-	float texCoordLeft = (subTextureWidth * column) / textureWidth;               // Left edge of the sub-texture
-	float texCoordRight = ((column + 1) * subTextureWidth) / textureWidth;         // Right edge of the sub-texture
-	float texCoordTop = 1.0f - ((subTextureHeight * row) / textureHeight);        // Top edge of the sub-texture
-	float texCoordBottom = 1.0f - (((row + 1) * (subTextureHeight)) / textureHeight); // Bottom edge of the sub-texture
 
 public:
 
@@ -94,7 +76,7 @@ public:
 			tmpVecRAW.push_back(pair.second->getPositionX());
 			tmpVecRAW.push_back(pair.second->getPositionY());
 			tmpVecRAW.push_back(0.0f);
-			generateBufferData(pair.second->getPositionX(), pair.second->getPositionY(),index);
+			generateBufferData(pair.second->getPositionX(), pair.second->getPositionY(),pair.second->getVertexPos(), index, pair.second->getTexturePos());
 			index+=4;
 
 		}
@@ -127,42 +109,42 @@ public:
 		return std::vector<unsigned int>(indiceData);
 	}
 
-	void generateBufferData(float transX,float transY,unsigned int index) {
-		verticeData.push_back(-0.5f);								//PosX
-		verticeData.push_back(-0.5f);								//PosY
-		verticeData.push_back(0.0f);								//PosZ
-		verticeData.push_back(texCoordLeft + onePixelWidth);		//TextureX
-		verticeData.push_back(texCoordBottom + onePixelHeight);		//TextureY
-		verticeData.push_back(transX);								//TransformX
-		verticeData.push_back(transY);								//TransformY
-		verticeData.push_back(0.0f);								//TransformZ
+	void generateBufferData(float transX, float transY, glm::mat4x3 vertexPos , unsigned int index , glm::mat4x2 texture) {
+		verticeData.push_back(vertexPos[0][0]);										//PosX
+		verticeData.push_back(vertexPos[0][1]);										//PosY
+		verticeData.push_back(vertexPos[0][2]);										//PosZ
+		verticeData.push_back(texture[0][0]);		//TextureX
+		verticeData.push_back(texture[0][1]);		//TextureY
+		verticeData.push_back(transX);												//TransformX
+		verticeData.push_back(transY);												//TransformY
+		verticeData.push_back(0.0f);												//TransformZ
 
-		verticeData.push_back(0.5f);								//PosX
-		verticeData.push_back(-0.5f);								//PosY
-		verticeData.push_back(0.0f);								//PosZ
-		verticeData.push_back(texCoordRight - onePixelWidth);		//TextureX
-		verticeData.push_back(texCoordBottom + onePixelHeight);		//TextureY
-		verticeData.push_back(transX);								//TransformX
-		verticeData.push_back(transY);								//TransformY
-		verticeData.push_back(0.0f);								//TransformZ
+		verticeData.push_back(vertexPos[1][0]);										//PosX
+		verticeData.push_back(vertexPos[1][1]);										//PosY
+		verticeData.push_back(vertexPos[1][2]);										//PosZ
+		verticeData.push_back(texture[1][0]);		//TextureX
+		verticeData.push_back(texture[1][1]);		//TextureY
+		verticeData.push_back(transX);												//TransformX
+		verticeData.push_back(transY);												//TransformY
+		verticeData.push_back(0.0f);												//TransformZ
 
-		verticeData.push_back(0.5f);								//PosX
-		verticeData.push_back(0.5f);								//PosY
-		verticeData.push_back(0.0f);								//PosZ
-		verticeData.push_back(texCoordRight - onePixelWidth);		//TextureX
-		verticeData.push_back(texCoordTop - onePixelHeight);		//TextureY
-		verticeData.push_back(transX);								//TransformX
-		verticeData.push_back(transY);								//TransformY
-		verticeData.push_back(0.0f);								//TransformZ
+		verticeData.push_back(vertexPos[2][0]);										//PosX
+		verticeData.push_back(vertexPos[2][1]);										//PosY
+		verticeData.push_back(vertexPos[2][2]);										//PosZ
+		verticeData.push_back(texture[2][0]);		//TextureX
+		verticeData.push_back(texture[2][1]);		//TextureY
+		verticeData.push_back(transX);												//TransformX
+		verticeData.push_back(transY);												//TransformY
+		verticeData.push_back(0.0f);												//TransformZ
 
-		verticeData.push_back(-0.5f);								//PosX
-		verticeData.push_back(0.5f);								//PosY
-		verticeData.push_back(0.0f);								//PosZ
-		verticeData.push_back(texCoordLeft + onePixelWidth);		//TextureX
-		verticeData.push_back(texCoordTop - onePixelHeight);		//TextureY
-		verticeData.push_back(transX);								//TransformX
-		verticeData.push_back(transY);								//TransformY
-		verticeData.push_back(0.0f);								//TransformZ
+		verticeData.push_back(vertexPos[3][0]);										//PosX
+		verticeData.push_back(vertexPos[3][1]);										//PosY
+		verticeData.push_back(vertexPos[3][2]);										//PosZ
+		verticeData.push_back(texture[3][0]);		//TextureX
+		verticeData.push_back(texture[3][1]);		//TextureY
+		verticeData.push_back(transX);												//TransformX
+		verticeData.push_back(transY);												//TransformY
+		verticeData.push_back(0.0f);												//TransformZ
 
 		indiceData.push_back(index);
 		indiceData.push_back(index+ (unsigned int)1);
