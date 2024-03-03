@@ -5,7 +5,7 @@
 #include "./../../OpenGL/vendor/glm/glm.hpp"
 #include "./../../Common/Objects/Particles/GuidedParticle.h"
 #include "./../../Common/Objects/Particles/ImplosionParticle.h"
-#include "./../../Common/Objects/Particles/TestPartical.h"
+#include "./../../Common/Objects/Particles/TestParticle.h"
 
 
 glm::mat4x2 getTexturePositions(glm::vec2 position);
@@ -16,7 +16,7 @@ std::map<std::type_index, glm::mat4x2> texturePositions;
 	//Particles
 	texturePositions.emplace(typeid(GuidedParticle),	getTexturePositions(glm::vec2(0.0,0.0)));
 	texturePositions.emplace(typeid(ImplosionParticle), getTexturePositions(glm::vec2(0.0,3.0)));
-	texturePositions.emplace(typeid(TestPartical),		getTexturePositions(glm::vec2(0.0,1.0)));
+	texturePositions.emplace(typeid(TestParticle),		getTexturePositions(glm::vec2(0.0,3.0)));
 	TextureManager::getInstance().setTextureDatabase(texturePositions);
 }
 

@@ -17,6 +17,10 @@ struct TileInfo{
 
 };
 
+enum MeasurmentSystem {
+	GOEMETRIC,
+	GRID,
+};
 
 
 
@@ -25,9 +29,19 @@ class GlobalConfigurations {
 private:
 	float Scale;
 	std::vector<TileInfo> MapTileInformation;
+	TileInfo currentlyHoveredTile;
+
+	glm::vec4 GridColor;
+	glm::vec4 CursorColor;
+
+	std::string selectedAction;
+	std::shared_ptr<Spell> selectedSpell;
+
+	MeasurmentSystem currentSystem;
 
 	GlobalConfigurations() {
-		Scale = 10.0;
+		Scale = 20.0;
+		currentSystem = MeasurmentSystem::GRID;
 	}
 
 	// Delete copy constructor and assignment operator
@@ -56,6 +70,52 @@ public:
 	std::vector<TileInfo> getMapTileInformation() {
 		return MapTileInformation;
 	}
+
+	void setCurrentlyHoveredTile(TileInfo tile) {
+		currentlyHoveredTile = tile;
+	}
+
+	TileInfo getCurrentlyHoveredTile() {
+		return currentlyHoveredTile;
+	}
+
+	void setGridColor(glm::vec4 gridColor) {
+		GridColor = gridColor;
+	}
+
+	glm::vec4 getGridColor() {
+		return GridColor;
+	}
+	void setCursorColor(glm::vec4 cursorColor) {
+		CursorColor = cursorColor;
+	}
+
+	glm::vec4 getCursorColor() {
+		return CursorColor;
+	}
+
+	void setselectedAction(std::string action) {
+		selectedAction = action;
+	}
+	std::string getselectedAction() {
+		return selectedAction;
+	}
+
+	void setSelectedSpell(std::shared_ptr<Spell> spell) {
+		selectedSpell = spell;
+	}
+	std::shared_ptr<Spell> getSelectedSpell() {
+		return selectedSpell;
+	}
+	MeasurmentSystem getCurrentMeasurmentSystem() {
+		return currentSystem;
+	}
+
+	void setCurrentMeasurementSystem(MeasurmentSystem tmpSystem) {
+		currentSystem = tmpSystem;
+	}
+	
+
 
 	
 

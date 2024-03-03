@@ -40,7 +40,7 @@ void OnUpdateThread() {
           //Update all player positions
           for (auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) { UpdatePlayerPosition(playerEntry.first, updateRequest.front()); }
           //for (auto& particalEntry : ParticalDatabase::getInstance().getParticals()) { UpdateParticals(particalEntry.first,deltaTime); }
-          ParticalDatabase::getInstance().onUpdate(updateRequest.front());
+          ParticleDatabase::getInstance().onUpdate(updateRequest.front());
           updateRequest.pop();
         }
     }

@@ -7,7 +7,7 @@
 #include <thread>
 #include "./Client.h"
 #include "./OnUpdate.h"
-#include "./ClientEventListener.h"
+#include "./ClientEventListener/ClientEventListener.h"
 #include "./ImGuiRenderContent.h"
 #include "./../Common/Utils/Logger.h"
 #include "./../Common/Utils/MapAndGridGenerator.h"
@@ -23,6 +23,7 @@
 #include "./../OpenGL/vendor/imgui/imgui.h"
 #include "./../OpenGL/vendor/imgui/imgui_impl_glfw_gl3.h"
 #include "./../Common/Utils/GlobalConfigurations.h"
+#include "./../Common/Objects/Spells/SpellFactory.h"
 // Window dimensions
 
 GLFWwindow* window;
@@ -154,6 +155,8 @@ public:
 
 
     void StartOpenGL() {
+        PlayerDatabase::getInstance().getPlayer(playerName).addSpell(SpellFactory::getInstance().createMagicMissle());
+        PlayerDatabase::getInstance().getPlayer(playerName).addSpell(SpellFactory::getInstance().createFireball());
         // Init GLFW
         glfwInit();
         // Set all the required options for GLFW
@@ -271,7 +274,7 @@ public:
             projection = glm::ortho(-projWidth * aspectRatio, projWidth * aspectRatio, -projHeight, projHeight, -1.0f, 1.0f);
             glm::mat4 MapModel = Vec3ToMat4(glm::vec3(1.0f, 1.0f, 1.0f));
       
-            std::vector<float> testInput = ParticalDatabase::getInstance().getParticalsRAW();
+            std::vector<float> testInput = ParticleDatabase::getInstance().getParticlesRAW();
             /*----------------------------------------------------------------------------------------------*
              *                                   Render The Map                                             *
              *----------------------------------------------------------------------------------------------*/
@@ -307,7 +310,10 @@ public:
 
             //TODO: Draw Spacing Grid
             glm::mat4 GridModel = Vec3ToMat4(glm::vec3(1.0f,1.0f,1.0f));
+            glm::vec4 gridColor = GlobalConfigurations::getInstance().getGridColor();
+
             m_GridShader->Bind();
+            m_GridShader->SetUniform4f("u_color", gridColor.r, gridColor.g, gridColor.b,gridColor.w);
             m_GridShader->SetUniformMat4f("translation", GridModel);
             m_GridShader->SetUniformMat4f("projection", projection);
             m_GridShader->SetUniformMat4f("view", view);
@@ -315,10 +321,11 @@ public:
 
 
             std::vector<float> tmpCoursorPos = eventListener.getCursor();
-
+            glm::vec4 cursorColor = GlobalConfigurations::getInstance().getCursorColor();
 
             m_CoursorVAO = std::make_unique<VertexArray>();
             m_CoursorVertexBuffer = std::make_unique<VertexBuffer>(tmpCoursorPos.data(), tmpCoursorPos.size() * sizeof(float));
+            m_GridShader->SetUniform4f("u_color", cursorColor.r, cursorColor.g, cursorColor.b, cursorColor.w);
             VertexBufferLayout coursorLayout;
             coursorLayout.Push<float>(3); // Position
             m_CoursorVAO->AddBuffer(*m_CoursorVertexBuffer, coursorLayout);
@@ -335,7 +342,7 @@ public:
             
             for (auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) {
                 Player player = PlayerDatabase::getInstance().getPlayer(playerEntry.first);
-                glm::mat4 transTest = Vec3ToMat4(glm::vec3(player.getPositionX(), player.getPositionY(), player.getPositionZ()));
+                glm::mat4 transTest = Vec3ToMat4(glm::vec3(player.getPositionX()+1.0f, player.getPositionY()+1.0f, player.getPositionZ()));
                 transTest = glm::scale(transTest,glm::vec3(GlobalConfigurations::getInstance().getScale()));
                 m_PlayerShader->Bind();
                 m_Texture->Bind();
@@ -351,8 +358,8 @@ public:
              *                                   Render Particles                                           *
              *----------------------------------------------------------------------------------------------*/
 
-            std::vector<float> tmpVerticies = ParticalDatabase::getInstance().getVerticies();
-            std::vector<unsigned int> tmpIndicies = ParticalDatabase::getInstance().getIndicies();
+            std::vector<float> tmpVerticies = ParticleDatabase::getInstance().getVerticies();
+            std::vector<unsigned int> tmpIndicies = ParticleDatabase::getInstance().getIndicies();
             if (!(tmpVerticies.empty())) {
                 m_VertexBuffer->Bind();
                 glBufferData(GL_ARRAY_BUFFER, tmpVerticies.size() * sizeof(float), tmpVerticies.data(), GL_DYNAMIC_DRAW); // Orphan the buffer and allocate new data
@@ -377,7 +384,7 @@ public:
 
             //Render ImGUI menu
             ImGui_ImplGlfwGL3_NewFrame();
-            imGuiRender(dynamicLightingFlag, eventListener);
+            imGuiRender(window,dynamicLightingFlag, eventListener);
             ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
 
 

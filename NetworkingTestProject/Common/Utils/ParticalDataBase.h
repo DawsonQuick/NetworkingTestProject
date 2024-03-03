@@ -7,7 +7,7 @@
 #include <list>
 #include <map>
 #include "./../Objects/Particles/Particle.h"
-#include "./../Objects/Particles/TestPartical.h"
+#include "./../Objects/Particles/TestParticle.h"
 #include "./../Objects/Particles/ImplosionParticle.h"
 #include "./../../OpenGL/vendor/glm/glm.hpp"
 #include "./TextureManager.h"
@@ -16,9 +16,9 @@
 #include <mutex>
 
 
-class ParticalDatabase {
+class ParticleDatabase {
 private:
-	std::map<std::string, std::unique_ptr<Particle>> particalMap;
+	std::map<std::string, std::shared_ptr<Particle>> particleMap;
 	std::mutex mapVectorMutex;
 	std::vector<glm::vec3> particleVec;
 	std::vector<float> particleVecRAW;
@@ -26,19 +26,19 @@ private:
 	std::vector<float> verticeData;
 	std::vector<unsigned int> indiceData;
 	long long tagindex = 0;
-	ParticalDatabase() {}
+	ParticleDatabase() {}
 	std::mutex mapMutex;
 	// Delete copy constructor and assignment operator
-	ParticalDatabase(const ParticalDatabase&) = delete;
-	ParticalDatabase& operator=(const ParticalDatabase&) = delete;
+	ParticleDatabase(const ParticleDatabase&) = delete;
+	ParticleDatabase& operator=(const ParticleDatabase&) = delete;
 
 
 public:
 
 	// Singleton Constructor
-	static ParticalDatabase& getInstance() {
+	static ParticleDatabase& getInstance() {
 		// Guaranteed to be thread-safe in C++11 and later
-		static ParticalDatabase instance;
+		static ParticleDatabase instance;
 		return instance;
 	}
 
@@ -50,7 +50,7 @@ public:
 		std::lock_guard<std::mutex> lock(mapMutex);
 
 		//Update the positions for each of the particles, and if they are complete, then add to removal list
-		std::for_each(std::execution::par, particalMap.begin(), particalMap.end(), [&,deltaTime](auto& pair) {
+		std::for_each(std::execution::par, particleMap.begin(), particleMap.end(), [&,deltaTime](auto& pair) {
 			pair.second->onUpdate(deltaTime);
 			if (pair.second->isComplete()) { 	
 			std::lock_guard<std::mutex> lock(toRemoveMutex);
@@ -61,7 +61,7 @@ public:
 		
 		//Remove all particles that were added to the removal list
 		for (std::string entry : toRemove) {
-			particalMap.erase(entry);
+			particleMap.erase(entry);
 		}
 
 		//Populate the positional Vector Data with the updated partical positions		
@@ -71,7 +71,7 @@ public:
 		verticeData.clear();
 		indiceData.clear();
 		unsigned int index = 0;
-		for (auto& pair : particalMap) {
+		for (auto& pair : particleMap) {
 			tmpVec.push_back(glm::vec3(pair.second->getPositionX(), pair.second->getPositionY(), 0.0f));
 			tmpVecRAW.push_back(pair.second->getPositionX());
 			tmpVecRAW.push_back(pair.second->getPositionY());
@@ -88,15 +88,15 @@ public:
 	}
 
 	//Add a player to the database
-	void addParticle(std::string name, std::unique_ptr<Particle> particle) {
-		particalMap.emplace(name+std::to_string(tagindex++), std::move(particle));
+	void addParticle(std::string name, std::shared_ptr<Particle> particle) {
+		particleMap.emplace(name+std::to_string(tagindex++), particle);
 	}
 
-	std::vector<glm::vec3> getParticals() {
+	std::vector<glm::vec3> getParticles() {
 		return std::vector<glm::vec3>(particleVec);
 	}
 
-	std::vector<float> getParticalsRAW() {
+	std::vector<float> getParticlesRAW() {
 		return std::vector<float>(particleVecRAW);
 	}
 

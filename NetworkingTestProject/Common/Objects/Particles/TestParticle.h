@@ -3,14 +3,14 @@
 #define TESTPARTICAL_H
 #include "Particle.h"
 
-class TestPartical : public Particle {
+class TestParticle : public Particle {
 private:
 	float posX;
 	float posY;
 	float velX;
 	float velY;
 	float lifetime;
-	glm::mat4x2 texturePos = TextureManager::getInstance().getTextureInfo(typeid(TestPartical));
+	glm::mat4x2 texturePos = TextureManager::getInstance().getTextureInfo(typeid(TestParticle));
 
 	glm::mat4x3 vertexPos = {
 			glm::vec3(-0.5f,-0.5,0.0),
@@ -22,7 +22,7 @@ public:
 
 	//This constructor does not have a carry velocity , therefore it acts more as an explosions
 	//Disriputes particales in all directs randomly
-	TestPartical(float posX, float posY, float scale): posX(posX), posY(posY) {
+	TestParticle(float posX, float posY, float scale): posX(posX), posY(posY) {
 
 	 std::uniform_real_distribution<float> dist(-0.1f, 0.1f);
 	 std::uniform_real_distribution<float> lifeTime(250.0f, 500.0f);
@@ -34,7 +34,7 @@ public:
 
 	//This constructor passes in a velocity, the velocity is then weighted in the the randomness
 	//Partical carry in the in the direction of the spawning partical
-	TestPartical(float posX, float posY, float biasVelX, float biasVelY , float scale) : posX(posX), posY(posY) {
+	TestParticle(float posX, float posY, float biasVelX, float biasVelY , float scale) : posX(posX), posY(posY) {
 
 		std::uniform_real_distribution<float> dist(-0.1f, 0.1f);
 		std::uniform_real_distribution<float> lifeTime(250.0f, 500.0f);
@@ -45,7 +45,7 @@ public:
 	}
 
 	//Default Constructor
-	TestPartical() {
+	TestParticle() {
 		std::uniform_real_distribution<float> dist(-0.1f, 0.1f);
 		std::uniform_real_distribution<float> lifeTime(3000.0f, 5000.0f);
 		posX = 0.0f;
@@ -55,7 +55,7 @@ public:
 		lifetime = lifeTime(gen);
 	}
 
-	~TestPartical() {
+	~TestParticle() {
 
 	}
 

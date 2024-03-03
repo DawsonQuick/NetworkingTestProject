@@ -11,6 +11,7 @@
 #include "./Common/Objects/Armour/BreastPlate.h"
 #include "./Common/Utils/TextureMapping.h"
 #include "./Common/Utils/json.hpp"
+#include "./client/ClientEventListener/ClientEventListener.h"
 SOCKET serverSocket;
 
 const int BUFFER_SIZE = 1024;
@@ -54,7 +55,7 @@ int main() {
         for (auto& armourPeice : armour) {
             if (armourPeice->hasSpells()) {
                 for (auto& spell : armourPeice->getSpells()) {
-                    spell->print();
+                    std::cout << spell->getName() << std::endl;
                 }
             }
         }

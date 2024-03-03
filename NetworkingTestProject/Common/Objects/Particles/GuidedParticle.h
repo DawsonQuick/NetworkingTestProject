@@ -74,12 +74,7 @@ public:
 		float distance = std::sqrt(std::pow(targetX - posX, 2) + std::pow(targetY - posY, 2));
 		if (distance <= 1.0 *(GlobalConfigurations::getInstance().getScale()/2)) {
 			if (callback) {
-				callback(posX,posY);
-			}
-			//Example of chaining particles
-			for (int i = 0; i < 100; i++) {
-				std::unique_ptr<Particle> particle = std::make_unique<ImplosionParticle>(posX, posY,0.3f);
-				ParticalDatabase::getInstance().addParticle("Test" + std::to_string(i), std::move(particle));
+				callback(targetX,targetY);
 			}
 		}
 		return (distance <= 1.0 * (GlobalConfigurations::getInstance().getScale() / 2));

@@ -1,11 +1,12 @@
 #pragma once
 #ifndef CLIENTEVENTLISTENER_H
 #define CLIENTEVENTLISTENER_H
-#include "./Client.h"
-#include "./../OpenGL/vendor/glm/glm.hpp"
-#include "./../OpenGL/vendor/glm/gtc/matrix_transform.hpp"
-#include "./../OpenGL/vendor/imgui/imgui.h"
-#include "./../Common/Objects/Spells/MagicMissle.h"
+#include "./../Client.h"
+#include "./../../OpenGL/vendor/glm/glm.hpp"
+#include "./../../OpenGL/vendor/glm/gtc/matrix_transform.hpp"
+#include "./../../OpenGL/vendor/imgui/imgui.h"
+#include "./../../Common/Objects/Spells/MagicMissle.h"
+#include "InputProcessor.h"
 #include <algorithm>
 #include <execution>
 #include <atomic>
@@ -137,10 +138,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
                 }
                 */
 
-                MagicMissle missle;
-                missle.castSpell(mousePosX, mousePosY);
-                float delta = static_cast<float>(getCurrentTimeInMillis() - before);
-                std::cout <<"Time taken to generate particles: "<< delta << std::endl;
+                processClick(mousePosX, mousePosY);
 
                 //TODO: Add events for clicks
 
@@ -259,14 +257,25 @@ public:
         return -(view[3][1]);
     }
 
+
+
+
     std::vector<float> getCursor() {
         std::vector<float> playerCursor;
+
+        //Draw a line from player position to the center of currently hovered grid cell
         playerCursor.push_back((float)PlayerDatabase::getInstance().getPlayer(playerName).getPositionX());
         playerCursor.push_back((float)PlayerDatabase::getInstance().getPlayer(playerName).getPositionY());
         playerCursor.push_back(0.0f);
         playerCursor.push_back((float)(mousePosX));
         playerCursor.push_back((float)(mousePosY));
         playerCursor.push_back(0.0f);
+
+        //Calculate a representation of effected area of currently selected action
+        calculateCursor(mousePosX, mousePosY,playerCursor);
+
+        //Calculate a representation of the range that the currently selected action has
+        calculateRange(playerCursor);
 
         return playerCursor;
     }
@@ -301,6 +310,7 @@ public:
 
                     });
                 dataReady.store(false, std::memory_order_release); // Reset the flag
+                GlobalConfigurations::getInstance().setCurrentlyHoveredTile(closestTile);
                 mousePosX = closestTile.centerPos.x;
                 mousePosY = closestTile.centerPos.y;
             }

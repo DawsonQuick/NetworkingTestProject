@@ -6,7 +6,7 @@
 #include <sstream>
 #include <list>
 #include <chrono>
-
+#include "./Spells/Spell.h"
 
 struct Position {
 	double X;
@@ -60,7 +60,7 @@ std::string playerFieldEnumToString(PlayerFields value) {
 
 class Player {
 private:
-	
+	std::vector<std::shared_ptr<Spell>> spells;
 	std::string name;
 	Position position;
 	KeyPress keyMap;
@@ -87,6 +87,8 @@ public:
 	  health(5),
 	  position(0.0,0.0,0.0, getCurrentTimeInMillis()),AC(10), movementSpeed(0.01) {}
 
+
+	void addSpell(std::shared_ptr<Spell> spell) { spells.push_back(spell); }
 
 /*
 * -------------------------SETTERS--------------------------------
@@ -151,6 +153,9 @@ public:
 	}
 	double getMovementSpeed() {
 		return movementSpeed;
+	}
+	std::vector<std::shared_ptr<Spell>> getAvailableSpells() {
+		return spells;
 	}
 
 /*

@@ -1,14 +1,15 @@
 #pragma once
 #ifndef SPELL_H
 #define SPELL_H
+#include "./../../Utils/CollsionCalculations/CollisionDetection.h"
 
 #include <iostream>
 class Spell {
 public:
-    virtual void print() {
-        std::cout << "Hello from Spell Parent class" << std::endl;
-    }
+    virtual std::string getName() const = 0;
     virtual void castSpell(float targetPosX, float targetPosY) {};
+    virtual float getImpactRadius() const = 0;
+    virtual float getRange() const = 0;
     virtual ~Spell() {};
 
     Spell() {
