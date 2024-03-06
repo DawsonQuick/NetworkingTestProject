@@ -74,47 +74,54 @@ bool pointInsideSquare(double x, double y, double squareX, double squareY, doubl
 /*-------------------------------------------------------------------------------------------------------------*/
 
 void processClick(float posX, float posY) {
-    
-    std::string action = GlobalConfigurations::getInstance().getselectedAction();
-    if(action == "Move") {
-        if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GOEMETRIC) {
-        
-            if (pointInsideCircle(posX, posY, PlayerDatabase::getInstance().getPlayer(playerName).getPositionX(), PlayerDatabase::getInstance().getPlayer(playerName).getPositionY(), ((30.0f / 5.0f) * (GlobalConfigurations::getInstance().getScale())))) {
-                PlayerDatabase::getInstance().getPlayer(playerName).setPositionX(posX);
-                PlayerDatabase::getInstance().getPlayer(playerName).setPositionY(posY);
-            }
-        
-        }
-        else if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GRID) {
-            if (pointInsideSquare(posX,posY, PlayerDatabase::getInstance().getPlayer(playerName).getPositionX(), PlayerDatabase::getInstance().getPlayer(playerName).getPositionY(), ((30.0f / 5.0f) * (GlobalConfigurations::getInstance().getScale()) + (GlobalConfigurations::getInstance().getScale() / 2.0f)))) {
-                PlayerDatabase::getInstance().getPlayer(playerName).setPositionX(posX);
-                PlayerDatabase::getInstance().getPlayer(playerName).setPositionY(posY);
-            }
-        }
-
-
-
+    if (GlobalConfigurations::getInstance().getgridPaintMode()) {
+        GlobalConfigurations::getInstance().updateTileMapInformation(GlobalConfigurations::getInstance().getCurrentlyHoveredTile().layoutIndex.x,
+            GlobalConfigurations::getInstance().getCurrentlyHoveredTile().layoutIndex.y, false);
     }
-    if (action == "Cast Spell") {
-        std::shared_ptr<Spell> spell = GlobalConfigurations::getInstance().getSelectedSpell();
-        if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GOEMETRIC) {
+    else {
+
+
+
+        std::string action = GlobalConfigurations::getInstance().getselectedAction();
+        if (action == "Move") {
+            if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GOEMETRIC) {
+
+                if (pointInsideCircle(posX, posY, PlayerDatabase::getInstance().getPlayer(playerName).getPositionX(), PlayerDatabase::getInstance().getPlayer(playerName).getPositionY(), ((30.0f / 5.0f) * (GlobalConfigurations::getInstance().getScale())))) {
+                    PlayerDatabase::getInstance().getPlayer(playerName).setPositionX(posX);
+                    PlayerDatabase::getInstance().getPlayer(playerName).setPositionY(posY);
+                }
+
+            }
+            else if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GRID) {
+                if (pointInsideSquare(posX, posY, PlayerDatabase::getInstance().getPlayer(playerName).getPositionX(), PlayerDatabase::getInstance().getPlayer(playerName).getPositionY(), ((30.0f / 5.0f) * (GlobalConfigurations::getInstance().getScale()) + (GlobalConfigurations::getInstance().getScale() / 2.0f)))) {
+                    PlayerDatabase::getInstance().getPlayer(playerName).setPositionX(posX);
+                    PlayerDatabase::getInstance().getPlayer(playerName).setPositionY(posY);
+                }
+            }
+
+
+
+        }
+        if (action == "Cast Spell") {
+            std::shared_ptr<Spell> spell = GlobalConfigurations::getInstance().getSelectedSpell();
+            if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GOEMETRIC) {
                 if (pointInsideCircle(posX, posY, PlayerDatabase::getInstance().getPlayer(playerName).getPositionX(), PlayerDatabase::getInstance().getPlayer(playerName).getPositionY(), (spell->getRange() * (GlobalConfigurations::getInstance().getScale())))) {
                     cachedTargetLocations.push_back(glm::vec2(posX, posY));
                     cachedCursorPoints.insert(cachedCursorPoints.end(), currentCursorPos.begin(), currentCursorPos.end());
                     float tmpCount = GlobalConfigurations::getInstance().getCurrentSpellShotCount();
                     tmpCount++;
                     GlobalConfigurations::getInstance().setCurrentSpellShotCount(tmpCount);
-                    if (spell->getMaxNumberofShots() == GlobalConfigurations::getInstance().getCurrentSpellShotCount()-1) {
+                    if (spell->getMaxNumberofShots() == GlobalConfigurations::getInstance().getCurrentSpellShotCount() - 1) {
                         for (glm::vec2 targetPosition : cachedTargetLocations) {
-                               spell->castSpell(targetPosition.x, targetPosition.y);
+                            spell->castSpell(targetPosition.x, targetPosition.y);
                         }
                         cachedCursorPoints.clear();
                         cachedTargetLocations.clear();
                         GlobalConfigurations::getInstance().setCurrentSpellShotCount(1.0f); //reset spell shot count after completing 
                     }
                 }
-        }
-        else if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GRID) {
+            }
+            else if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GRID) {
                 if (pointInsideSquare(posX, posY, PlayerDatabase::getInstance().getPlayer(playerName).getPositionX(), PlayerDatabase::getInstance().getPlayer(playerName).getPositionY(), (spell->getRange() * (GlobalConfigurations::getInstance().getScale()) + (GlobalConfigurations::getInstance().getScale() / 2.0f)))) {
                     cachedTargetLocations.push_back(glm::vec2(posX, posY));
                     cachedCursorPoints.insert(cachedCursorPoints.end(), currentCursorPos.begin(), currentCursorPos.end());
@@ -130,13 +137,14 @@ void processClick(float posX, float posY) {
                         GlobalConfigurations::getInstance().setCurrentSpellShotCount(1.0f); //reset spell shot count after completing 
                     }
                 }
+            }
+
+
+
+
+
+
         }
-       
-
-        
-
-
-        
     }
 }
 
@@ -154,6 +162,10 @@ void calculateCursor(float posX,float posY,std::vector<float>& vertices) {
 
     std::string action = GlobalConfigurations::getInstance().getselectedAction();
     if (action == "Move") {
+
+         std::vector<float> tmp =GlobalConfigurations::getInstance().getA_Starpath();
+         vertices.insert(vertices.end(), tmp.begin(), tmp.end());
+
         if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GOEMETRIC) {
             drawCircle(posX, posY, (0.5f * (GlobalConfigurations::getInstance().getScale())), 50, vertices);
         }
@@ -164,6 +176,16 @@ void calculateCursor(float posX,float posY,std::vector<float>& vertices) {
        
     }
     if (action == "Cast Spell") {
+        std::vector<float> tmp;
+        tmp.push_back((float)PlayerDatabase::getInstance().getPlayer(playerName).getPositionX());
+        tmp.push_back((float)PlayerDatabase::getInstance().getPlayer(playerName).getPositionY());
+        tmp.push_back(0.0f);
+        tmp.push_back((float)(posX));
+        tmp.push_back((float)(posY));
+        tmp.push_back(0.0f);
+        vertices.insert(vertices.end(), tmp.begin(), tmp.end());
+
+
         std::shared_ptr<Spell> spell = GlobalConfigurations::getInstance().getSelectedSpell();
         if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GOEMETRIC) {
             drawCircle(posX, posY, (spell->getImpactRadius() * (GlobalConfigurations::getInstance().getScale())), 50, vertices);

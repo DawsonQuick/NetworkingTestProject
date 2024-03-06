@@ -36,11 +36,13 @@ private:
 
 	float currentSpellShotCount;
 
+	bool gridPaintMode;
 
 	GlobalConfigurations() {
 		Scale = 26.0;
 		currentSystem = MeasurmentSystem::GRID;
 		spellChangedState = false;
+		gridPaintMode = false;
 	}
 
 	// Delete copy constructor and assignment operator
@@ -133,6 +135,17 @@ public:
 	}
 	float getCurrentSpellShotCount() {
 		return currentSpellShotCount;
+	}
+
+	void updateTileMapInformation(float indexX, float indexY, bool isTraversable) {
+		TileManager::getInstance().updateTileMapInformation(indexX, indexY, isTraversable);
+	}
+
+	void setgridPaintMode(bool isPainting) {
+		gridPaintMode = isPainting;
+	}
+	bool getgridPaintMode() {
+		return gridPaintMode;
 	}
 
 	void resetChangeState(bool changeState) {

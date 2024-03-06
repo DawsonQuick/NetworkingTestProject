@@ -44,7 +44,7 @@ void imGuiRender(GLFWwindow* window ,int &dynamicLightingFlag, ClientEventListen
 
     ImGui::Text("Currently Hovered tile: X: %.1f Y: %.1f", GlobalConfigurations::getInstance().getCurrentlyHoveredTile().layoutIndex.x, GlobalConfigurations::getInstance().getCurrentlyHoveredTile().layoutIndex.y);
     ImGui::Text("Current Player tile: X: %.1f Y: %.1f", GlobalConfigurations::getInstance().getCurrentlPlayerTile().layoutIndex.x, GlobalConfigurations::getInstance().getCurrentlPlayerTile().layoutIndex.y);
-    static MeasurmentSystem currentMeasurementSystem;
+    static MeasurmentSystem currentMeasurementSystem = MeasurmentSystem::GRID;
     // Render the selectable item for Type A
     if (ImGui::Selectable("GRID", currentMeasurementSystem == MeasurmentSystem::GRID)) {
         currentMeasurementSystem = MeasurmentSystem::GRID;
@@ -55,6 +55,20 @@ void imGuiRender(GLFWwindow* window ,int &dynamicLightingFlag, ClientEventListen
         currentMeasurementSystem = MeasurmentSystem::GOEMETRIC;
     }
     GlobalConfigurations::getInstance().setCurrentMeasurementSystem(currentMeasurementSystem);
+
+
+    static bool  gridPaintMode = false; // Boolean variable to store the toggle state
+
+    // Inside your ImGui window or frame loop
+    ImGui::Checkbox("Toggle", &gridPaintMode);
+
+    // Use the toggleValue variable to control your application logic
+    if (gridPaintMode) {
+        GlobalConfigurations::getInstance().setgridPaintMode(true);
+    }
+    else {
+        GlobalConfigurations::getInstance().setgridPaintMode(false);
+    }
 
 
     ImGui::End();

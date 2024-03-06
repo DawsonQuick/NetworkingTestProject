@@ -90,7 +90,7 @@ public:
 		static TileManager instance;
 		return instance;
 	}
-void setMapTileInformation(std::vector<TileInfo> tileInformation) {
+	void setMapTileInformation(std::vector<TileInfo> tileInformation) {
 		MapTileInformation = tileInformation;
 		tileArray = vectorTo2DArray();
 		vectorToMap();
@@ -108,6 +108,16 @@ void setMapTileInformation(std::vector<TileInfo> tileInformation) {
 		return currentlyHoveredTile;
 	}
 
+	void updateTileMapInformation(float indexX, float indexY, bool isTraversable) {
+		for (int i = 0; i < MapTileInformation.size(); i++) {
+			if ((MapTileInformation[i].layoutIndex.x == indexX) && (MapTileInformation[i].layoutIndex.y == indexY)) {
+				MapTileInformation[i].isTraversable = isTraversable;
+			}
+		}
+		//Regenerate Tile ArrayMap
+		tileArray = vectorTo2DArray();
+
+	}
 
 
 	void setCurrentlPlayerTile(TileInfo tile) {

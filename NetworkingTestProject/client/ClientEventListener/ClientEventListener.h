@@ -261,26 +261,18 @@ public:
 
 
     std::vector<float> getCursor() {
-        std::vector<float> playerCursor;
-            
-         std::vector<float> tmp =GlobalConfigurations::getInstance().getA_Starpath();
-         playerCursor.insert(playerCursor.end(), tmp.begin(), tmp.end());
-        //Draw a line from player position to the center of currently hovered grid cell
-        //playerCursor.push_back((float)PlayerDatabase::getInstance().getPlayer(playerName).getPositionX());
-        //playerCursor.push_back((float)PlayerDatabase::getInstance().getPlayer(playerName).getPositionY());
-        //playerCursor.push_back(0.0f);
-        //playerCursor.push_back((float)(mousePosX));
-        //playerCursor.push_back((float)(mousePosY));
-       // playerCursor.push_back(0.0f);
+
+            std::vector<float> playerCursor;
+
+            //Calculate a representation of effected area of currently selected action
+            calculateCursor(mousePosX, mousePosY, playerCursor);
+
+            //Calculate a representation of the range that the currently selected action has
+            calculateRange(playerCursor);
 
 
-        //Calculate a representation of effected area of currently selected action
-        calculateCursor(mousePosX, mousePosY,playerCursor);
 
-        //Calculate a representation of the range that the currently selected action has
-        calculateRange(playerCursor);
-
-        return playerCursor;
+            return playerCursor;
     }
 
 
