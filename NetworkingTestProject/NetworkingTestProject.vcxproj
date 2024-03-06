@@ -175,6 +175,7 @@
     <ClInclude Include="Common\Objects\Spells\MagicMissle.h" />
     <ClInclude Include="Common\Objects\Spells\Spell.h" />
     <ClInclude Include="Common\Objects\Spells\SpellFactory.h" />
+    <ClInclude Include="Common\Utils\TileManager\AStartPathFinding.h" />
     <ClInclude Include="Common\Utils\CollsionCalculations\CollisionDetection.h" />
     <ClInclude Include="Common\Utils\GlobalConfigurations.h" />
     <ClInclude Include="Common\Utils\json.hpp" />
@@ -185,6 +186,7 @@
     <ClInclude Include="Common\Utils\PlayerDatabase.h" />
     <ClInclude Include="Common\Utils\TextureManager.h" />
     <ClInclude Include="Common\Utils\TextureMapping.h" />
+    <ClInclude Include="Common\Utils\TileManager\TileManager.h" />
     <ClInclude Include="OpenGL\Utils\Camera\Camera.h" />
     <ClInclude Include="OpenGL\Utils\IndexBuffer.h" />
     <ClInclude Include="OpenGL\Utils\Renderer.h" />

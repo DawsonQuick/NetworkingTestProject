@@ -6,6 +6,8 @@
 #include <iostream>
 class MagicMissle : public Spell {
 private:
+    float maxNumberofShots = 3.0f;
+
     //Number of grid cells
     float impactRadius = 0.0f;
 
@@ -22,6 +24,9 @@ public:
     }
     float getRange() const override {
         return range;
+    }
+    float getMaxNumberofShots() const override {
+        return maxNumberofShots;
     }
     void castSpell(float targetPosX , float targetPosY) override {
         ParticleDatabase::getInstance().addParticle("MagicMissle", ParticleFactory::getInstance().createGuidedParticle(PlayerDatabase::getInstance().getPlayer(playerName).getPositionX(), PlayerDatabase::getInstance().getPlayer(playerName).getPositionY(),

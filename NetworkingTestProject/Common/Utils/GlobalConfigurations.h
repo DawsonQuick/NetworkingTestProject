@@ -8,14 +8,7 @@
 #include <typeindex>
 #include "./../../OpenGL/Utils/Texture.h"
 #include "./../../OpenGL/vendor/glm/glm.hpp"
-
-struct TileInfo{
-	glm::mat4x3 vertexPos;
-	glm::vec2 centerPos;
-	glm::vec2 layoutIndex;
-	bool isTraversable;
-
-};
+#include "./TileManager/TileManager.h"
 
 enum MeasurmentSystem {
 	GOEMETRIC,
@@ -28,25 +21,33 @@ enum MeasurmentSystem {
 class GlobalConfigurations {
 private:
 	float Scale;
-	std::vector<TileInfo> MapTileInformation;
-	TileInfo currentlyHoveredTile;
+
+
+
 
 	glm::vec4 GridColor;
 	glm::vec4 CursorColor;
 
 	std::string selectedAction;
 	std::shared_ptr<Spell> selectedSpell;
+	bool spellChangedState; 
 
 	MeasurmentSystem currentSystem;
 
+	float currentSpellShotCount;
+
+
 	GlobalConfigurations() {
-		Scale = 20.0;
+		Scale = 26.0;
 		currentSystem = MeasurmentSystem::GRID;
+		spellChangedState = false;
 	}
 
 	// Delete copy constructor and assignment operator
 	GlobalConfigurations(const GlobalConfigurations&) = delete;
 	GlobalConfigurations& operator=(const GlobalConfigurations&) = delete;
+
+
 
 public:
 	// Singleton Constructor
@@ -64,19 +65,29 @@ public:
 	}
 
 	void setMapTileInformation(std::vector<TileInfo> tileInformation) {
-		MapTileInformation = tileInformation;
+		TileManager::getInstance().setMapTileInformation(tileInformation);
 	}
 
 	std::vector<TileInfo> getMapTileInformation() {
-		return MapTileInformation;
+		return TileManager::getInstance().getMapTileInformation();
 	}
 
 	void setCurrentlyHoveredTile(TileInfo tile) {
-		currentlyHoveredTile = tile;
+		TileManager::getInstance().setCurrentlyHoveredTile(tile);
 	}
 
 	TileInfo getCurrentlyHoveredTile() {
-		return currentlyHoveredTile;
+		return TileManager::getInstance().getCurrentlyHoveredTile();
+	}
+
+
+
+	void setCurrentlPlayerTile(TileInfo tile) {
+		TileManager::getInstance().setCurrentlPlayerTile(tile);
+	}
+
+	TileInfo getCurrentlPlayerTile() {
+		return TileManager::getInstance().getCurrentlPlayerTile();
 	}
 
 	void setGridColor(glm::vec4 gridColor) {
@@ -102,6 +113,8 @@ public:
 	}
 
 	void setSelectedSpell(std::shared_ptr<Spell> spell) {
+		currentSpellShotCount = 1.0f; //reset shot count for change in spell
+		spellChangedState = true;
 		selectedSpell = spell;
 	}
 	std::shared_ptr<Spell> getSelectedSpell() {
@@ -114,7 +127,30 @@ public:
 	void setCurrentMeasurementSystem(MeasurmentSystem tmpSystem) {
 		currentSystem = tmpSystem;
 	}
-	
+
+	void setCurrentSpellShotCount(float count) {
+		currentSpellShotCount = count;
+	}
+	float getCurrentSpellShotCount() {
+		return currentSpellShotCount;
+	}
+
+	void resetChangeState(bool changeState) {
+		spellChangedState = changeState;
+	}
+
+	bool hasSpellChanged(){
+		return spellChangedState;
+	}
+	void setTileDimemsions(int width, int height) {
+		TileManager::getInstance().setTileDimemsions(width,height);
+	}
+
+	//Temp void
+	std::vector<float> getA_Starpath() {
+		return std::move(TileManager::getInstance().getA_Starpath());
+	}
+
 
 
 	

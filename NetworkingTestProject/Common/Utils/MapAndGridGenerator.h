@@ -79,6 +79,7 @@ void generateGridQuads(float maxWidth, float maxHeight, float gridSizeWidth, flo
 
         }
     }
+    GlobalConfigurations::getInstance().setTileDimemsions(numTilesWidth,numTilesHeight);
     GlobalConfigurations::getInstance().setMapTileInformation(tileInformation);
 
 }

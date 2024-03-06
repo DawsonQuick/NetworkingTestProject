@@ -262,14 +262,17 @@ public:
 
     std::vector<float> getCursor() {
         std::vector<float> playerCursor;
-
+            
+         std::vector<float> tmp =GlobalConfigurations::getInstance().getA_Starpath();
+         playerCursor.insert(playerCursor.end(), tmp.begin(), tmp.end());
         //Draw a line from player position to the center of currently hovered grid cell
-        playerCursor.push_back((float)PlayerDatabase::getInstance().getPlayer(playerName).getPositionX());
-        playerCursor.push_back((float)PlayerDatabase::getInstance().getPlayer(playerName).getPositionY());
-        playerCursor.push_back(0.0f);
-        playerCursor.push_back((float)(mousePosX));
-        playerCursor.push_back((float)(mousePosY));
-        playerCursor.push_back(0.0f);
+        //playerCursor.push_back((float)PlayerDatabase::getInstance().getPlayer(playerName).getPositionX());
+        //playerCursor.push_back((float)PlayerDatabase::getInstance().getPlayer(playerName).getPositionY());
+        //playerCursor.push_back(0.0f);
+        //playerCursor.push_back((float)(mousePosX));
+        //playerCursor.push_back((float)(mousePosY));
+       // playerCursor.push_back(0.0f);
+
 
         //Calculate a representation of effected area of currently selected action
         calculateCursor(mousePosX, mousePosY,playerCursor);
@@ -300,17 +303,25 @@ public:
                 std::pair<float, float> dataPair = sharedVec.load(std::memory_order_relaxed);
                 glm::vec2 dataVec(dataPair.first, dataPair.second);
                 std::vector<TileInfo> tmpTileInfo = GlobalConfigurations::getInstance().getMapTileInformation();
+
+                glm::vec2 playerPos(PlayerDatabase::getInstance().getPlayer(playerName).getPositionX(), PlayerDatabase::getInstance().getPlayer(playerName).getPositionY());
+
                 float tmpScale = GlobalConfigurations::getInstance().getScale();
                 TileInfo closestTile;
+                TileInfo playerTile;
                 std::for_each(std::execution::par, tmpTileInfo.begin(), tmpTileInfo.end(), [&](TileInfo tile) {
 
                     if (isPointInsideSquare(dataVec, tile.vertexPos)) {
                         closestTile = tile;
                     }
+                    else if (isPointInsideSquare(playerPos, tile.vertexPos)) {
+                        playerTile = tile;
+                    }
 
                     });
                 dataReady.store(false, std::memory_order_release); // Reset the flag
                 GlobalConfigurations::getInstance().setCurrentlyHoveredTile(closestTile);
+                GlobalConfigurations::getInstance().setCurrentlPlayerTile(playerTile);
                 mousePosX = closestTile.centerPos.x;
                 mousePosY = closestTile.centerPos.y;
             }

@@ -10,6 +10,7 @@ public:
     virtual void castSpell(float targetPosX, float targetPosY) {};
     virtual float getImpactRadius() const = 0;
     virtual float getRange() const = 0;
+    virtual float getMaxNumberofShots() const = 0;
     virtual ~Spell() {};
 
     Spell() {

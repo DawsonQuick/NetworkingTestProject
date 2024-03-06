@@ -6,7 +6,7 @@
 void imGuiRender(GLFWwindow* window ,int &dynamicLightingFlag, ClientEventListener &eventListener) {
     // Get screen dimensions
     static ImVec4 GridColor = ImVec4(20.0f / 255.0f, 20.0f / 255.0f, 20.0f / 255.0f, 100.0f / 255.0f);
-    static ImVec4 CursorColor = ImVec4(255.0f / 255.0f, 0.0f / 255.0f, 0.0f / 255.0f, 255.0f / 255.0f);
+    static ImVec4 CursorColor = ImVec4(255.0f / 255.0f, 255.0f / 255.0f, 255.0f / 255.0f, 255.0f / 255.0f);
     
     // Get the size of the viewport (the entire window)
     int display_w, display_h;
@@ -43,7 +43,7 @@ void imGuiRender(GLFWwindow* window ,int &dynamicLightingFlag, ClientEventListen
     GlobalConfigurations::getInstance().setCursorColor(glm::vec4(CursorColor.x, CursorColor.y, CursorColor.z, CursorColor.w));
 
     ImGui::Text("Currently Hovered tile: X: %.1f Y: %.1f", GlobalConfigurations::getInstance().getCurrentlyHoveredTile().layoutIndex.x, GlobalConfigurations::getInstance().getCurrentlyHoveredTile().layoutIndex.y);
-
+    ImGui::Text("Current Player tile: X: %.1f Y: %.1f", GlobalConfigurations::getInstance().getCurrentlPlayerTile().layoutIndex.x, GlobalConfigurations::getInstance().getCurrentlPlayerTile().layoutIndex.y);
     static MeasurmentSystem currentMeasurementSystem;
     // Render the selectable item for Type A
     if (ImGui::Selectable("GRID", currentMeasurementSystem == MeasurmentSystem::GRID)) {

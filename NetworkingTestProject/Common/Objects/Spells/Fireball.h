@@ -6,6 +6,8 @@
 #include <iostream>
 class Fireball : public Spell {
 private:
+    float maxNumberofShots = 1;
+
     //Number of grid cells
     float impactRadius = 20.0f / 5.0f;
 
@@ -21,6 +23,9 @@ public:
     }
     float getRange() const override {
         return range;
+    }
+    float getMaxNumberofShots() const override {
+        return maxNumberofShots;
     }
 
     void castSpell(float targetPosX, float targetPosY) override {

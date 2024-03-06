@@ -34,8 +34,8 @@ public:
 		float directionX = this->targetX - this->posX;
 		float directionY = this->targetY- this->posY;
 		float angle = atan2(directionY, directionX);
-		velX = cos(angle) / (GlobalConfigurations::getInstance().getScale()*2);
-		velY = sin(angle) / (GlobalConfigurations::getInstance().getScale()*2);
+		velX = cos(angle) / (GlobalConfigurations::getInstance().getScale());
+		velY = sin(angle) / (GlobalConfigurations::getInstance().getScale());
 		vertexPos = vertexPos * scale * (GlobalConfigurations::getInstance().getScale());
 		callback = Tmpcallback;
 		updateSpriteRotation();
