@@ -22,8 +22,8 @@ std::atomic<std::pair<float, float>> sharedVec({ 0.0f, 0.0f });
 int WIDTH = 1000, HEIGHT = 1000;
 
 //Think if these variables as the "Zoom" for the 2d top-down engine (make sure projWidth and Height always match or warping can occur)
-float projHeight = 70.0;
-float projWidth = 70.0;
+float projHeight = 500.0;
+float projWidth = 500.0;
 
 float aspectRatio = static_cast<float>(WIDTH) / HEIGHT;
 

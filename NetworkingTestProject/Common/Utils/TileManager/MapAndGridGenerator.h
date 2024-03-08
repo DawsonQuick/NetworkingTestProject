@@ -1,4 +1,4 @@
-#include "GlobalConfigurations.h"
+#include "./../GlobalConfigurations.h"
 #include <vector>
 /*---------------------------------------------------------------------------------------
 *                               Code to generate grid  

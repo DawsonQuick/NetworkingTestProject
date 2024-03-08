@@ -26,6 +26,11 @@ void UpdatePlayerPosition(std::string name,float deltaTime) {
     PlayerDatabase::getInstance().getPlayer(name).setPosition(newPos.X, newPos.Y, newPos.Z, getCurrentTimeInMillis());
 }
 
+void checkPlayerHealth(std::string name) {
+    if (PlayerDatabase::getInstance().getPlayer(name).getHealth() < 0) {
+        PlayerDatabase::getInstance().removePlayer(name);
+    }
+}
 
 
 
@@ -39,6 +44,7 @@ void OnUpdateThread() {
         if (!updateRequest.empty()) {
           //Update all player positions
           for (auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) { UpdatePlayerPosition(playerEntry.first, updateRequest.front()); }
+          for (auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) { checkPlayerHealth(playerEntry.first); }
           //for (auto& particalEntry : ParticalDatabase::getInstance().getParticals()) { UpdateParticals(particalEntry.first,deltaTime); }
           ParticleDatabase::getInstance().onUpdate(updateRequest.front());
           updateRequest.pop();

@@ -59,26 +59,68 @@ inline  std::unique_ptr<std::unique_ptr<float[]>[]> vectorTo2DArray(std::vector<
 
 
 
-inline void vectorToMap(std::vector<TileInfo>& MapTileInformation, std::unordered_map<glm::vec2, glm::vec2, vec2Hash>& tileMap) {
+inline void vectorToMap(std::vector<TileInfo>& MapTileInformation, std::unordered_map<glm::vec2, TileInfo, vec2Hash>& tileMap) {
 		
 		for (int i = 0; i < MapTileInformation.size(); i++) {
-			tileMap[MapTileInformation[i].layoutIndex]=MapTileInformation[i].centerPos;
+			tileMap[MapTileInformation[i].layoutIndex]=MapTileInformation[i];
 		}
 }
 
-//TODO: Optimize later, if a tile is not traverable , check to see if the neighboring tiles to see if the are also not traversable, if so,
-//then the edge that is facing the other non-traversable tile is benign . So dont add it to the list.
-// 
-//TLDR , prune all edges that are not outward facing
-inline std::vector<glm::mat4x3> generateBlockTileWalls(std::vector<TileInfo> MapTileInformation) {
-	std::vector<glm::mat4x3> returnVector;
 
+inline std::vector<glm::mat2x2> generateBlockTileWalls(int width, int height, std::unordered_map<glm::vec2, TileInfo, vec2Hash> tileMap , std::vector<TileInfo> MapTileInformation) {
+	std::vector<glm::mat2x2> returnVector;
+
+	int tmpCounter = 0;
 	for (int i = 0; i < MapTileInformation.size(); i++) {
 		if (!MapTileInformation[i].isTraversable) {
-			returnVector.push_back(MapTileInformation[i].vertexPos);
+			glm::mat4x3 tmp = MapTileInformation[i].vertexPos;
+			glm::vec2 index = MapTileInformation[i].layoutIndex;
+
+
+	/*-----------------------------------------------------------------------------------------------*
+	 *									Simple culling check										 *
+	 *-----------------------------------------------------------------------------------------------*/
+	// For each Tile we check to see if any of the adjacent tiles are also non-traversable.
+	// If the tile is non-traversable, we dont need to render the side facing that direction
+	// This allows only outward facing sides to be added, reducing the size of the vector
+
+			auto it = tileMap.find(glm::vec2(index.x-1, index.y)); //Check left
+			if (it != tileMap.end()) {
+				if (it->second.isTraversable) {
+			        glm::mat2x2 line = { tmp[3][0],tmp[3][1],tmp[0][0],tmp[0][1]};
+					returnVector.push_back(line);
+				}
+			}
+
+			it = tileMap.find(glm::vec2(index.x + 1, index.y)); //Check right
+			if (it != tileMap.end()) {
+				if (it->second.isTraversable) {
+					glm::mat2x2 line = { tmp[1][0],tmp[1][1],tmp[2][0],tmp[2][1]};
+					returnVector.push_back(line);
+				}
+			}
+
+			it = tileMap.find(glm::vec2(index.x, index.y-1)); //Check below
+			if (it != tileMap.end()) {
+				if (it->second.isTraversable) {
+					glm::mat2x2 line = { tmp[0][0],tmp[0][1],tmp[1][0],tmp[1][1]};
+					returnVector.push_back(line);
+				}
+			}
+
+			it = tileMap.find(glm::vec2(index.x, index.y+1)); //Check above
+			if (it != tileMap.end()) {
+				if (it->second.isTraversable) {
+					glm::mat2x2 line = { tmp[2][0],tmp[2][1],tmp[3][0],tmp[3][1]};
+					returnVector.push_back(line);
+				}
+			}
+	//TODO: Could optimize futher by setting a single line if tiles aline on same axis
+	/*----------------------------------------------------------------------------------------------*/
+			tmpCounter++;
 		}
 	}
-
+	std::cout << "Generation of non-traversable walls, number of entries in the mat2x2 vector: " << returnVector.size() << " for: " << tmpCounter << " entries." << std::endl;
 	return returnVector;
 
 }
@@ -91,6 +133,7 @@ inline std::vector<float> generateBlockedTileVertexArray(std::vector<TileInfo> M
 	std::vector<float>& vertexArray, std::vector<unsigned int>& indiceArray , float sideLength) {
 	unsigned int index = 0;
 	float half = (sideLength / 2.0f) - 1.0f;
+	int totalNumberofNonTraversableTiles = 0;
 	for (int i = 0; i < MapTileInformation.size(); i++) {
 		if (!MapTileInformation[i].isTraversable) {
 
@@ -133,10 +176,10 @@ inline std::vector<float> generateBlockedTileVertexArray(std::vector<TileInfo> M
 			indiceArray.push_back(index);
 
 			index += (unsigned int)4;
-
+			totalNumberofNonTraversableTiles++;
 		}
 	}
-
+	std::cout << "Non-Traversable Tile Vertex Array Size: " << vertexArray.size() << " for "<< totalNumberofNonTraversableTiles << " tiles " << std::endl;
 	return vertexArray;
 }
 

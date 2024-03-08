@@ -100,7 +100,6 @@ glm::vec2 intersection(glm::mat2x2 l1, glm::mat2x2 l2) {
     if (0.00001 <= t && t <= 0.99999 && 0.00001 <= u && u <= 0.99999) {
         double x = x1 + t * (x2 - x1);
         double y = y1 + t * (y2 - y1);
-        std::cout << "Intersection detected at : " << x << " - " << y << endl;
         return glm::vec2(x, y );
     }
     else {
@@ -117,7 +116,7 @@ glm::vec2 intersection(glm::mat2x2 l1, glm::mat2x2 l2) {
 void processClick(float posX, float posY) {
     if (GlobalConfigurations::getInstance().getgridPaintMode()) {
         GlobalConfigurations::getInstance().updateTileMapInformation(GlobalConfigurations::getInstance().getCurrentlyHoveredTile().layoutIndex.x,
-            GlobalConfigurations::getInstance().getCurrentlyHoveredTile().layoutIndex.y, false);
+            GlobalConfigurations::getInstance().getCurrentlyHoveredTile().layoutIndex.y);
     }
     else {
 
@@ -253,16 +252,10 @@ void calculateCursor(float posX,float posY,std::vector<float>& vertices) {
             (float)PlayerDatabase::getInstance().getPlayer(playerName).getPositionY(),
             (float)(posX),(float)(posY)
         };
-        for (glm::mat4x3 tile : GlobalConfigurations::getInstance().getBlockedTileWalls()) {
+        for (glm::mat2x2 tile : GlobalConfigurations::getInstance().getBlockedTileWalls()) {
+            glm::mat2x2 tmp = { tile[0][0] - scale,tile[0][1] - scale,tile[1][0] - scale ,tile[1][1] - scale };
 
-            glm::mat2x2 line1 = {tile[0][0] - scale,tile[0][1] - scale,tile[1][0] - scale,tile[1][1] - scale };
-            glm::mat2x2 line2 = {tile[1][0] - scale,tile[1][1] - scale,tile[2][0] - scale,tile[2][1] - scale };
-            glm::mat2x2 line3 = {tile[2][0] - scale,tile[2][1] - scale,tile[3][0] - scale,tile[3][1] - scale };
-            glm::mat2x2 line4 = {tile[3][0] - scale,tile[3][1] - scale,tile[0][0] - scale,tile[0][1] - scale };
-            if (intersection(line1, cursorLine) != glm::vec2(-1.0f, -1.0f) ||
-                intersection(line2, cursorLine) != glm::vec2(-1.0f, -1.0f) ||
-                intersection(line3, cursorLine) != glm::vec2(-1.0f, -1.0f) ||
-                intersection(line4, cursorLine) != glm::vec2(-1.0f, -1.0f)) {
+            if (intersection(tmp, cursorLine) != glm::vec2(-1.0f, -1.0f)) {
                 isSpellLocatonValid = false;
                 GlobalConfigurations::getInstance().setCursorColor(glm::vec4(1.0f,0.0f,0.0f,1.0f));
                 break;

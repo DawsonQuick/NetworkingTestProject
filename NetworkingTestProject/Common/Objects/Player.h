@@ -87,35 +87,40 @@ public:
 	  health(5),
 	  position(0.0,0.0,0.0, getCurrentTimeInMillis()),AC(10), movementSpeed(0.01) {}
 
+	~Player() {
+
+	}
+
 
 	void addSpell(std::shared_ptr<Spell> spell) { spells.push_back(spell); }
 
 /*
 * -------------------------SETTERS--------------------------------
 */
-	void setName(std::string name) {
-		this->name = name;
+	void setName(std::string tmpName) {
+		name = tmpName;
 	}
-	void setHealth(int health) {
-		this->health = health;
+	void setHealth(int tmpHealth) {
+		health = tmpHealth;
+
 	}
 	void setPosition(double posX,double posY, double posZ , long long tmpPointTime) {
-		this->position.X = posX;
-		this->position.Y = posY;
-		this->position.Z = posZ;
-		this->position.pointTime = tmpPointTime;
+		position.X = posX;
+		position.Y = posY;
+		position.Z = posZ;
+		position.pointTime = tmpPointTime;
 	}
 	void setPositionX(double positionX) {
-		this->position.X = positionX;
+		position.X = positionX;
 	}
 	void setPositionY(double positionY) {
-		this->position.Y = positionY;
+		position.Y = positionY;
 	}
 	void setPositionZ(double positionZ) {
-		this->position.Z = positionZ;
+		position.Z = positionZ;
 	}
-	void setAC(int AC) {
-		this->AC = AC;
+	void setAC(int tmpAC) {
+		AC = tmpAC;
 	}
 	void setKeyPress(KeyPress tmpKeyMap) {
 		keyMap = tmpKeyMap;
@@ -134,16 +139,16 @@ public:
 		return health;
 	}
 	Position getPosition() {
-		return this->position;
+		return position;
 	}
 	double getPositionX() {
-		return this->position.X;
+		return position.X;
 	}
 	double getPositionY() {
-		return this->position.Y;
+		return position.Y;
 	}
 	double getPositionZ() {
-		return this->position.Z;
+		return position.Z;
 	}
 	int getAC() {
 		return AC;

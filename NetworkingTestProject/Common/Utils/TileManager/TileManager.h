@@ -19,14 +19,14 @@ private:
 	std::vector<TileInfo> MapTileInformation;
 	TileInfo currentlyHoveredTile;
 	TileInfo currentPlayerTile;
-	std::vector<glm::mat4x3> blockTileWalls;
+	std::vector<glm::mat2x2> blockTileWalls;
 	std::vector<float> blockedTileVectorArray;
 	std::vector<unsigned int> blockedTileIndicesArray;
 	float tileSize;
 	int numberTileWidth;
 	int numberTileHeight;
 	std::unique_ptr<std::unique_ptr<float[]>[]> tileArray;
-	std::unordered_map<glm::vec2, glm::vec2, vec2Hash> tileMap;
+	std::unordered_map<glm::vec2,TileInfo, vec2Hash> tileMap;
 
 	TileManager() {
 	}
@@ -54,7 +54,7 @@ public:
 	TileInfo getCurrentlPlayerTile() {
 		return currentPlayerTile;
 	}
-	std::vector<glm::mat4x3> getBlockedTileWalls() {
+	std::vector<glm::mat2x2> getBlockedTileWalls() {
 		return blockTileWalls;
 	}
 	std::vector<float> getBlockedTilesVertexArray() {
@@ -92,15 +92,18 @@ public:
 	/*
 	* When a tile has a state update need to regenerate all the different transmutations of the tile information
 	*/
-	void updateTileMapInformation(float indexX, float indexY, bool isTraversable) {
+	void updateTileMapInformation(float indexX, float indexY) {
 		for (int i = 0; i < MapTileInformation.size(); i++) {
 			if ((MapTileInformation[i].layoutIndex.x == indexX) && (MapTileInformation[i].layoutIndex.y == indexY)) {
-				MapTileInformation[i].isTraversable = isTraversable;
+				//If Tile is currently traversable, then toggle it to non-traversable.
+				//If Tile is currently non-traversable, then toggle to traversable	
+				MapTileInformation[i].isTraversable = MapTileInformation[i].isTraversable? false : true;
 			}
 		}
-		//Regenerate Tile ArrayMap
+		//Regenerate Tile ArrayMap (Execution order is important here)
 		tileArray = vectorTo2DArray(MapTileInformation, numberTileWidth, numberTileHeight);
-		blockTileWalls = generateBlockTileWalls(MapTileInformation);
+		vectorToMap(MapTileInformation, tileMap);
+		blockTileWalls = generateBlockTileWalls(numberTileWidth, numberTileHeight, tileMap, MapTileInformation);
 		regenerateBlockTileRenderInformation();
 	}
 
@@ -149,8 +152,8 @@ public:
 		auto it = tileMap.find(glm::vec2(currentPlayerTile.layoutIndex.x, currentPlayerTile.layoutIndex.y));
 
 		//Since the posistions inside the A* Search algorithm were translated to a positive value between 0-30 , we need to translate them back to world positions to properly map to the grid
-		float prevX = it->second.x;
-		float prevY = it->second.y;
+		float prevX = it->second.centerPos.x;
+		float prevY = it->second.centerPos.y;
 		while (!Path.empty()) {
 			pair<int, int> p = Path.top();
 			Path.pop();
@@ -159,7 +162,7 @@ public:
 			// Check if the key exists in tileMap
 			auto it = tileMap.find(layoutIndexToFind);
 			if (it != tileMap.end()) {
-				glm::vec2 centerPos = it->second;
+				glm::vec2 centerPos = it->second.centerPos;
 				lineToCursor.push_back((float)prevX);
 				lineToCursor.push_back((float)prevY);
 				lineToCursor.push_back(0.0f);

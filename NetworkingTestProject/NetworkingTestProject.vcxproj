@@ -181,7 +181,7 @@
     <ClInclude Include="Common\Utils\GlobalConfigurations.h" />
     <ClInclude Include="Common\Utils\json.hpp" />
     <ClInclude Include="Common\Utils\Logger.h" />
-    <ClInclude Include="Common\Utils\MapAndGridGenerator.h" />
+    <ClInclude Include="Common\Utils\TileManager\MapAndGridGenerator.h" />
     <ClInclude Include="Common\Utils\ParticalDataBase.h" />
     <ClInclude Include="Common\Utils\StringStreamer.h" />
     <ClInclude Include="Common\Utils\PlayerDatabase.h" />

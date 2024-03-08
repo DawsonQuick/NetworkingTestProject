@@ -10,7 +10,7 @@
 #include "./ClientEventListener/ClientEventListener.h"
 #include "./ImGuiRenderContent.h"
 #include "./../Common/Utils/Logger.h"
-#include "./../Common/Utils/MapAndGridGenerator.h"
+#include "./../Common/Utils/TileManager/MapAndGridGenerator.h"
 #include "./../OpenGL/Utils/Renderer.h"
 #include "./../OpenGL/vendor/imgui/imgui.h"
 #include "./../OpenGL/vendor/glm/glm.hpp"

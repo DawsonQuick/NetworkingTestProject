@@ -56,6 +56,9 @@ public:
 		if (it != playerMap.end()) {
 			return it->second; // Return reference to the player if found
 		}
+		else {
+			std::cout << "Player not found in database" << std::endl;
+		}
 
 	}
 

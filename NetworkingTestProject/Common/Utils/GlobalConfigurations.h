@@ -41,7 +41,7 @@ private:
 	bool gridPaintMode;
 
 	GlobalConfigurations() {
-		Scale = 50.0;
+		Scale = 25.0;
 		TileManager::getInstance().setSideLength(Scale);
 		currentSystem = MeasurmentSystem::GRID;
 		spellChangedState = false;
@@ -84,7 +84,7 @@ public:
 	TileInfo getCurrentlyHoveredTile() {
 		return TileManager::getInstance().getCurrentlyHoveredTile();
 	}
-	std::vector<glm::mat4x3> getBlockedTileWalls() {
+	std::vector<glm::mat2x2> getBlockedTileWalls() {
 		return TileManager::getInstance().getBlockedTileWalls();
 	}
 
@@ -142,8 +142,8 @@ public:
 		return currentSpellShotCount;
 	}
 
-	void updateTileMapInformation(float indexX, float indexY, bool isTraversable) {
-		TileManager::getInstance().updateTileMapInformation(indexX, indexY, isTraversable);
+	void updateTileMapInformation(float indexX, float indexY) {
+		TileManager::getInstance().updateTileMapInformation(indexX, indexY);
 	}
 
 	void setgridPaintMode(bool isPainting) {
