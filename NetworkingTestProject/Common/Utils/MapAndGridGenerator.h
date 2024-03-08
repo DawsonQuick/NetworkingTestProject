@@ -45,17 +45,16 @@ void generateGridQuads(float maxWidth, float maxHeight, float gridSizeWidth, flo
     // Calculate the number of tiles along one side of the grid
     int numTilesWidth = static_cast<int>(maxWidth / gridSizeWidth);
     int numTilesHeight = static_cast<int>(maxHeight / gridSizeHeight);
-
     // Generate quads in the middle of each grid square
-    for (int i = -numTilesWidth/2; i < numTilesWidth/2; ++i) {
-        for (int j = -numTilesHeight/2; j < numTilesHeight/2; ++j) {
+    for (int i = -numTilesWidth; i < numTilesWidth; ++i) {
+        for (int j = -numTilesHeight; j < numTilesHeight; ++j) {
             TileInfo perTileInfo;
             float x =  i * gridSizeWidth;
             float y = j * gridSizeHeight;
-            float quadSize = gridSizeWidth * 0.5f; // Half the size of each grid square
+            float quadSize = gridSizeWidth * (0.5f); // Half the size of each grid square
 
 
-            perTileInfo.centerPos.x = x- quadSize;
+            perTileInfo.centerPos.x = x - quadSize;
             perTileInfo.centerPos.y = y - quadSize;
             perTileInfo.layoutIndex.x = i;
             perTileInfo.layoutIndex.y = j;
@@ -76,10 +75,9 @@ void generateGridQuads(float maxWidth, float maxHeight, float gridSizeWidth, flo
             perTileInfo.isTraversable = true;
 
             tileInformation.push_back(perTileInfo);
-
         }
     }
-    GlobalConfigurations::getInstance().setTileDimemsions(numTilesWidth,numTilesHeight);
+    GlobalConfigurations::getInstance().setTileDimemsions(numTilesWidth*2,numTilesHeight*2);
     GlobalConfigurations::getInstance().setMapTileInformation(tileInformation);
 
 }

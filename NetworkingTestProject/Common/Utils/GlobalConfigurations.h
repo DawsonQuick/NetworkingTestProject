@@ -10,6 +10,8 @@
 #include "./../../OpenGL/vendor/glm/glm.hpp"
 #include "./TileManager/TileManager.h"
 
+
+
 enum MeasurmentSystem {
 	GOEMETRIC,
 	GRID,
@@ -39,7 +41,8 @@ private:
 	bool gridPaintMode;
 
 	GlobalConfigurations() {
-		Scale = 26.0;
+		Scale = 50.0;
+		TileManager::getInstance().setSideLength(Scale);
 		currentSystem = MeasurmentSystem::GRID;
 		spellChangedState = false;
 		gridPaintMode = false;
@@ -81,7 +84,9 @@ public:
 	TileInfo getCurrentlyHoveredTile() {
 		return TileManager::getInstance().getCurrentlyHoveredTile();
 	}
-
+	std::vector<glm::mat4x3> getBlockedTileWalls() {
+		return TileManager::getInstance().getBlockedTileWalls();
+	}
 
 
 	void setCurrentlPlayerTile(TileInfo tile) {
@@ -148,6 +153,12 @@ public:
 		return gridPaintMode;
 	}
 
+	std::vector<float> getBlockedTilesVertexArray() {
+		return TileManager::getInstance().getBlockedTilesVertexArray();
+	}
+	std::vector<unsigned int> getBlockedTileIndiceArray() {
+		return TileManager::getInstance().getBlockedTileIndiceArray();
+	}
 	void resetChangeState(bool changeState) {
 		spellChangedState = changeState;
 	}

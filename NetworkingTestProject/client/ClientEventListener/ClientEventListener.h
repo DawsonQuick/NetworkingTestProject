@@ -222,6 +222,7 @@ public:
 *                                    Control Logic
 * -----------------------------------------------------------------------------------------
 */
+    //TODO Convert this callback to move the camera and not the player now that there is a movment system in game
     void processInput(GLFWwindow* windowLocal)
     {
         bool isWPressed = glfwGetKey(windowLocal, GLFW_KEY_W) == GLFW_PRESS;

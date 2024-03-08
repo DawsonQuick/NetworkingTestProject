@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Common\Utils\TileManager\TileTranformationUtils.h" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OpenGL\Utils\Camera\Camera.cpp" />
     <ClCompile Include="OpenGL\Utils\IndexBuffer.cpp" />
@@ -352,6 +353,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenGL\resources\Basic.shader" />
+    <None Include="OpenGL\resources\BlockedTile.shader" />
     <None Include="OpenGL\resources\Grid.shader" />
     <None Include="OpenGL\resources\Map.shader" />
     <None Include="OpenGL\resources\Player.shader" />

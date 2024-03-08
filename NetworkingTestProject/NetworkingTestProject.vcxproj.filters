@@ -60,6 +60,9 @@
     <ClCompile Include="OpenGL\vendor\imgui\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Common\Utils\TileManager\TileTranformationUtils.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Messages\HandShakeMessage.h">
@@ -1005,6 +1008,7 @@
     <None Include="Test.json" />
     <None Include="OpenGL\resources\Map.shader" />
     <None Include="OpenGL\resources\Player.shader" />
+    <None Include="OpenGL\resources\BlockedTile.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="OpenGL\resources\PixelArtTest2.png">

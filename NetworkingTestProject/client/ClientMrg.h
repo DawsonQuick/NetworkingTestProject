@@ -92,6 +92,12 @@ private:
     std::unique_ptr<VertexBuffer> m_VertexBuffer;
     std::unique_ptr<IndexBuffer> m_IndexBuffer;
 
+    std::unique_ptr<VertexArray> m_BlockedTileVAO;
+    std::unique_ptr<VertexBuffer> m_BlockedTileVertexBuffer;
+    std::unique_ptr<IndexBuffer> m_BlockedTileIndexBuffer;
+    std::unique_ptr<Shader> m_BlockedTileShader;
+
+
     std::unique_ptr<VertexArray> m_PlayerVAO;
     std::unique_ptr<VertexBuffer> m_PlayerVertexBuffer;
     std::unique_ptr<IndexBuffer> m_PlayerIndexBuffer;
@@ -140,6 +146,8 @@ public:
         std::vector<float> Gridvertices;
         int mapWidth = m_MApTexture->GetWidth();
         int mapHeight = m_MApTexture->GetHeigth();
+        
+
         generateGrid(mapWidth, mapHeight, gridSize, gridSize, Gridvertices);
         m_GridShader = std::make_unique<Shader>("./OpenGL/resources/Grid.shader", 2);
         m_GridVAO = std::make_unique<VertexArray>();
@@ -258,6 +266,18 @@ public:
         layout.Push<float>(3); //Translation
         m_VAO->AddBuffer(*m_VertexBuffer, layout);
         m_IndexBuffer = std::make_unique<IndexBuffer>(nullptr, ((numOfParticles)*(6)));
+
+
+        //The Map Tile Information should be initialized by this point
+        m_BlockedTileShader = std::make_unique<Shader>("./OpenGL/resources/BlockedTile.shader",1);
+        int numOfTiles = GlobalConfigurations::getInstance().getMapTileInformation().size();
+        m_BlockedTileVAO = std::make_unique<VertexArray>();
+        m_BlockedTileVertexBuffer = std::make_unique<VertexBuffer>(nullptr, ((numOfTiles) * (16)) * sizeof(float));
+        VertexBufferLayout BlockedTilelayout;
+        BlockedTilelayout.Push<float>(3); //Position
+        BlockedTilelayout.Push<float>(4); //Color
+        m_BlockedTileVAO->AddBuffer(*m_BlockedTileVertexBuffer, BlockedTilelayout);
+        m_BlockedTileIndexBuffer = std::make_unique<IndexBuffer>(nullptr, ((numOfTiles) * (6)));
 
 
         while (!glfwWindowShouldClose(window))
@@ -380,7 +400,28 @@ public:
                 
             
             
-            
+            //TODO: Render BlockedTiles to the screen
+            std::vector<float> blockTileTmpVertices = GlobalConfigurations::getInstance().getBlockedTilesVertexArray();
+            std::vector<unsigned int> blockTileTmpIndicies = GlobalConfigurations::getInstance().getBlockedTileIndiceArray();
+            if (!(blockTileTmpVertices.empty())) {
+                m_BlockedTileVertexBuffer->Bind();
+                glBufferData(GL_ARRAY_BUFFER, blockTileTmpVertices.size() * sizeof(float), blockTileTmpVertices.data(), GL_DYNAMIC_DRAW); // Orphan the buffer and allocate new data
+                m_BlockedTileVertexBuffer->UnBind();
+
+                m_BlockedTileIndexBuffer->Bind();
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, blockTileTmpIndicies.size() * sizeof(unsigned int), blockTileTmpIndicies.data(), GL_DYNAMIC_DRAW); // Orphan the buffer and allocate new data
+                m_BlockedTileIndexBuffer->UnBind();
+
+
+                m_BlockedTileShader->Bind();
+                m_BlockedTileShader->SetUniformMat4f("projection", projection);
+                m_BlockedTileShader->SetUniformMat4f("view", view);
+                renderer.Draw(*m_BlockedTileVAO, *m_BlockedTileIndexBuffer, *m_BlockedTileShader);
+            }
+
+
+
+
 
             //Render ImGUI menu
             ImGui_ImplGlfwGL3_NewFrame();
