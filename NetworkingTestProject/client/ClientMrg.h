@@ -11,6 +11,7 @@
 #include "./ImGuiRenderContent.h"
 #include "./../Common/Utils/Logger.h"
 #include "./../Common/Utils/TileManager/MapAndGridGenerator.h"
+#include "./../Common/Utils/MainGameLoop/MainGameLoop.h"
 #include "./../OpenGL/Utils/Renderer.h"
 #include "./../OpenGL/vendor/imgui/imgui.h"
 #include "./../OpenGL/vendor/glm/glm.hpp"
@@ -165,6 +166,7 @@ public:
     void StartOpenGL() {
         PlayerDatabase::getInstance().getPlayer(playerName).addSpell(SpellFactory::getInstance().createMagicMissle());
         PlayerDatabase::getInstance().getPlayer(playerName).addSpell(SpellFactory::getInstance().createFireball());
+        PlayerDatabase::getInstance().getPlayer(playerName).addSpell(SpellFactory::getInstance().createCloudOfDaggers());
         // Init GLFW
         glfwInit();
         // Set all the required options for GLFW
@@ -193,9 +195,6 @@ public:
         genGrid();
 
         //-----------------------------------------------------------------------------------------
-       // std::vector<float> mapVertices;
-        //std::vector<unsigned int> mapIndicies;
-       // generateGridQuads(maxSize, gridSize, mapVertices, mapIndicies);
         m_MapShader = std::make_unique<Shader>("./OpenGL/resources/Map.shader",2);
 
         GLfloat mapVertices[] = {
@@ -280,6 +279,9 @@ public:
         m_BlockedTileIndexBuffer = std::make_unique<IndexBuffer>(nullptr, ((numOfTiles) * (6)));
 
 
+
+
+        MainGameLoop::getInstance().executeInitialtive();
         while (!glfwWindowShouldClose(window))
         {
             long long tmpTime = getCurrentTimeInMillis();
@@ -288,6 +290,10 @@ public:
             OnUpdate(delta);
             glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
+
+
+            MainGameLoop::getInstance().checkGameState();
+
             Renderer renderer;
             //Interface with the event listeners
             eventListener.processInput(window);
@@ -328,7 +334,6 @@ public:
              *                                   Render The Grid                                            *
              *----------------------------------------------------------------------------------------------*/
 
-            //TODO: Draw Spacing Grid
             glm::mat4 GridModel = Vec3ToMat4(glm::vec3(1.0f,1.0f,1.0f));
             glm::vec4 gridColor = GlobalConfigurations::getInstance().getGridColor();
 
@@ -341,6 +346,7 @@ public:
 
 
             std::vector<float> tmpCoursorPos = eventListener.getCursor();
+
             glm::vec4 cursorColor = GlobalConfigurations::getInstance().getCursorColor();
 
             m_CoursorVAO = std::make_unique<VertexArray>();
@@ -350,7 +356,6 @@ public:
             coursorLayout.Push<float>(3); // Position
             m_CoursorVAO->AddBuffer(*m_CoursorVertexBuffer, coursorLayout);
             renderer.DrawGrid(*m_CoursorVAO, *m_GridShader, tmpCoursorPos.size() / 3);
-
 
 
             /*----------------------------------------------------------------------------------------------*
@@ -399,8 +404,6 @@ public:
 
                 
             
-            
-            //TODO: Render BlockedTiles to the screen
             std::vector<float> blockTileTmpVertices = GlobalConfigurations::getInstance().getBlockedTilesVertexArray();
             std::vector<unsigned int> blockTileTmpIndicies = GlobalConfigurations::getInstance().getBlockedTileIndiceArray();
             if (!(blockTileTmpVertices.empty())) {

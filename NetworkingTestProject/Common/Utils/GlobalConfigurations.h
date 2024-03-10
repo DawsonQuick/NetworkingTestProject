@@ -23,7 +23,7 @@ enum MeasurmentSystem {
 class GlobalConfigurations {
 private:
 	float Scale;
-
+	float timePerTurn; // In ms
 
 
 
@@ -31,20 +31,20 @@ private:
 	glm::vec4 CursorColor;
 
 	std::string selectedAction;
-	std::shared_ptr<Spell> selectedSpell;
-	bool spellChangedState; 
+
+
 
 	MeasurmentSystem currentSystem;
 
-	float currentSpellShotCount;
+
 
 	bool gridPaintMode;
 
 	GlobalConfigurations() {
 		Scale = 25.0;
+		timePerTurn = 6000; //Each Turn will take 6 seconds
 		TileManager::getInstance().setSideLength(Scale);
 		currentSystem = MeasurmentSystem::GRID;
-		spellChangedState = false;
 		gridPaintMode = false;
 	}
 
@@ -119,14 +119,7 @@ public:
 		return selectedAction;
 	}
 
-	void setSelectedSpell(std::shared_ptr<Spell> spell) {
-		currentSpellShotCount = 1.0f; //reset shot count for change in spell
-		spellChangedState = true;
-		selectedSpell = spell;
-	}
-	std::shared_ptr<Spell> getSelectedSpell() {
-		return selectedSpell;
-	}
+
 	MeasurmentSystem getCurrentMeasurmentSystem() {
 		return currentSystem;
 	}
@@ -135,12 +128,7 @@ public:
 		currentSystem = tmpSystem;
 	}
 
-	void setCurrentSpellShotCount(float count) {
-		currentSpellShotCount = count;
-	}
-	float getCurrentSpellShotCount() {
-		return currentSpellShotCount;
-	}
+
 
 	void updateTileMapInformation(float indexX, float indexY) {
 		TileManager::getInstance().updateTileMapInformation(indexX, indexY);
@@ -159,13 +147,7 @@ public:
 	std::vector<unsigned int> getBlockedTileIndiceArray() {
 		return TileManager::getInstance().getBlockedTileIndiceArray();
 	}
-	void resetChangeState(bool changeState) {
-		spellChangedState = changeState;
-	}
 
-	bool hasSpellChanged(){
-		return spellChangedState;
-	}
 	void setTileDimemsions(int width, int height) {
 		TileManager::getInstance().setTileDimemsions(width,height);
 	}

@@ -6,6 +6,8 @@
 #include <iostream>
 class MagicMissle : public Spell {
 private:
+    SpellType spellType = SpellType::INSTANTANEOUS;
+    int spellLevel = 1;
     float maxNumberofShots = 3.0f;
 
     //Number of grid cells
@@ -28,16 +30,23 @@ public:
     float getMaxNumberofShots() const override {
         return maxNumberofShots;
     }
-    void castSpell(float targetPosX , float targetPosY) override {
-        ParticleDatabase::getInstance().addParticle("MagicMissle", ParticleFactory::getInstance().createGuidedParticle(PlayerDatabase::getInstance().getPlayer(playerName).getPositionX(), PlayerDatabase::getInstance().getPlayer(playerName).getPositionY(),
-            targetPosX, targetPosY, 1.0f, [this](float resultPosX, float resultPoxY) { this->onComplete(resultPosX,resultPoxY); }));
+    SpellType getSpellType() const override {
+        return spellType;
+    }
+    int getSpellLevel() const override {
+        return spellLevel;
+    }
+
+    void castSpell(std::string tmpPlayerName, float targetPosX , float targetPosY) override {
+        ParticleDatabase::getInstance().addParticle("MagicMissle", ParticleFactory::getInstance().createGuidedParticle(PlayerDatabase::getInstance().getPlayer(tmpPlayerName).getPositionX(), PlayerDatabase::getInstance().getPlayer(tmpPlayerName).getPositionY(),
+            targetPosX, targetPosY, 0.5f, [this](float resultPosX, float resultPoxY) { this->onComplete(resultPosX,resultPoxY); }));
     }
 
     void onComplete(float resultPosX, float resultPosY) {
         std::cout << "MagicMissle impacted at X: " << resultPosX << " Y: " << resultPosY << std::endl;
 
         //Example of chaining particles
-        for (int i = 0; i < 100; i++) {ParticleDatabase::getInstance().addParticle("Test" + std::to_string(i), ParticleFactory::getInstance().createImplosionParticle(resultPosX, resultPosY,0.3f));}
+        //for (int i = 0; i < 100; i++) {ParticleDatabase::getInstance().addParticle("Test" + std::to_string(i), ParticleFactory::getInstance().createImplosionParticle(resultPosX, resultPosY,0.3f));}
 
         //Sample hit detection
         for (auto& player : PlayerDatabase::getInstance().getPlayers()) {

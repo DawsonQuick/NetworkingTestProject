@@ -21,22 +21,6 @@ struct Position {
 	Position():X(0.0),Y(0.0),Z(0.0),pointTime(getCurrentTimeInMillis()) {};
 };
 
-struct KeyPress {
-	bool keyW;
-	bool keyA;
-	bool keyS;
-	bool keyD;
-	KeyPress() : keyW(false), keyA(false), keyS(false), keyD(false) {
-	};
-	KeyPress(bool W, bool A, bool S, bool D) :keyW(W), keyA(A), keyS(S), keyD(D) {
-	};
-
-	// Define the != operator for KeyPress
-	bool operator!=(const KeyPress& other) const {
-		return (keyW != other.keyW) || (keyA != other.keyA) || (keyS != other.keyS) || (keyD != other.keyD);
-	}
-
-};
 enum PlayerFields {
 	NAME,
 	POSITION,
@@ -63,19 +47,28 @@ private:
 	std::vector<std::shared_ptr<Spell>> spells;
 	std::string name;
 	Position position;
-	KeyPress keyMap;
 	int health;
 	int AC;
 	double movementSpeed;
+	std::shared_ptr<Spell> selectedSpell;
+	bool spellChangedState; 
+	float currentSpellShotCount;
+
+	bool isCurrentlyConcentrating;
+	std::shared_ptr<Spell> concentrationSpell;
+
+	bool isTurnReady;
+	bool isTurnComplete;
 
 public:
 
 	//Constructor
-	Player(std::string name,double posX, double posY, double posZ, int health,int AC)
-	: name(name),
-	  health(health),
-	  position(posX,posY,posZ, getCurrentTimeInMillis()),AC(AC),
-	  movementSpeed(0.01)
+	Player(std::string name, double posX, double posY, double posZ, int health, int AC)
+		: name(name),
+		health(health),
+		position(posX, posY, posZ, getCurrentTimeInMillis()), AC(AC),
+		movementSpeed(0.01),
+		spellChangedState(false)
 	{
 
 	}
@@ -97,6 +90,12 @@ public:
 /*
 * -------------------------SETTERS--------------------------------
 */
+	void setIsTurnReady(bool readyState) {
+		isTurnReady = readyState;
+	}
+	void setIsTurnComplete(bool completeState) {
+		isTurnComplete = completeState;
+	}
 	void setName(std::string tmpName) {
 		name = tmpName;
 	}
@@ -122,13 +121,61 @@ public:
 	void setAC(int tmpAC) {
 		AC = tmpAC;
 	}
-	void setKeyPress(KeyPress tmpKeyMap) {
-		keyMap = tmpKeyMap;
-	}
 	void setMovementSpeed(double tmpSpeed) {
 		movementSpeed = tmpSpeed;
 	}
+	void setSelectedSpell(std::shared_ptr<Spell> spell) {
+		currentSpellShotCount = 1.0f; //reset shot count for change in spell
+		spellChangedState = true;
+		selectedSpell = spell;
+	}
+	void setCurrentSpellShotCount(float count) {
+		currentSpellShotCount = count;
+	}
+	float getCurrentSpellShotCount() {
+		return currentSpellShotCount;
+	}
+	void resetChangeState(bool changeState) {
+		spellChangedState = changeState;
+	}
 
+	bool hasSpellChanged(){
+		return spellChangedState;
+	}
+
+
+	std::shared_ptr<Spell> getSelectedSpell() {
+		return selectedSpell;
+	}
+	void castSpell(float targetX, float targetY) {
+		//Do upkeep spell tracking here before casting, if current casting spell is concentration , check to see if another concentration spell
+		//is currently active , if so then need to stop that spell and replace with this one.
+
+		if (selectedSpell->getSpellType() == SpellType::CONCENTRATION) {
+			//Check to see if player currently has a active concentration spell
+			if (isCurrentlyConcentrating) {
+				//If currently concentrating and then cast another concentration spell, break the old connection and cast the new one
+				DurationSpellManager::getInstance().removeConcentrationSpell(name, concentrationSpell->getName());
+			}
+			isCurrentlyConcentrating = true;
+			concentrationSpell = selectedSpell;
+		}
+
+		
+		selectedSpell->castSpell(name,targetX, targetY);
+	}
+
+	void cancelConcentration() {
+		if (isCurrentlyConcentrating) {
+			DurationSpellManager::getInstance().removeConcentrationSpell(name, concentrationSpell->getName());
+			concentrationSpell.reset();
+			isCurrentlyConcentrating = false;
+		}
+	}
+
+	bool isPlayerCurrentlyConcentrating() {
+		return isCurrentlyConcentrating;
+	}
 /*
 * -------------------------GETTERS--------------------------------
 */
@@ -153,14 +200,18 @@ public:
 	int getAC() {
 		return AC;
 	}
-	KeyPress getKeyPress() {
-		return keyMap;
-	}
 	double getMovementSpeed() {
 		return movementSpeed;
 	}
 	std::vector<std::shared_ptr<Spell>> getAvailableSpells() {
 		return spells;
+	}
+
+	bool getIsTurnReady() {
+		return isTurnReady;
+	}
+	bool getIsTurnComplete() {
+		return isTurnComplete;
 	}
 
 /*

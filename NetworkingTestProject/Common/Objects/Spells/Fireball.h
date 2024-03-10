@@ -6,8 +6,9 @@
 #include <iostream>
 class Fireball : public Spell {
 private:
+    SpellType spellType = SpellType::INSTANTANEOUS;
     float maxNumberofShots = 1;
-
+    int spellLevel = 3;
     //Number of grid cells
     float impactRadius = 20.0f / 5.0f;
 
@@ -27,10 +28,16 @@ public:
     float getMaxNumberofShots() const override {
         return maxNumberofShots;
     }
+    SpellType getSpellType() const override {
+        return spellType;
+    }
+    int getSpellLevel() const override {
+        return spellLevel;
+    }
 
-    void castSpell(float targetPosX, float targetPosY) override {
+    void castSpell(std::string tmpPlayerName, float targetPosX, float targetPosY) override {
         //TODO: Send a message when casting starts saying that this spell has been cast to start the partical animation on other players screens
-        ParticleDatabase::getInstance().addParticle("Fireball", ParticleFactory::getInstance().createGuidedParticle(PlayerDatabase::getInstance().getPlayer(playerName).getPositionX(), PlayerDatabase::getInstance().getPlayer(playerName).getPositionY(),
+        ParticleDatabase::getInstance().addParticle("Fireball", ParticleFactory::getInstance().createGuidedParticle(PlayerDatabase::getInstance().getPlayer(tmpPlayerName).getPositionX(), PlayerDatabase::getInstance().getPlayer(tmpPlayerName).getPositionY(),
             targetPosX, targetPosY, 1.0f, [this](float resultPosX, float resultPoxY) { this->onComplete(resultPosX, resultPoxY); }));
     }
 

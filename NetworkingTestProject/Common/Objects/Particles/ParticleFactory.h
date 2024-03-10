@@ -5,6 +5,7 @@
 #include "./GuidedParticle.h"
 #include "./TestParticle.h"
 #include "./ImplosionParticle.h"
+#include "./CloudOfDaggersParticle.h"
 #include <memory>
 class ParticleFactory {
 
@@ -30,6 +31,9 @@ public:
 	}
 	std::shared_ptr<TestParticle> createTestParticle(float posX, float posY, float biasVelX, float biasVelY, float scale) {
 		return std::make_shared<TestParticle>(posX, posY, biasVelX, biasVelY, scale);
+	}
+	std::shared_ptr<CloudOfDaggersParticle> createCloudOfDaggersParticle(float posX, float posY, float range, float tmpLifeTime, float scale) {
+		return std::make_shared<CloudOfDaggersParticle>(posX, posY, range, tmpLifeTime, scale);
 	}
 
 };

@@ -113,7 +113,7 @@ public:
 	void regenerateBlockTileRenderInformation() {
 		blockedTileVectorArray.clear();
 		blockedTileIndicesArray.clear();
-		generateBlockedTileVertexArray(MapTileInformation, glm::vec4(1.0f, 0.0f, 0.0f, 0.3f), blockedTileVectorArray, blockedTileIndicesArray, tileSize);
+		generateBlockedTileVertexArray(MapTileInformation, glm::vec4(1.0f, 0.0f, 0.0f, 0.1f), blockedTileVectorArray, blockedTileIndicesArray, tileSize);
 	}
 
 	/*

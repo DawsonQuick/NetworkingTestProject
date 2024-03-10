@@ -146,7 +146,7 @@ void processClick(float posX, float posY) {
             if (isSpellLocatonValid) {
 
 
-                std::shared_ptr<Spell> spell = GlobalConfigurations::getInstance().getSelectedSpell();
+                std::shared_ptr<Spell> spell = PlayerDatabase::getInstance().getPlayer(playerName).getSelectedSpell();
                 if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GOEMETRIC) {
                     if (pointInsideCircle(posX, posY, PlayerDatabase::getInstance().getPlayer(playerName).getPositionX(), PlayerDatabase::getInstance().getPlayer(playerName).getPositionY(), (spell->getRange() * (GlobalConfigurations::getInstance().getScale())))) {
                         
@@ -155,16 +155,16 @@ void processClick(float posX, float posY) {
                         //-------------------------------------------------------------------------------------------------------------------------
                         cachedTargetLocations.push_back(glm::vec2(posX, posY));
                         cachedCursorPoints.insert(cachedCursorPoints.end(), currentCursorPos.begin(), currentCursorPos.end());
-                        float tmpCount = GlobalConfigurations::getInstance().getCurrentSpellShotCount();
+                        float tmpCount = PlayerDatabase::getInstance().getPlayer(playerName).getCurrentSpellShotCount();
                         tmpCount++;
-                        GlobalConfigurations::getInstance().setCurrentSpellShotCount(tmpCount);
-                        if (spell->getMaxNumberofShots() == GlobalConfigurations::getInstance().getCurrentSpellShotCount() - 1) {
+                        PlayerDatabase::getInstance().getPlayer(playerName).setCurrentSpellShotCount(tmpCount);
+                        if (spell->getMaxNumberofShots() == PlayerDatabase::getInstance().getPlayer(playerName).getCurrentSpellShotCount() - 1) {
                             for (glm::vec2 targetPosition : cachedTargetLocations) {
-                                spell->castSpell(targetPosition.x, targetPosition.y);
+                                PlayerDatabase::getInstance().getPlayer(playerName).castSpell(targetPosition.x, targetPosition.y);
                             }
                             cachedCursorPoints.clear();
                             cachedTargetLocations.clear();
-                            GlobalConfigurations::getInstance().setCurrentSpellShotCount(1.0f); //reset spell shot count after completing 
+                            PlayerDatabase::getInstance().getPlayer(playerName).setCurrentSpellShotCount(1.0f); //reset spell shot count after completing 
                         }
                         //------------------------------------------------------------------------------------------------------------------------
                     }
@@ -177,16 +177,16 @@ void processClick(float posX, float posY) {
                         //-------------------------------------------------------------------------------------------------------------------------
                         cachedTargetLocations.push_back(glm::vec2(posX, posY));
                         cachedCursorPoints.insert(cachedCursorPoints.end(), currentCursorPos.begin(), currentCursorPos.end());
-                        float tmpCount = GlobalConfigurations::getInstance().getCurrentSpellShotCount();
+                        float tmpCount = PlayerDatabase::getInstance().getPlayer(playerName).getCurrentSpellShotCount();
                         tmpCount++;
-                        GlobalConfigurations::getInstance().setCurrentSpellShotCount(tmpCount);
-                        if (spell->getMaxNumberofShots() == GlobalConfigurations::getInstance().getCurrentSpellShotCount() - 1) {
+                        PlayerDatabase::getInstance().getPlayer(playerName).setCurrentSpellShotCount(tmpCount);
+                        if (spell->getMaxNumberofShots() == PlayerDatabase::getInstance().getPlayer(playerName).getCurrentSpellShotCount() - 1) {
                             for (glm::vec2 targetPosition : cachedTargetLocations) {
-                                spell->castSpell(targetPosition.x, targetPosition.y);
+                                PlayerDatabase::getInstance().getPlayer(playerName).castSpell(targetPosition.x, targetPosition.y);
                             }
                             cachedCursorPoints.clear();
                             cachedTargetLocations.clear();
-                            GlobalConfigurations::getInstance().setCurrentSpellShotCount(1.0f); //reset spell shot count after completing 
+                            PlayerDatabase::getInstance().getPlayer(playerName).setCurrentSpellShotCount(1.0f); //reset spell shot count after completing 
                         }
                         //------------------------------------------------------------------------------------------------------------------------
                     }
@@ -210,13 +210,20 @@ void calculateCursor(float posX,float posY,std::vector<float>& vertices) {
 
     //Since this is called every frame it has an almost immediate responce
     //This checks to see if the uses has switch selected spells are actions, and if so reset the stored cursors
-    if (GlobalConfigurations::getInstance().hasSpellChanged()) {
+    if (PlayerDatabase::getInstance().getPlayer(playerName).hasSpellChanged()) {
         cachedCursorPoints.clear();
         cachedTargetLocations.clear();
-        GlobalConfigurations::getInstance().setCurrentSpellShotCount(1.0f); //reset spell shot count 
-        GlobalConfigurations::getInstance().resetChangeState(false);
+        PlayerDatabase::getInstance().getPlayer(playerName).setCurrentSpellShotCount(1.0f); //reset spell shot count 
+        PlayerDatabase::getInstance().getPlayer(playerName).resetChangeState(false);
     }
 
+
+    /*
+    * Does not make the most sense to place this here, but this is getting the vertex array from the DurationSpellManager
+    * Which shows the the range of all currently active duration/concentration spells and just appends them onto the cursor vertex array
+    */
+    std::vector<float> tmpDurationSpellVertexArray = DurationSpellManager::getInstance().getDurationSpellVertexArray();
+    vertices.insert(vertices.end(), tmpDurationSpellVertexArray.begin(), tmpDurationSpellVertexArray.end());
     std::string action = GlobalConfigurations::getInstance().getselectedAction();
 
     if (action == "Move") {
@@ -266,7 +273,7 @@ void calculateCursor(float posX,float posY,std::vector<float>& vertices) {
         }
         /*--------------------------------------------------------------------------------------------------------------------*/
 
-        std::shared_ptr<Spell> spell = GlobalConfigurations::getInstance().getSelectedSpell();
+        std::shared_ptr<Spell> spell = PlayerDatabase::getInstance().getPlayer(playerName).getSelectedSpell();
         if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GOEMETRIC) {
             drawCircle(posX, posY, (spell->getImpactRadius() * (GlobalConfigurations::getInstance().getScale())), 50, vertices);
         }
@@ -304,7 +311,7 @@ void calculateRange(std::vector<float>& vertices) {
         
     }
     if (action == "Cast Spell") {
-        std::shared_ptr<Spell> spell = GlobalConfigurations::getInstance().getSelectedSpell();
+        std::shared_ptr<Spell> spell = PlayerDatabase::getInstance().getPlayer(playerName).getSelectedSpell();
         if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GOEMETRIC) {
             drawCircle(posX, posY, (spell->getRange() * (GlobalConfigurations::getInstance().getScale())), 50, vertices);
         }

@@ -60,7 +60,7 @@ void imGuiRender(GLFWwindow* window ,int &dynamicLightingFlag, ClientEventListen
     static bool  gridPaintMode = false; // Boolean variable to store the toggle state
 
     // Inside your ImGui window or frame loop
-    ImGui::Checkbox("Toggle", &gridPaintMode);
+    ImGui::Checkbox("Enable Tile editing", &gridPaintMode);
 
     // Use the toggleValue variable to control your application logic
     if (gridPaintMode) {
@@ -68,6 +68,13 @@ void imGuiRender(GLFWwindow* window ,int &dynamicLightingFlag, ClientEventListen
     }
     else {
         GlobalConfigurations::getInstance().setgridPaintMode(false);
+    }
+
+
+
+    if (ImGui::Button("Cancel Current Concentration Spell")) {
+        // Set the callback function here
+        PlayerDatabase::getInstance().getPlayer(playerName).cancelConcentration();
     }
 
 
@@ -85,6 +92,8 @@ void imGuiRender(GLFWwindow* window ,int &dynamicLightingFlag, ClientEventListen
                 ImGui::Text("Health: %d", playerEntry.second.getHealth());
                 ImGui::Text("AC: %d", playerEntry.second.getAC());
                 ImGui::Text("MovementSpeed: %f", playerEntry.second.getMovementSpeed());
+                const char* boolStr = playerEntry.second.isPlayerCurrentlyConcentrating() ? "true" : "false";
+                ImGui::Text("Is Player Concentrating %s", boolStr);
                 ImGui::TreePop();
             }
         }
@@ -101,6 +110,8 @@ void imGuiRender(GLFWwindow* window ,int &dynamicLightingFlag, ClientEventListen
 
     ImGui::Begin("Player Information", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
 
+
+    
     static std::string currentSelected = "Move"; // Set to "Move" by default
     static std::string currentSpellName;
 
@@ -120,7 +131,7 @@ void imGuiRender(GLFWwindow* window ,int &dynamicLightingFlag, ClientEventListen
         if (ImGui::Selectable(spell->getName().c_str(), currentSpellName == spell->getName())) {
             currentSpellName = spell->getName();
             currentSelected = "Cast Spell";
-            GlobalConfigurations::getInstance().setSelectedSpell(spell);
+            PlayerDatabase::getInstance().getPlayer(playerName).setSelectedSpell(spell);
         }
     }
     ImGui::Columns(1);

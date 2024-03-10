@@ -2,15 +2,19 @@
 #ifndef SPELL_H
 #define SPELL_H
 #include "./../../Utils/CollsionCalculations/CollisionDetection.h"
-
+#include "DurationSpellManager.h"
+#include "./../../Enums/SpellType.h"
 #include <iostream>
+
 class Spell {
 public:
     virtual std::string getName() const = 0;
-    virtual void castSpell(float targetPosX, float targetPosY) {};
+    virtual void castSpell(std::string playerName,float targetPosX, float targetPosY) {};
     virtual float getImpactRadius() const = 0;
     virtual float getRange() const = 0;
     virtual float getMaxNumberofShots() const = 0;
+    virtual SpellType getSpellType() const = 0;
+    virtual int getSpellLevel() const = 0;
     virtual ~Spell() {};
 
     Spell() {

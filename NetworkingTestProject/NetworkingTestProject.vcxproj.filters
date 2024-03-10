@@ -668,6 +668,21 @@
     <ClInclude Include="Common\Utils\TileManager\TileManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Common\Objects\Spells\CloudOfDaggers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Spells\DurationSpellManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CloudOfDaggersParticle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Utils\MainGameLoop\MainGameLoop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Enums\SpellType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenGL\vendor\glm\detail\func_common.inl">

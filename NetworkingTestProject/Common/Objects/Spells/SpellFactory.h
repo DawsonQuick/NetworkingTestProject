@@ -1,9 +1,9 @@
 #pragma once
 #ifndef SPELLFACTORY_H
 #define SPELLFACTORY_H
-#include "./Spell.h"
 #include "./Fireball.h"
 #include "./MagicMissle.h"
+#include "./CloudOfDaggers.h"
 #include <memory>
 class SpellFactory {
 
@@ -28,6 +28,10 @@ public:
 	std::shared_ptr<Fireball> createFireball() {
 		return std::make_shared<Fireball>();
 	}
+	std::shared_ptr<CloudOfDaggers> createCloudOfDaggers() {
+		return std::make_shared<CloudOfDaggers>();
+	}
+
 
 
 

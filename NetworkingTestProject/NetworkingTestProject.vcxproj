@@ -156,6 +156,7 @@
     <ClInclude Include="client\ImGuiRenderContent.h" />
     <ClInclude Include="client\OnUpdate.h" />
     <ClInclude Include="Common\Enums\MessageTypes.h" />
+    <ClInclude Include="Common\Enums\SpellType.h" />
     <ClInclude Include="Common\Messages\BroadCastMessage.h" />
     <ClInclude Include="Common\Messages\ClientDisconnectMessage.h" />
     <ClInclude Include="Common\Messages\Message.h" />
@@ -165,6 +166,7 @@
     <ClInclude Include="Common\Messages\Utils\MessageFactory.h" />
     <ClInclude Include="Common\Objects\Armour\Armour.h" />
     <ClInclude Include="Common\Objects\Armour\BreastPlate.h" />
+    <ClInclude Include="Common\Objects\Particles\CloudOfDaggersParticle.h" />
     <ClInclude Include="Common\Objects\Particles\GuidedParticle.h" />
     <ClInclude Include="Common\Objects\Particles\ImplosionParticle.h" />
     <ClInclude Include="Common\Objects\Particles\Particle.h" />
@@ -172,10 +174,13 @@
     <ClInclude Include="Common\Objects\Player.h" />
     <ClInclude Include="client\ClientMsgProcessor.h" />
     <ClInclude Include="Common\Objects\Particles\TestParticle.h" />
+    <ClInclude Include="Common\Objects\Spells\CloudOfDaggers.h" />
+    <ClInclude Include="Common\Objects\Spells\DurationSpellManager.h" />
     <ClInclude Include="Common\Objects\Spells\Fireball.h" />
     <ClInclude Include="Common\Objects\Spells\MagicMissle.h" />
     <ClInclude Include="Common\Objects\Spells\Spell.h" />
     <ClInclude Include="Common\Objects\Spells\SpellFactory.h" />
+    <ClInclude Include="Common\Utils\MainGameLoop\MainGameLoop.h" />
     <ClInclude Include="Common\Utils\TileManager\AStartPathFinding.h" />
     <ClInclude Include="Common\Utils\CollsionCalculations\CollisionDetection.h" />
     <ClInclude Include="Common\Utils\GlobalConfigurations.h" />

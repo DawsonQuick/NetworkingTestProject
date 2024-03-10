@@ -83,18 +83,6 @@ public:
 				player.setPosition(posX,posY,posZ,msg.getPointTime());
 				break;
 			}
-			case PlayerFields::KEYPRESS: {
-				std::stringstream ss = msg.getStringStream();
-				bool W, A, S, D;
-				float posX, posY;
-				char delimiter;
-				ss >> W >> delimiter >> A >> delimiter >> S >> delimiter >> D >> delimiter>>posX>>delimiter>>posY;
-				KeyPress keyMap(W, A, S, D);
-				player.setKeyPress(keyMap);
-				player.setPositionX(posX);
-				player.setPositionY(posY);
-				break;
-			}
 			}
 		}
 	}

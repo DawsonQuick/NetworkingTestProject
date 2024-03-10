@@ -230,14 +230,6 @@ void processMessage(int clientSocket, const char* inMsg) {
 			player.setPosition(posX, posY, posZ,msg.getPointTime());
 			break;
 		}
-		case PlayerFields::KEYPRESS: {
-			std::stringstream ss = msg.getStringStream();
-			bool W, A, S, D;
-			ss >> W >> A >> S >> D;
-			KeyPress keyMap(W, A, S, D);
-			player.setKeyPress(keyMap);
-			break;
-		}
 		}
 		ServerConnection::noFeedBackBroadcast(clientSocket, inMsg);
 	}

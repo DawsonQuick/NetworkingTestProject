@@ -230,21 +230,6 @@ public:
         bool isSPressed = glfwGetKey(windowLocal, GLFW_KEY_S) == GLFW_PRESS;
         bool isDPressed = glfwGetKey(windowLocal, GLFW_KEY_D) == GLFW_PRESS;
 
-        KeyPress currentPlayerKeyPress(isWPressed, isAPressed, isSPressed, isDPressed);
-        KeyPress previousPlayerKeyPress = PlayerDatabase::getInstance().getPlayer(playerName).getKeyPress();
-
-        if (currentPlayerKeyPress != previousPlayerKeyPress) {
-            std::cout << "Change in key press" << std::endl;
-            PlayerDatabase::getInstance().getPlayer(playerName).setKeyPress(currentPlayerKeyPress);
-            Position pos = PlayerDatabase::getInstance().getPlayer(playerName).getPosition();
-            UpdatePlayerDataMessage msg(MessageType::UPDATEPLAYERDATA, 3, getCurrentTimeInSeconds(), PlayerFields::KEYPRESS, playerName, StringStreamer::createStream(currentPlayerKeyPress , pos));
-            std::string msgTest = msg.serialize();
-            const char* msgToSend = msgTest.c_str();
-            client.sendMsg(msgToSend);
-
-
-
-        }
     }
     /*
     *        The logic above detects key presses and moved the player accordingly
