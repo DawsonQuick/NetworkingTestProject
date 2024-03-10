@@ -34,7 +34,9 @@ public:
     int getSpellLevel() const override {
         return spellLevel;
     }
-
+    int getSpellDuration() const override {
+        return 1000; //Spell is Instantaneous so just return 1 second
+    }
     void castSpell(std::string tmpPlayerName, float targetPosX, float targetPosY) override {
         //TODO: Send a message when casting starts saying that this spell has been cast to start the partical animation on other players screens
         ParticleDatabase::getInstance().addParticle("Fireball", ParticleFactory::getInstance().createGuidedParticle(PlayerDatabase::getInstance().getPlayer(tmpPlayerName).getPositionX(), PlayerDatabase::getInstance().getPlayer(tmpPlayerName).getPositionY(),

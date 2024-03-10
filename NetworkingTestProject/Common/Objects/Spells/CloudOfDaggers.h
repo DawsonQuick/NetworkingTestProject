@@ -23,10 +23,12 @@ private:
 
 
     //Only used for concentration or duration style spells
-    float duration = 60000; //convert to millseconds
-    float updateRate = 1000;
-    float originX;
-    float originY;
+    float duration = 60000; //Spell last for 60 seconds (1 minute) if conentration is not broken or canceled , convert to millseconds
+    float originX;  //The point at which the spell was targeted
+    float originY;  //The point at which the spell was targeted
+
+    float updateRate = 1000; //Purely used for rendering particles 
+
     std::string playerName;
 
 public:
@@ -49,6 +51,9 @@ public:
     int getSpellLevel() const override {
         return spellLevel;
     }
+    int getSpellDuration() const override {
+        return duration;
+    }
 
     void castSpell(std::string tmpPlayerName, float targetPosX, float targetPosY) override {
 
@@ -62,11 +67,10 @@ public:
         //Crude way of checking if concentration spell has expired
         //If Spell completes naturally by running out of time, need to cancel spell
         //If Spell was cancelled externally (CON spell override or break of CON) then this shouldnt trigger
+        //Since the spell was removed from the DurationSpellManager
         if (originX == std::numeric_limits<float>::max() && originX == std::numeric_limits<float>::max()) {
             PlayerDatabase::getInstance().getPlayer(playerName).cancelConcentration();
         }
-
-        std::cout << "CloudOfDaggers update at X: " << originX << " Y: " << originY << std::endl;
 
         //Example of chaining particles
         for (int i = 0; i < 10; i++) { ParticleDatabase::getInstance().addParticle("Test" + std::to_string(i), ParticleFactory::getInstance().createCloudOfDaggersParticle(originX, originY,impactRadius, updateRate, 0.3f)); }

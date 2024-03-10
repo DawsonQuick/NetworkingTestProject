@@ -225,10 +225,20 @@ public:
     //TODO Convert this callback to move the camera and not the player now that there is a movment system in game
     void processInput(GLFWwindow* windowLocal)
     {
-        bool isWPressed = glfwGetKey(windowLocal, GLFW_KEY_W) == GLFW_PRESS;
-        bool isAPressed = glfwGetKey(windowLocal, GLFW_KEY_A) == GLFW_PRESS;
-        bool isSPressed = glfwGetKey(windowLocal, GLFW_KEY_S) == GLFW_PRESS;
-        bool isDPressed = glfwGetKey(windowLocal, GLFW_KEY_D) == GLFW_PRESS;
+        float speed = 2.0f;
+        if (glfwGetKey(windowLocal, GLFW_KEY_W) == GLFW_PRESS) {
+            view = glm::translate(view, glm::vec3(0.0f, -speed, 0.0f));
+        }
+             
+        if (glfwGetKey(windowLocal, GLFW_KEY_A) == GLFW_PRESS) {
+            view = glm::translate(view, glm::vec3(speed, 0.0f, 0.0f));
+        }
+        if (glfwGetKey(windowLocal, GLFW_KEY_S) == GLFW_PRESS) {
+            view = glm::translate(view, glm::vec3(0.0f, speed, 0.0f));
+        }
+        if (glfwGetKey(windowLocal, GLFW_KEY_D) == GLFW_PRESS) {
+            view = glm::translate(view, glm::vec3(-speed, 0.0f, 0.0f));
+        }
 
     }
     /*

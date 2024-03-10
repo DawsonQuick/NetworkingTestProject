@@ -36,6 +36,9 @@ public:
     int getSpellLevel() const override {
         return spellLevel;
     }
+    int getSpellDuration() const override {
+        return 1000; //Spell is Instantaneous so just return 1 second
+    }
 
     void castSpell(std::string tmpPlayerName, float targetPosX , float targetPosY) override {
         ParticleDatabase::getInstance().addParticle("MagicMissle", ParticleFactory::getInstance().createGuidedParticle(PlayerDatabase::getInstance().getPlayer(tmpPlayerName).getPositionX(), PlayerDatabase::getInstance().getPlayer(tmpPlayerName).getPositionY(),

@@ -71,11 +71,37 @@ void imGuiRender(GLFWwindow* window ,int &dynamicLightingFlag, ClientEventListen
     }
 
 
+    for (const auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) {
+        const std::string& playerKey = playerEntry.first;
+        const Player& player = playerEntry.second;
+
+        // Create a selectable widget for each player
+        if (ImGui::Selectable(playerKey.c_str(), playerName == playerKey)) {
+            // Set the playerName variable to the selected player's name
+            playerName = playerKey;
+        }
+    }
+
 
     if (ImGui::Button("Cancel Current Concentration Spell")) {
         // Set the callback function here
         PlayerDatabase::getInstance().getPlayer(playerName).cancelConcentration();
     }
+
+    if (!PlayerDatabase::getInstance().getPlayer(playerName).getIsTurnReady()) {
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f); // Set alpha value to make widgets semi-transparent
+    }
+    if (ImGui::Button("End Turn")) {
+        // Set the callback function here
+        PlayerDatabase::getInstance().getPlayer(playerName).setIsTurnComplete(true);
+    }
+
+    if (!PlayerDatabase::getInstance().getPlayer(playerName).getIsTurnReady()) {
+        ImGui::PopStyleVar(); // Restore the original alpha value
+    }
+
+
+
 
 
     ImGui::End();
@@ -94,6 +120,14 @@ void imGuiRender(GLFWwindow* window ,int &dynamicLightingFlag, ClientEventListen
                 ImGui::Text("MovementSpeed: %f", playerEntry.second.getMovementSpeed());
                 const char* boolStr = playerEntry.second.isPlayerCurrentlyConcentrating() ? "true" : "false";
                 ImGui::Text("Is Player Concentrating %s", boolStr);
+                if (boolStr == "true") {
+                    ImGui::Text("Current Concentration Spell : %s , with %d rounds remaining", playerEntry.second.getCurrentConcentrationSpellName().c_str(),
+                        playerEntry.second.getRoundsRemainingForConcentrationSpell());
+                }
+               
+
+                boolStr = playerEntry.second.getIsTurnReady() ? "true" : "false";
+                ImGui::Text("Is Player Turn Ready %s", boolStr);
                 ImGui::TreePop();
             }
         }
@@ -111,6 +145,9 @@ void imGuiRender(GLFWwindow* window ,int &dynamicLightingFlag, ClientEventListen
     ImGui::Begin("Player Information", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
 
 
+    if (!PlayerDatabase::getInstance().getPlayer(playerName).getIsTurnReady()) {
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f); // Set alpha value to make widgets semi-transparent
+    }
     
     static std::string currentSelected = "Move"; // Set to "Move" by default
     static std::string currentSpellName;
@@ -118,25 +155,39 @@ void imGuiRender(GLFWwindow* window ,int &dynamicLightingFlag, ClientEventListen
     // Begin a column
     ImGui::Columns(2, "PlayerInfoColumns", false); // 2 columns, don't auto-fit columns
     ImGui::Text("List of available basic actions");
-    ImGui::SetColumnWidth(0, display_w/2);
-    if (ImGui::Selectable("Move", currentSelected == "Move")) {
-        currentSelected = "Move";
-        currentSpellName = ""; // Reset the selected spell
+    ImGui::SetColumnWidth(0, display_w / 2);
+    if (!PlayerDatabase::getInstance().getPlayer(playerName).getIsTurnReady()) {
+        ImGui::Text("Player's turn is not ready"); // Show a message instead of the "Move" option
+        currentSelected = "NONE";
     }
-    ImGui::NextColumn(); 
+    else {
+        if (ImGui::Selectable("Move", currentSelected == "Move")) {
+            currentSelected = "Move";
+            currentSpellName = ""; // Reset the selected spell
+        }
+    }
+    ImGui::NextColumn();
 
-    ImGui::SetColumnWidth(1, display_w/2);
+    ImGui::SetColumnWidth(1, display_w / 2);
     ImGui::Text("List of available spells");
-    for (std::shared_ptr<Spell> spell : PlayerDatabase::getInstance().getPlayer(playerName).getAvailableSpells()) {
-        if (ImGui::Selectable(spell->getName().c_str(), currentSpellName == spell->getName())) {
-            currentSpellName = spell->getName();
-            currentSelected = "Cast Spell";
-            PlayerDatabase::getInstance().getPlayer(playerName).setSelectedSpell(spell);
+    if (!PlayerDatabase::getInstance().getPlayer(playerName).getIsTurnReady()) {
+        ImGui::Text("Player's turn is not ready"); // Show a message instead of the list of spells
+    }
+    else {
+        for (std::shared_ptr<Spell> spell : PlayerDatabase::getInstance().getPlayer(playerName).getAvailableSpells()) {
+            if (ImGui::Selectable(spell->getName().c_str(), currentSpellName == spell->getName())) {
+                currentSpellName = spell->getName();
+                currentSelected = "Cast Spell";
+                PlayerDatabase::getInstance().getPlayer(playerName).setSelectedSpell(spell);
+            }
         }
     }
     ImGui::Columns(1);
     GlobalConfigurations::getInstance().setselectedAction(currentSelected);
 
+    if (!PlayerDatabase::getInstance().getPlayer(playerName).getIsTurnReady()) {
+        ImGui::PopStyleVar(); // Restore the original alpha value
+    }
     // End the window
     ImGui::End();
 

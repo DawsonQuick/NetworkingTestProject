@@ -33,22 +33,41 @@ public:
 	void checkGameState() {
 		//This will be called from the main render loop on update. This will keep track of the state of the game.
 		//In other words, who is currently playing , update all their specific details like if they are currently casting a duration spell, need to update time spell has left
-		int index = 0;
 		for (std::string name : playerListing) {
 			if (PlayerDatabase::getInstance().getPlayer(name).getIsTurnReady()) {
 				if (PlayerDatabase::getInstance().getPlayer(name).getIsTurnComplete()) {
+
+					if (PlayerDatabase::getInstance().getPlayer(name).isPlayerCurrentlyConcentrating()) {
+						int roundsLeft = DurationSpellManager::getInstance().updatePlayerConcentrationSpellDuration(name, PlayerDatabase::getInstance().getPlayer(name).getCurrentConcentrationSpellName());
+						PlayerDatabase::getInstance().getPlayer(name).setRoundsRemainingForConcentrationSpell(roundsLeft);
+					}
+
+					//Once turn is complete, reset the players flags and move on to the next player in the queue
 					PlayerDatabase::getInstance().getPlayer(name).setIsTurnReady(false);
 					PlayerDatabase::getInstance().getPlayer(name).setIsTurnComplete(false);
 
-					if (playerListing.size() > index) {
-						PlayerDatabase::getInstance().getPlayer(playerListing.at(index + 1)).setIsTurnReady(true);
+
+					auto it = std::find(playerListing.begin(), playerListing.end(), name);
+					if (it != playerListing.end()) {
+
+						// Element found, calculate its index
+						int index = std::distance(playerListing.begin(), it);
+
+						//If the player is at the end of the queue, loop back around to the beginning
+						if (index+1 >= playerListing.size()) {
+							PlayerDatabase::getInstance().getPlayer(playerListing.at(0)).setIsTurnReady(true);
+						}
+						//If not at the end of the Initiative Queue, then just move to next in line
+						else {
+							PlayerDatabase::getInstance().getPlayer(playerListing.at(index+1)).setIsTurnReady(true);
+						}
+
 					}
 					else {
-						PlayerDatabase::getInstance().getPlayer(playerListing.at(0)).setIsTurnReady(true); //Start the first player in the List
+						std::cout << "Player of name: " << name << " not found in Combat Initiative" << std::endl;
 					}
 				}
 			}
-			index++;
 		}
 	}
 

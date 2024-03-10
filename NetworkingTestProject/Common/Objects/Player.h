@@ -56,6 +56,7 @@ private:
 
 	bool isCurrentlyConcentrating;
 	std::shared_ptr<Spell> concentrationSpell;
+	int concentrationRoundsLeft;
 
 	bool isTurnReady;
 	bool isTurnComplete;
@@ -158,6 +159,7 @@ public:
 				DurationSpellManager::getInstance().removeConcentrationSpell(name, concentrationSpell->getName());
 			}
 			isCurrentlyConcentrating = true;
+			concentrationRoundsLeft = selectedSpell->getSpellDuration()/6000; //Divide by the time taken per round
 			concentrationSpell = selectedSpell;
 		}
 
@@ -169,6 +171,7 @@ public:
 		if (isCurrentlyConcentrating) {
 			DurationSpellManager::getInstance().removeConcentrationSpell(name, concentrationSpell->getName());
 			concentrationSpell.reset();
+			concentrationRoundsLeft = 0;
 			isCurrentlyConcentrating = false;
 		}
 	}
@@ -212,6 +215,17 @@ public:
 	}
 	bool getIsTurnComplete() {
 		return isTurnComplete;
+	}
+	std::string getCurrentConcentrationSpellName() {
+		return concentrationSpell->getName();
+	}
+
+	void setRoundsRemainingForConcentrationSpell(int rounds) {
+		concentrationRoundsLeft = rounds;
+	}
+
+	int getRoundsRemainingForConcentrationSpell() {
+		return concentrationRoundsLeft;
 	}
 
 /*

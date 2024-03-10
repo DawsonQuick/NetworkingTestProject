@@ -167,6 +167,13 @@ public:
         PlayerDatabase::getInstance().getPlayer(playerName).addSpell(SpellFactory::getInstance().createMagicMissle());
         PlayerDatabase::getInstance().getPlayer(playerName).addSpell(SpellFactory::getInstance().createFireball());
         PlayerDatabase::getInstance().getPlayer(playerName).addSpell(SpellFactory::getInstance().createCloudOfDaggers());
+
+        Player player2;
+        player2.setName("Player2");
+        player2.setPosition(0.0,0.0,0.0,getCurrentTimeInMillis());
+        player2.addSpell(SpellFactory::getInstance().createCloudOfDaggers());
+        PlayerDatabase::getInstance().addPlayer(player2.getName(),player2);
+
         // Init GLFW
         glfwInit();
         // Set all the required options for GLFW

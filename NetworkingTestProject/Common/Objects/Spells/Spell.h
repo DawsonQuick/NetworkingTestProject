@@ -15,6 +15,7 @@ public:
     virtual float getMaxNumberofShots() const = 0;
     virtual SpellType getSpellType() const = 0;
     virtual int getSpellLevel() const = 0;
+    virtual int getSpellDuration() const = 0;
     virtual ~Spell() {};
 
     Spell() {

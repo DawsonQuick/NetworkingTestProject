@@ -19,8 +19,11 @@ struct DurationSpellInformation {
 	std::string spellName;
 	SpellType type;
 	float duration;
+
+	//Variables used to update the particle effects
 	float updateRate;
 	float currentDeltaTime;
+	
 	float sideLength;
 	glm::vec2 spawnPoint;
 	std::function<void(float,float,std::string)> callback;
@@ -85,16 +88,14 @@ public:
 	void onUpdate(float deltaTime) {
 		std::vector<DurationSpellInformation> expiredSpells;
 		for (DurationSpellInformation& durationSpell : durationSpellCollection) {
-			if (durationSpell.duration - deltaTime < 0) {
+			if (durationSpell.duration  <= 0) {
 				std::cout << "Duration Spell has Expired removing" << std::endl;
 				expiredSpells.push_back(durationSpell);
 				continue;
 			}
 			else {
-				durationSpell.duration = durationSpell.duration - deltaTime;
 				durationSpell.currentDeltaTime = durationSpell.currentDeltaTime + deltaTime;
 				if (durationSpell.currentDeltaTime >= durationSpell.updateRate) {
-					std::cout << "Spell interval triggered calling callback function for spell" << std::endl;
 					glm::vec2 tmp = durationSpell.spawnPoint;
 					float x = tmp.x;
 					float y = tmp.y;
@@ -123,13 +124,15 @@ public:
 		newInfo.spellCastersName = playerName;
 		newInfo.spellName = spellName;
 		newInfo.type = type;
-		newInfo.duration = duration;
+		newInfo.duration = duration + 6000; //add a full round to negate duration being subtracted on the same round as the cast
 		newInfo.updateRate = updateRate;
 		newInfo.callback = Tmpcallback;
 		newInfo.spawnPoint = spawnPoint;
 		newInfo.sideLength = sideLength;
 		newInfo.currentDeltaTime = 0.0f;
-		std::cout << "Adding Duration Spell to Manager" << std::endl;
+		std::cout << "Adding Duration Spell to Manager: "<<"\n"
+			<<"PlayerName: " << playerName << "\n"
+			<<"SpellName: " << spellName << "\n";
 		durationSpellCollection.push_back(newInfo);
 	}
 
@@ -139,22 +142,35 @@ public:
 	}
 
 	void removeConcentrationSpell(std::string playerName, std::string spellName) {
-		DurationSpellInformation spellToRemove;
-		bool foundSpell = false;
-		for (DurationSpellInformation spellInformation : durationSpellCollection) {
+		std::cout << "Attempting to remove spell: " << spellName << " casted by player: " << playerName << std::endl;
+
+		auto iter = std::remove_if(durationSpellCollection.begin(), durationSpellCollection.end(),
+			[playerName, spellName](const DurationSpellInformation& spellInformation) {
+				return spellInformation.spellCastersName == playerName
+					&& spellInformation.spellName == spellName
+					&& spellInformation.type == SpellType::CONCENTRATION;
+			});
+
+		if (iter != durationSpellCollection.end()) {
+			std::cout << "Found and removed spell: " << spellName << " for caster: " << playerName << std::endl;
+			durationSpellCollection.erase(iter, durationSpellCollection.end());
+		}
+		else {
+			std::cout << "Spell not found for removal: " << spellName << " for caster: " << playerName << std::endl;
+		}
+	}
+
+	int updatePlayerConcentrationSpellDuration(std::string playerName, std::string spellName) {
+		for (DurationSpellInformation& spellInformation : durationSpellCollection) {
 			if (spellInformation.spellCastersName == playerName
 				&& spellInformation.spellName == spellName
 				&& spellInformation.type == SpellType::CONCENTRATION) {
-				spellToRemove = spellInformation;
-				foundSpell = true;
-				break;
+				spellInformation.duration -= 6000; //Each round of combat last 6 seconds so convert to milliseconds
+				return (spellInformation.duration / 6000);
 			}
 		}
-
-		if (foundSpell) {
-			durationSpellCollection.erase(std::remove(durationSpellCollection.begin(), durationSpellCollection.end(), spellToRemove), durationSpellCollection.end());
-		}
 	}
+
 
 };
 #endif
