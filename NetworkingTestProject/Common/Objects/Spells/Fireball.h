@@ -2,6 +2,7 @@
 #ifndef FIREBALL_H
 #define FIREBALL_H
 #include "./../Particles/GuidedParticle.h"
+#include "./../Particles/ParticleFactory.h"
 #include "./Spell.h"
 #include <iostream>
 class Fireball : public Spell {

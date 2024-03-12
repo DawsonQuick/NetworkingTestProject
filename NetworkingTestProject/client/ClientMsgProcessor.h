@@ -5,8 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include "./../Common/Messages/Utils/MessageFactory.h"
-#include "./../Common/Utils/PlayerDatabase.h"
-
+#include "./../Common/Objects/Spells/SpellFactory.h"
 
 float lagSimulationTime;
 /*
