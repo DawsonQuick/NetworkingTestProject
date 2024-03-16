@@ -54,7 +54,7 @@ public:
         //TODO: Send another message when spell cast is finished letting other players know the resulting effects
         std::cout << "Fireball impacted at X: " << resultPosX << " Y: " << resultPosY << std::endl;
 
-        for (int i = 0; i < 100; i++) { ParticleDatabase::getInstance().addParticle("Test" + std::to_string(i), ParticleFactory::getInstance().createTestParticle(resultPosX,resultPosY,0.0f,0.0f,0.3f)); }
+        for (int i = 0; i < 100; i++) { ParticleDatabase::getInstance().addParticle("Test" + std::to_string(i), ParticleFactory::getInstance().createTestParticle(resultPosX,resultPosY,0.0f,0.0f,0.2f)); }
         //Sample hit detection
         if (playerName == GlobalConfigurations::getInstance().getPlayerName()) {
             for (auto& player : PlayerDatabase::getInstance().getPlayers()) {

@@ -46,7 +46,7 @@ public:
 		std::uniform_real_distribution<float> lifeTime(250.0f, 500.0f);
 		std::uniform_real_distribution<float> startingAngle(0.0f, 360.0f);
 		std::uniform_real_distribution<float> randomRadius(0.0f, 5.0f);
-		std::uniform_real_distribution<float> randomRotationSpeed(0.0f, 15.0f);
+		std::uniform_real_distribution<float> randomRotationSpeed(0.0f, 5.0f);
 		velX = (((biasVelX)*(0.3)) + (dist(gen)*(0.7)))/2;
 		velY = (((biasVelY)*(0.3)) + (dist(gen)*(0.7)))/2;
 		lifetime = lifeTime(gen);

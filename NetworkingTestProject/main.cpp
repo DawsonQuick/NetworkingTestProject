@@ -13,8 +13,13 @@
 #include "./Common/Utils/json.hpp"
 #include "./client/ClientEventListener/ClientEventListener.h"
 #include "./Common/Objects/Spells/SpellFactory.h"
+
+#include "AL/al.h"
+#include "sndfile.h"
+
 SOCKET serverSocket;
 const int BUFFER_SIZE = 1024;
+
 // main.cpp
 int main() {
     setPositions();

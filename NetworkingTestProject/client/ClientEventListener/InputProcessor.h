@@ -82,6 +82,20 @@ bool pointInsideSquare(double x, double y, double squareX, double squareY, doubl
     return (x >= leftBoundary && x <= rightBoundary && y >= bottomBoundary && y <= topBoundary);
 }
 
+bool pointOnLine(float x1, float y1, float x2, float y2, float x3, float y3) {
+    // Check if the slopes of the line segments (x1, y1)-(x2, y2) and (x1, y1)-(x3, y3) are equal
+    float slope1 = (y2 - y1) / (x2 - x1);
+    float slope2 = (y3 - y1) / (x3 - x1);
+
+    // Check if the slopes are approximately equal (considering floating-point arithmetic)
+    if (fabs(slope1 - slope2) < 0.00001) {
+        return true; // The point lies on the line
+    }
+    else {
+        return false; // The point does not lie on the line
+    }
+}
+
 //TODO: If l2 lands directly on a point in l1 then intersection is missed, need to fix
 glm::vec2 intersection(glm::mat2x2 l1, glm::mat2x2 l2) {
     double x1 = l1[0][0];
@@ -100,6 +114,12 @@ glm::vec2 intersection(glm::mat2x2 l1, glm::mat2x2 l2) {
 
     double t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den;
     double u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den;
+
+    if (pointOnLine(x3, y3, x4, y4, x1, y1) || pointOnLine(x3, y3, x4, y4, x2, y2)) {
+        double x = x1 + t * (x2 - x1);
+        double y = y1 + t * (y2 - y1);
+        return glm::vec2(x, y);
+    }
 
     if (0.00001 <= t && t <= 0.99999 && 0.00001 <= u && u <= 0.99999) {
         double x = x1 + t * (x2 - x1);
@@ -277,7 +297,10 @@ void calculateCursor(float posX,float posY,std::vector<float>& vertices) {
 
          //Checks to see if the a* was able to find a path to the target location,
          //If not set a flag this either allows the player to move or not
-         if ((tmp.size() <= 1)) { isMoveLocationValid = false; }
+         if ((tmp.size() <= 0) || ((tmp.size() / 3) / 2) > (PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).getMovementSpeed() / 5.0) + 1) {
+             isMoveLocationValid = false; 
+             GlobalConfigurations::getInstance().setCursorColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+         }
          else { isMoveLocationValid = true; }
 
          vertices.insert(vertices.end(), tmp.begin(), tmp.end());

@@ -42,7 +42,7 @@ public:
 		: name(name),
 		health(health),
 		position(posX, posY, posZ, getCurrentTimeInMillis()), AC(AC),
-		movementSpeed(0.01),
+		movementSpeed(30.0),
 		spellChangedState(false)
 	{
 
@@ -53,7 +53,7 @@ public:
 	Player()
 	: name("Frodo"),
 	  health(5),
-	  position(0.0,0.0,0.0, getCurrentTimeInMillis()),AC(10), movementSpeed(0.01) {}
+	  position(0.0,0.0,0.0, getCurrentTimeInMillis()),AC(10), movementSpeed(30.0) {}
 
 	~Player() {
 
