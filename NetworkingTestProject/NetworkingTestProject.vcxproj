@@ -149,15 +149,18 @@
     <ClCompile Include="OpenGL\vendor\imgui\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="client\Client.h" />
+    <ClInclude Include="client\ClientConnection.h" />
     <ClInclude Include="client\ClientEventListener\ClientEventListener.h" />
     <ClInclude Include="client\ClientEventListener\InputProcessor.h" />
     <ClInclude Include="client\ClientMrg.h" />
     <ClInclude Include="client\ImGuiRenderContent.h" />
     <ClInclude Include="client\OnUpdate.h" />
     <ClInclude Include="Common\Enums\MessageTypes.h" />
+    <ClInclude Include="Common\Enums\PlayerFields.h" />
     <ClInclude Include="Common\Enums\SpellType.h" />
     <ClInclude Include="Common\Messages\BroadCastMessage.h" />
+    <ClInclude Include="Common\Messages\CancelConcentrationMessage.h" />
+    <ClInclude Include="Common\Messages\CastSpellMessage.h" />
     <ClInclude Include="Common\Messages\ClientDisconnectMessage.h" />
     <ClInclude Include="Common\Messages\Message.h" />
     <ClInclude Include="Common\Messages\AddPlayerMessage.h" />
@@ -181,6 +184,7 @@
     <ClInclude Include="Common\Objects\Spells\Spell.h" />
     <ClInclude Include="Common\Objects\Spells\SpellFactory.h" />
     <ClInclude Include="Common\Utils\MainGameLoop\MainGameLoop.h" />
+    <ClInclude Include="Common\Utils\TestGlobalClientInstance.h" />
     <ClInclude Include="Common\Utils\TileManager\AStartPathFinding.h" />
     <ClInclude Include="Common\Utils\CollsionCalculations\CollisionDetection.h" />
     <ClInclude Include="Common\Utils\GlobalConfigurations.h" />

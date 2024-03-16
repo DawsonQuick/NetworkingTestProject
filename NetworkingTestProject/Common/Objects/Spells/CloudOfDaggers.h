@@ -54,6 +54,9 @@ public:
     int getSpellDuration() const override {
         return duration;
     }
+    std::function<void(float, float, std::string)> getCallback() override {
+        return [this](float targetPosX, float targetPosY, std::string playerName) { this->onUpdate(targetPosX, targetPosY, playerName); };
+    }
 
     void castSpell(std::string tmpPlayerName, float targetPosX, float targetPosY) override {
 
@@ -73,12 +76,8 @@ public:
         }
 
         //Example of chaining particles
-        for (int i = 0; i < 10; i++) { ParticleDatabase::getInstance().addParticle("Test" + std::to_string(i), ParticleFactory::getInstance().createCloudOfDaggersParticle(originX, originY,impactRadius, updateRate, 0.3f)); }
+        for (int i = 0; i < 50; i++) { ParticleDatabase::getInstance().addParticle("Test" + std::to_string(i), ParticleFactory::getInstance().createCloudOfDaggersParticle(originX, originY,impactRadius, updateRate, 0.3f)); }
 
-    }
-    void onComplete() {
-        
-       
     }
     ~CloudOfDaggers() {};
 };

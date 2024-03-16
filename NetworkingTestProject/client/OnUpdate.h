@@ -1,4 +1,6 @@
 #pragma once
+#ifndef ONUPDATE_H
+#define ONUPDATE_H
 #include <queue>
 #include "./../Common/Objects/Spells/DurationSpellManager.h"
 std::queue<float> updateRequest;
@@ -26,3 +28,5 @@ void OnUpdateThread() {
         }
     }
 }
+
+#endif

@@ -1,7 +1,7 @@
 #pragma once
 #ifndef CLIENTEVENTLISTENER_H
 #define CLIENTEVENTLISTENER_H
-#include "./../Client.h"
+#include "./../ClientConnection.h"
 #include "./../../OpenGL/vendor/glm/glm.hpp"
 #include "./../../OpenGL/vendor/glm/gtc/matrix_transform.hpp"
 #include "./../../OpenGL/vendor/imgui/imgui.h"
@@ -137,7 +137,6 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
                     ParticalDatabase::getInstance().addPartical("Test"+std::to_string(i), std::move(particle));
                 }
                 */
-
                 processClick(mousePosX, mousePosY);
 
                 //TODO: Add events for clicks
@@ -198,7 +197,6 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
 }
 float simulatedLagThreshold;
 class ClientEventListener {
-
 private:
     long long timeSinceLastMessage = 0.0;
     ClientConnection client;
@@ -292,7 +290,7 @@ public:
                 glm::vec2 dataVec(dataPair.first, dataPair.second);
                 std::vector<TileInfo> tmpTileInfo = GlobalConfigurations::getInstance().getMapTileInformation();
 
-                glm::vec2 playerPos(PlayerDatabase::getInstance().getPlayer(playerName).getPositionX(), PlayerDatabase::getInstance().getPlayer(playerName).getPositionY());
+                glm::vec2 playerPos(PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).getPositionX(), PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).getPositionY());
 
                 float tmpScale = GlobalConfigurations::getInstance().getScale();
                 TileInfo closestTile;

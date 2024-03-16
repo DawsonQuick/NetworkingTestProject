@@ -1,13 +1,17 @@
 //Message.h
-#ifndef PLAYERMESSAGE_H
-#define PLAYERMESSAGE_H
+#pragma once
+#ifndef CANCELCONCENTRATIONMESSAGE_H
+#define CANCELCONCENTRATIONMESSAGE_H
 #include <string>
 #include <iostream>
 #include <sstream>
 #include "./Message.h"
 #include "./../Enums/MessageTypes.h"
+#include <chrono>
 
-class AddPlayerMessage : public Message {
+
+
+class CancelConcentrationMessage : public Message {
 
 private:
 
@@ -34,65 +38,65 @@ private:
 	*/
 
 	/*
-	* Payload
+	* Player to update
 	*/
-	std::stringstream player;
+	std::string name;
 
 
 public:
 	/*
 	* Constructor
 	*/
-	AddPlayerMessage(MessageType tempType, int tmpUID, double tmpcreationTime, std::stringstream tmpPlayer) {
+	CancelConcentrationMessage(MessageType tempType, int tmpUID, double tmpcreationTime, std::string tmpName) {
 		type = tempType;
 		UID = tmpUID;
 		creationTime = tmpcreationTime;
-		player = std::move(tmpPlayer);
+		name = tmpName;
 	}
+
 
 	/*
 	* ----------------GETTERS----------------------------
 	*/
-	std::stringstream getPlayer() {
-		return std::move(player);
+	std::string getName() {
+		return name;
 	}
+
+
 	/*
 	* --------------Print MSG to Screen----------------
 	*/
 
-	std::string toString() {
-		std::ostringstream builder;
-		builder << " UID: " << UID << " \n"
+	void toString() {
+		std::cout << " UID: " << UID << " \n"
 			<< " MessageType: " << enumToString(type) << "\n"
 			<< " creationTime: " << creationTime << " \n"
-			<< " Player : " << "\n";
-		return builder.str();
+			<< " Player name: " << name << "\n";
 	}
-	/*k
+
+	/*
 	* ----------------------------------Message transportation packaging----------------------------------------------
 	*/
 	//Serialize the message
-	std::string serialize() {
+	std::string serialize() const {
 		std::stringstream ss;
-		ss << static_cast<int>(type) << "|" << UID << "|" << creationTime << "|" << player.rdbuf()<<"|";
+		ss << static_cast<int>(type) << "|" << UID << "|" << creationTime <<"|" << name << "|";
 		return ss.str();
 	}
 
 
 	// Deserialization method
-	static AddPlayerMessage* deserialize(const char* serializedData) {
+	static CancelConcentrationMessage* deserialize(const char* serializedData) {
 		std::stringstream ss(serializedData);
+		std::string name;
 		int enumID;
 		int UID;
-		std::string playerSerialized;
 		double creationTime;
-		int commandInt;
 		char delimiter;
-
-		ss >> enumID >> delimiter >> UID >> delimiter >> creationTime >> delimiter >> playerSerialized>>delimiter;
-		std::stringstream tmpPlayerSS(playerSerialized);
+		ss >> enumID >> delimiter >> UID >> delimiter >> creationTime >> delimiter;
+		std::getline(ss, name, delimiter);
 		MessageType type = static_cast<MessageType>(enumID);
-		return new AddPlayerMessage(type, UID, creationTime, std::move(tmpPlayerSS));
+		return new CancelConcentrationMessage(type, UID, creationTime, name);
 	}
 	/*
 	* ---------------------------------------------------------------------------------------------------------------

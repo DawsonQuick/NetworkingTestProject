@@ -1,5 +1,7 @@
 #pragma once
-
+#ifndef IMGUIRENDERCONTEXT_H
+#define IMGUIRENDERCONTEXT_H
+#include "./../Common/Messages/Utils/MessageFactory.h"
 /*
 *  Ties to the main render loop, renders all ImGui related content
 */
@@ -70,7 +72,7 @@ void imGuiRender(GLFWwindow* window ,int &dynamicLightingFlag, ClientEventListen
         GlobalConfigurations::getInstance().setgridPaintMode(false);
     }
 
-
+    /*
     for (const auto& playerEntry : PlayerDatabase::getInstance().getPlayers()) {
         const std::string& playerKey = playerEntry.first;
         const Player& player = playerEntry.second;
@@ -81,22 +83,35 @@ void imGuiRender(GLFWwindow* window ,int &dynamicLightingFlag, ClientEventListen
             playerName = playerKey;
         }
     }
-
+    */
 
     if (ImGui::Button("Cancel Current Concentration Spell")) {
         // Set the callback function here
-        PlayerDatabase::getInstance().getPlayer(playerName).cancelConcentration();
+        PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).cancelConcentration();
+        MessageFactory factory;
+        std::stringstream ss;
+        ss << true << '|';
+        GlobalConfigurations::getInstance().sendMsg(factory.generateCancelConcentrationMessage(MessageType::CANCELCONCENTRATIONSPELL, 1, getCurrentTimeInSeconds(),
+            GlobalConfigurations::getInstance().getPlayerName()
+        ).serialize().c_str());
     }
 
-    if (!PlayerDatabase::getInstance().getPlayer(playerName).getIsTurnReady()) {
+    if (!PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).getIsTurnReady()) {
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f); // Set alpha value to make widgets semi-transparent
     }
     if (ImGui::Button("End Turn")) {
         // Set the callback function here
-        PlayerDatabase::getInstance().getPlayer(playerName).setIsTurnComplete(true);
+        PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).setIsTurnComplete(true);
+
+        MessageFactory factory;
+        std::stringstream ss;
+        ss << true << '|';
+        GlobalConfigurations::getInstance().sendMsg(factory.generateUpdatePlayerDataMessage(MessageType::UPDATEPLAYERDATA,1,getCurrentTimeInSeconds(),
+            PlayerFields::ISTURNCOMPLETE, GlobalConfigurations::getInstance().getPlayerName(), std::move(ss)
+            ).serialize().c_str());
     }
 
-    if (!PlayerDatabase::getInstance().getPlayer(playerName).getIsTurnReady()) {
+    if (!PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).getIsTurnReady()) {
         ImGui::PopStyleVar(); // Restore the original alpha value
     }
 
@@ -118,6 +133,7 @@ void imGuiRender(GLFWwindow* window ,int &dynamicLightingFlag, ClientEventListen
                 ImGui::Text("Health: %d", playerEntry.second.getHealth());
                 ImGui::Text("AC: %d", playerEntry.second.getAC());
                 ImGui::Text("MovementSpeed: %f", playerEntry.second.getMovementSpeed());
+                if (playerEntry.second.getSelectedSpell() != nullptr) {ImGui::Text("SelectedSpell: %s", playerEntry.second.getSelectedSpell()->getName().c_str());}
                 const char* boolStr = playerEntry.second.isPlayerCurrentlyConcentrating() ? "true" : "false";
                 ImGui::Text("Is Player Concentrating %s", boolStr);
                 if (boolStr == "true") {
@@ -145,7 +161,7 @@ void imGuiRender(GLFWwindow* window ,int &dynamicLightingFlag, ClientEventListen
     ImGui::Begin("Player Information", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
 
 
-    if (!PlayerDatabase::getInstance().getPlayer(playerName).getIsTurnReady()) {
+    if (!PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).getIsTurnReady()) {
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f); // Set alpha value to make widgets semi-transparent
     }
     
@@ -156,7 +172,7 @@ void imGuiRender(GLFWwindow* window ,int &dynamicLightingFlag, ClientEventListen
     ImGui::Columns(2, "PlayerInfoColumns", false); // 2 columns, don't auto-fit columns
     ImGui::Text("List of available basic actions");
     ImGui::SetColumnWidth(0, display_w / 2);
-    if (!PlayerDatabase::getInstance().getPlayer(playerName).getIsTurnReady()) {
+    if (!PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).getIsTurnReady()) {
         ImGui::Text("Player's turn is not ready"); // Show a message instead of the "Move" option
         currentSelected = "NONE";
     }
@@ -170,22 +186,28 @@ void imGuiRender(GLFWwindow* window ,int &dynamicLightingFlag, ClientEventListen
 
     ImGui::SetColumnWidth(1, display_w / 2);
     ImGui::Text("List of available spells");
-    if (!PlayerDatabase::getInstance().getPlayer(playerName).getIsTurnReady()) {
+    if (!PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).getIsTurnReady()) {
         ImGui::Text("Player's turn is not ready"); // Show a message instead of the list of spells
     }
     else {
-        for (std::shared_ptr<Spell> spell : PlayerDatabase::getInstance().getPlayer(playerName).getAvailableSpells()) {
+        for (std::shared_ptr<Spell> spell : PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).getAvailableSpells()) {
             if (ImGui::Selectable(spell->getName().c_str(), currentSpellName == spell->getName())) {
                 currentSpellName = spell->getName();
                 currentSelected = "Cast Spell";
-                PlayerDatabase::getInstance().getPlayer(playerName).setSelectedSpell(spell);
+                PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).setSelectedSpell(spell);
+                MessageFactory factory;
+                std::stringstream ss;
+                ss << spell->getName() << '|';
+                GlobalConfigurations::getInstance().sendMsg(factory.generateUpdatePlayerDataMessage(MessageType::UPDATEPLAYERDATA, 1, getCurrentTimeInSeconds(),
+                    PlayerFields::SELECTEDSPELL, GlobalConfigurations::getInstance().getPlayerName(), std::move(ss)
+                ).serialize().c_str());
             }
         }
     }
     ImGui::Columns(1);
     GlobalConfigurations::getInstance().setselectedAction(currentSelected);
 
-    if (!PlayerDatabase::getInstance().getPlayer(playerName).getIsTurnReady()) {
+    if (!PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).getIsTurnReady()) {
         ImGui::PopStyleVar(); // Restore the original alpha value
     }
     // End the window
@@ -193,3 +215,4 @@ void imGuiRender(GLFWwindow* window ,int &dynamicLightingFlag, ClientEventListen
 
     ImGui::Render();
 }
+#endif

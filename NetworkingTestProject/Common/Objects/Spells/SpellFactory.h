@@ -4,6 +4,7 @@
 #include "./Fireball.h"
 #include "./MagicMissle.h"
 #include "./CloudOfDaggers.h"
+#include "./Spell.h"
 #include <memory>
 class SpellFactory {
 
@@ -32,7 +33,21 @@ public:
 		return std::make_shared<CloudOfDaggers>();
 	}
 
+	std::shared_ptr<Spell> stringNametoPointer(std::string name) {
+		if (name == "MagicMissle") {
+			return createMagicMissle();
+		}
+		else if (name == "Fireball") {
+			return createFireball();
+		}
+		else if (name == "CloudOfDaggers") {
+			return createCloudOfDaggers();
+		}
 
+		else {
+			return nullptr;
+		}
+	}
 
 
 };

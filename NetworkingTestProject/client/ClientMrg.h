@@ -1,3 +1,4 @@
+
 #include <iostream>
 // GLEW
 #define GLEW_STATIC
@@ -5,13 +6,14 @@
 // GLFW
 #include <GLFW/glfw3.h>
 #include <thread>
-#include "./Client.h"
+#include "./ClientConnection.h"
 #include "./OnUpdate.h"
 #include "./ClientEventListener/ClientEventListener.h"
 #include "./ImGuiRenderContent.h"
 #include "./../Common/Utils/Logger.h"
 #include "./../Common/Utils/TileManager/MapAndGridGenerator.h"
 #include "./../Common/Utils/MainGameLoop/MainGameLoop.h"
+#include "./../Common/Utils/TestGlobalClientInstance.h"
 #include "./../OpenGL/Utils/Renderer.h"
 #include "./../OpenGL/vendor/imgui/imgui.h"
 #include "./../OpenGL/vendor/glm/glm.hpp"
@@ -28,7 +30,7 @@
 // Window dimensions
 
 GLFWwindow* window;
-
+ClientConnection client("127.0.0.1", 8080);
 /*
 * ----------------------------------
 *     Sprite Diminesion Info
@@ -120,7 +122,7 @@ private:
     std::unique_ptr<VertexBuffer> m_CoursorVertexBuffer;
 
     glm::mat4 projection = glm::ortho(-projWidth * aspectRatio, projWidth * aspectRatio, -projHeight * aspectRatio, projHeight * aspectRatio, -1.0f, 1.0f);
-    ClientConnection client;
+
     ClientEventListener eventListener;
 
     std::vector<float> m_Gridvertices;
@@ -131,12 +133,12 @@ private:
 
 
 public:
-    ClientMrg(): client("127.0.0.1", 8080), eventListener(client, nullptr) {
+    ClientMrg():eventListener(client, nullptr) {
         /*
         * -----------Start Back End Processing------------
         */
             client.Start();
-            playerName = client.getPlayerName();
+            TestGlobalClientInstance::getInstance().setGlobalClientConnection(client);
         /*
         * ------------------------------------------------
         */
@@ -164,15 +166,9 @@ public:
 
 
     void StartOpenGL() {
-        PlayerDatabase::getInstance().getPlayer(playerName).addSpell(SpellFactory::getInstance().createMagicMissle());
-        PlayerDatabase::getInstance().getPlayer(playerName).addSpell(SpellFactory::getInstance().createFireball());
-        PlayerDatabase::getInstance().getPlayer(playerName).addSpell(SpellFactory::getInstance().createCloudOfDaggers());
-
-        Player player2;
-        player2.setName("Player2");
-        player2.setPosition(0.0,0.0,0.0,getCurrentTimeInMillis());
-        player2.addSpell(SpellFactory::getInstance().createCloudOfDaggers());
-        PlayerDatabase::getInstance().addPlayer(player2.getName(),player2);
+        PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).addSpell(SpellFactory::getInstance().createMagicMissle());
+        PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).addSpell(SpellFactory::getInstance().createFireball());
+        PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).addSpell(SpellFactory::getInstance().createCloudOfDaggers());
 
         // Init GLFW
         glfwInit();
@@ -447,7 +443,7 @@ public:
 
         ImGui_ImplGlfwGL3_Shutdown();
         ImGui::DestroyContext();
-        ClientDisconnectMessage msg(MessageType::CLIENTDISCONNECT, 3, getCurrentTimeInSeconds(), playerName);
+        ClientDisconnectMessage msg(MessageType::CLIENTDISCONNECT, 3, getCurrentTimeInSeconds(), GlobalConfigurations::getInstance().getPlayerName());
         std::string msgTest = msg.serialize();
         const char* msgToSend = msgTest.c_str();
         client.sendMsg(msgToSend);

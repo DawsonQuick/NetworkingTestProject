@@ -6,38 +6,26 @@
 #include <vector>
 #include <memory>
 #include <typeindex>
+#include <functional>
+#include <sstream>
 #include "./../../OpenGL/Utils/Texture.h"
 #include "./../../OpenGL/vendor/glm/glm.hpp"
 #include "./TileManager/TileManager.h"
-
-
 
 enum MeasurmentSystem {
 	GOEMETRIC,
 	GRID,
 };
-
-
-
-
 class GlobalConfigurations {
 private:
 	float Scale;
 	float timePerTurn; // In ms
-
-
-
 	glm::vec4 GridColor;
 	glm::vec4 CursorColor;
-
 	std::string selectedAction;
-
-
-
 	MeasurmentSystem currentSystem;
-
-
-
+	std::string playerName;
+	std::function<void(const char* msg)> callback;
 	bool gridPaintMode;
 
 	GlobalConfigurations() {
@@ -64,7 +52,17 @@ public:
 	float getScale() {
 		return Scale;
 	}
-	
+	void setPlayerName(std::string tmpPlayerName) {
+		playerName = tmpPlayerName;
+	}
+	std::string getPlayerName() {
+		return playerName;
+	}
+
+	void setClientSendMessageCallback(std::function<void(const char* msg)> Tmpcallback) {
+		callback = Tmpcallback;
+	}
+
 	void setScale(float tmpScale) {
 		Scale = tmpScale;
 	}
@@ -157,12 +155,9 @@ public:
 		return std::move(TileManager::getInstance().getA_Starpath());
 	}
 
-
-
-	
-
-
-
+	void sendMsg(const char* msg) {
+		callback(msg);
+	}
 
 
 };

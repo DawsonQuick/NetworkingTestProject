@@ -4,6 +4,7 @@
 #include "./../../Utils/CollsionCalculations/CollisionDetection.h"
 #include "DurationSpellManager.h"
 #include "./../../Enums/SpellType.h"
+#include "./../../Messages/Utils/MessageFactory.h"
 #include <iostream>
 
 class Spell {
@@ -16,6 +17,7 @@ public:
     virtual SpellType getSpellType() const = 0;
     virtual int getSpellLevel() const = 0;
     virtual int getSpellDuration() const = 0;
+    virtual std::function<void(float, float, std::string)> getCallback() { return nullptr;  };
     virtual ~Spell() {};
 
     Spell() {

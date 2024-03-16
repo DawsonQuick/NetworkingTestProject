@@ -1,4 +1,6 @@
 #pragma once
+#ifndef CLIENTCONNECTION_H
+#define CLIENTCONNECTION_H
 #include <iostream>
 #include <thread>
 #include <list>
@@ -11,7 +13,6 @@
 #include "./../Common/Utils/StringStreamer.h"
 //GLOBAL VARIABLES HERE
 SOCKET clientSocket;
-std::string playerName;
 
 double getCurrentTimeInSeconds() {
     // Get the current time point
@@ -30,6 +31,11 @@ class ClientConnection {
 private:
     ClientMessageProcessor msgProcessor;
 public:
+
+    //Default Constructor
+    ClientConnection() {
+
+    }
 
     /*
     * Constructor
@@ -81,12 +87,14 @@ public:
         std::string msgTest = msg.serialize();
         const char* msgToSend = msgTest.c_str();
         sendMsg(msgToSend);
-
+        std::string playerName;
         std::cout << "Please enter your charaters name: ";
         std::cin >> playerName;
+        GlobalConfigurations::getInstance().setPlayerName(playerName);
+        GlobalConfigurations::getInstance().setClientSendMessageCallback([this](const char* msg) { this->sendMsg(msg); });
         Player player(playerName, 0.0, 0.0, 0.0, 55, 15);
         PlayerDatabase::getInstance().addPlayer(playerName, player);
-        AddPlayerMessage msg2(MessageType::ADDPLAYER, 3, getCurrentTimeInSeconds(), player);
+        AddPlayerMessage msg2(MessageType::ADDPLAYER, 3, getCurrentTimeInSeconds(), player.serialize());
         msgTest = msg2.serialize();
         msgToSend = msgTest.c_str();
         sendMsg(msgToSend);
@@ -112,9 +120,6 @@ public:
     void sendMsg(const char* msg) {
         send(clientSocket, msg, strlen(msg), 0);
     }
-    std::string getPlayerName() {
-        return playerName;
-    }
 
 };
-
+#endif

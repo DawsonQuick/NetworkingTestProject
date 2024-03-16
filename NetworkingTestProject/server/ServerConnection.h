@@ -7,15 +7,59 @@
 #include <atomic>
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <winsock2.h>
+#include <map>
 #include "./../Common/Messages/Utils/MessageFactory.h"
 #include "./../Common/Utils/PlayerDatabase.h"
 #include "./../Common/Utils/Logger.h"
+#include "./../Common/Enums/PlayerFields.h"
 //GLOBAL VARIABLES HERE
 std::list<int> clientConnections;
 std::atomic<bool> serverRunning(false);
 MessageFactory msgFactory;
 void processMessage(int clientSocket, const char* inMsg);
 
+struct PlayerVariables {
+	std::vector<std::string> resultspells;
+	std::string resultname;
+	Position resultposition;
+	int resulthealth;
+	int resultAC;
+	double resultmovementSpeed;
+	std::string resultselectedSpell;
+	bool resultspellChangedState;
+	float resultcurrentSpellShotCount;
+
+	bool resultisCurrentlyConcentrating;
+	std::string resultconcentrationSpell;
+	float resultconcentrationSpellLocationX;
+	float resultconcentrationSpellLocationY;
+	int resultconcentrationRoundsLeft;
+
+	bool resultisTurnReady;
+	bool resultisTurnComplete;
+
+	std::stringstream serialize() {
+		std::stringstream ss;
+
+		ss << resultname << "|" << resultposition.X << "|" << resultposition.Y << "|" << resultposition.Z
+			<< "|" << resulthealth << "|" << resultAC << "|" << resultmovementSpeed << "|"
+			<< "StartSpells"
+			<< "|";
+		for (std::string spell : resultspells) {
+			ss << spell << "|";
+		}
+		ss << "EndSpells"
+			<< "|" << resultselectedSpell << "|" << resultspellChangedState << "|"
+			<< resultcurrentSpellShotCount << "|" << resultisCurrentlyConcentrating << "|"
+			<< resultconcentrationSpell << "|" << resultconcentrationRoundsLeft << "|" 
+			<< resultconcentrationSpellLocationX << "|"<< resultconcentrationSpellLocationY<<"|"
+			<< resultisTurnReady << "|" << resultisTurnComplete;
+		return ss;
+
+	}
+};
+
+	std::map<std::string, PlayerVariables> playerMap;
 class ServerConnection {
 private:
 
@@ -159,8 +203,8 @@ void processMessage(int clientSocket, const char* inMsg) {
 		Logger::getInstance().info("Received a HandShakeMessage: \n"+msg.toString());
 		//For response to handshake send all players in servers database to client
 		//This syncs the client to the current state of the session
-		for (auto const& entry : PlayerDatabase::getInstance().getPlayers()) {
-			AddPlayerMessage msg(MessageType::ADDPLAYER, 3, 0.0, entry.second);
+		for (auto& entry : playerMap) {
+			AddPlayerMessage msg(MessageType::ADDPLAYER, 3, 0.0, entry.second.serialize());
 			std::string msgTest = msg.serialize();
 			const char* msgToSend = msgTest.c_str();
 			ServerConnection::sendMsg(clientSocket,msgToSend);
@@ -173,21 +217,54 @@ void processMessage(int clientSocket, const char* inMsg) {
 		BroadCastMessage& msg = *testMsg;
 		Logger::getInstance().info("Received a BroadCastMessage: \n"+msg.toString());
 	}
+
+
 	else if (AddPlayerMessage* testMsg = dynamic_cast<AddPlayerMessage*>(msg)) {
 
 		AddPlayerMessage& msg = *testMsg;
-		Logger::getInstance().info("Received a AddPlayerMessage: \n"+msg.toString());
+		std::stringstream ss(msg.getPlayer());
+		PlayerVariables playerVariables;
 
+		char delimiter = '|';
+		std::string StartSpell;
+		std::getline(ss, playerVariables.resultname, delimiter);
 
-		//If the message is a add player command, then add the player to the server database
-		//Then broadcast the command out to all other clients to add to their local database
-		PlayerDatabase::getInstance().addPlayer(msg.getPlayer().getName(), msg.getPlayer());
+		ss >> playerVariables.resultposition.X >> delimiter >>
+			playerVariables.resultposition.Y >> delimiter >>
+			playerVariables.resultposition.Z >> delimiter >>
+			playerVariables.resulthealth >> delimiter >> playerVariables.resultAC >>
+			delimiter >> playerVariables.resultmovementSpeed >> delimiter;
+		std::getline(ss, StartSpell, delimiter);
+		int i = 0;
+		while (i < 100) {
+			std::getline(ss, StartSpell, delimiter);
+			if (StartSpell.compare("EndSpells") != 0) {
+				playerVariables.resultspells.push_back(StartSpell);
+			}
+			else {
+				break;
+			}
+			i++;
+		}
+		std::getline(ss, playerVariables.resultselectedSpell, delimiter);
+		ss >> playerVariables.resultspellChangedState >> delimiter >>
+			playerVariables.resultcurrentSpellShotCount >> delimiter >>
+			playerVariables.resultisCurrentlyConcentrating >> delimiter;
+		std::getline(ss, playerVariables.resultconcentrationSpell, delimiter);
+		ss >> playerVariables.resultconcentrationRoundsLeft >> delimiter >>
+			playerVariables.resultconcentrationSpellLocationX >> delimiter>> playerVariables.resultconcentrationSpellLocationY>> delimiter>>
+			playerVariables.resultisTurnReady >> delimiter >>
+			playerVariables.resultisTurnComplete;
+
+		playerMap[playerVariables.resultname] = playerVariables;
 		ServerConnection::noFeedBackBroadcast(clientSocket,inMsg);
 	}
+
+
 	else if (ClientDisconnectMessage* testMsg = dynamic_cast<ClientDisconnectMessage*>(msg)) {
 		ClientDisconnectMessage& msg = *testMsg;
 		Logger::getInstance().info("Received a ClientDisconnectMessage: \n" + msg.toString());
-		PlayerDatabase::getInstance().removePlayer(msg.getPlayerName());
+		//PlayerDatabase::getInstance().removePlayer(msg.getPlayerName());
 
 		//Let all the clients know that this client has disconnected
 		ServerConnection::noFeedBackBroadcast(clientSocket, inMsg);
@@ -197,27 +274,45 @@ void processMessage(int clientSocket, const char* inMsg) {
 		//Then close the winsock client connection
 		closesocket(clientSocket);
 	}
+
+
+	else if (CastSpellMessage* testMsg = dynamic_cast<CastSpellMessage*>(msg)) {
+		CastSpellMessage& msg = *testMsg;
+		std::cout << "Received a CastSpellMessage" << std::endl;
+		msg.toString();
+		std::stringstream ss(msg.getStringStream());
+
+		std::string spellName;
+		std::string spellType;
+		float posX;
+		float posY;
+		char deliminter = '|';
+		std::getline(ss, spellName, deliminter);
+		std::getline(ss, spellType, deliminter);
+		ss >> posX >> deliminter >> posY >> deliminter;
+
+		//TODO: update server data later , if spell is a certain type, say , concentration
+
+		ServerConnection::noFeedBackBroadcast(clientSocket, inMsg);
+
+	}
+	else if (CancelConcentrationMessage* testMsg = dynamic_cast<CancelConcentrationMessage*>(msg)) {
+		CancelConcentrationMessage& msg = *testMsg;
+
+		//TODO, update player struct on the server to reset the concentration spell
+
+		ServerConnection::noFeedBackBroadcast(clientSocket, inMsg);
+
+	}
+
+
 	else if (UpdatePlayerDataMessage* testMsg = dynamic_cast<UpdatePlayerDataMessage*>(msg)) {
 		UpdatePlayerDataMessage& msg = *testMsg;
 
 		std::cout << "Received a UpdatePlayerDataMessage" << std::endl; 
 		msg.toString();
-		Player& player = PlayerDatabase::getInstance().getPlayer(msg.getName());
+		auto& player = playerMap.at(msg.getName());
 		switch (msg.getField()) {
-		case PlayerFields::AC: {
-			std::stringstream ss = msg.getStringStream();
-			int tmpAC;
-			ss >> tmpAC;
-			player.setAC(tmpAC);
-			break;
-		}
-		case PlayerFields::HEALTH: {
-			std::stringstream ss = msg.getStringStream();
-			int tmpHealth;
-			ss >> tmpHealth;
-			player.setHealth(tmpHealth);
-			break;
-		}
 		case PlayerFields::NAME: {
 			std::stringstream ss = msg.getStringStream();
 			break;
@@ -227,7 +322,113 @@ void processMessage(int clientSocket, const char* inMsg) {
 			double posX, posY, posZ;
 			char deliminter;
 			ss >> posX >> deliminter >> posY >> deliminter >> posZ >> deliminter;
-			player.setPosition(posX, posY, posZ,msg.getPointTime());
+			Position tmpPos(posX, posY, posZ, msg.getPointTime());
+			player.resultposition = tmpPos;
+			break;
+		}
+		case PlayerFields::HEALTH: {
+			std::stringstream ss = msg.getStringStream();
+			int tmpHealth;
+			ss >> tmpHealth;
+			player.resulthealth = tmpHealth;
+			break;
+		}
+		case PlayerFields::AC: {
+			std::stringstream ss = msg.getStringStream();
+			int tmpAC;
+			ss >> tmpAC;
+			player.resultAC = tmpAC;
+			break;
+		}
+		case PlayerFields::MOVEMENTSPEED: {
+			std::stringstream ss = msg.getStringStream();
+			float tmpMovementSpeed;
+			char deliminter;
+			ss >> tmpMovementSpeed >> deliminter;
+			player.resultmovementSpeed = tmpMovementSpeed;
+			break;
+		}
+		case PlayerFields::SELECTEDSPELL: {
+			std::stringstream ss = msg.getStringStream();
+			std::string spellName;
+			char deliminter = '|';
+			std::getline(ss, spellName, deliminter);
+
+			player.resultselectedSpell = spellName;
+
+			break;
+		}
+		case PlayerFields::SPELLCHANGESTATE: {
+			std::stringstream ss = msg.getStringStream();
+			bool spellChangeState;
+			char deliminter;
+
+			ss >> spellChangeState >> deliminter;
+			//Currently no setter for this member due to only being used locally per client
+			break;
+		}
+		case PlayerFields::CURRENTSPELLSHOTCOUNT: {
+			std::stringstream ss = msg.getStringStream();
+			float tmpSpellShotCount;
+			char deliminter;
+
+			ss >> tmpSpellShotCount >> deliminter;
+			player.resultcurrentSpellShotCount = tmpSpellShotCount;
+			break;
+		}
+		case PlayerFields::ISCURRENTLYCONCENTRATING: {
+			std::stringstream ss = msg.getStringStream();
+			bool tmpIsCurrentlyConcentrating;
+			char deliminter;
+
+			ss >> tmpIsCurrentlyConcentrating >> deliminter;
+			player.resultisCurrentlyConcentrating = tmpIsCurrentlyConcentrating;
+			break;
+		}
+		case PlayerFields::CONCENTRATIONSPELL: {
+
+			std::stringstream ss = msg.getStringStream();
+			std::string spellName;
+			char deliminter = '|';
+			std::getline(ss, spellName, deliminter);
+
+			player.resultconcentrationSpell = spellName;
+
+			break;
+		}
+		case PlayerFields::CONCENTRATIONSPELLLOCATION: {
+			std::stringstream ss = msg.getStringStream();
+			float tmpConcentrationSpellLocationX;
+			float tmpConcentrationSpellLocationY;
+			char deliminter;
+			ss >> tmpConcentrationSpellLocationX >> deliminter >> tmpConcentrationSpellLocationY >> deliminter;
+			player.resultconcentrationSpellLocationX = tmpConcentrationSpellLocationX;
+			player.resultconcentrationSpellLocationY = tmpConcentrationSpellLocationY;
+			break;
+		}
+		case PlayerFields::CONCENTRATIONROUNDSLEFT: {
+			std::stringstream ss = msg.getStringStream();
+			float tmpConcentrationRoundsLeft;
+			char deliminter;
+			ss >> tmpConcentrationRoundsLeft >> deliminter;
+			player.resultconcentrationRoundsLeft = tmpConcentrationRoundsLeft;
+			break;
+		}
+		case PlayerFields::ISTURNREADY: {
+			std::stringstream ss = msg.getStringStream();
+			bool isTurnReady;
+			char deliminter;
+			ss >> isTurnReady >> deliminter;
+			player.resultisTurnReady = isTurnReady;
+			break;
+		}
+		case PlayerFields::ISTURNCOMPLETE: {
+			std::stringstream ss = msg.getStringStream();
+			bool isTurnComplete;
+			char deliminter;
+
+			ss >> isTurnComplete >> deliminter;
+			player.resultisTurnComplete = isTurnComplete;
 			break;
 		}
 		}

@@ -74,7 +74,7 @@
     <ClInclude Include="server\ServerConnection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="client\Client.h">
+    <ClInclude Include="client\ClientConnection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\Messages\BroadCastMessage.h">
@@ -681,6 +681,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\Enums\SpellType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Utils\TestGlobalClientInstance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Messages\CastSpellMessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Messages\CancelConcentrationMessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Enums\PlayerFields.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

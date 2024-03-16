@@ -29,8 +29,16 @@ public:
 		PlayerDatabase::getInstance().getPlayer(playerListing.at(0)).setIsTurnReady(true); //Start the first player in the List
 	}
 
+	void checkPlayerList() {
+		playerListing.clear();
+		for (auto& player : PlayerDatabase::getInstance().getPlayers()) {
+			playerListing.push_back(player.first);
+		}
+	}
+
 
 	void checkGameState() {
+		checkPlayerList(); //Update the playerList to make sure joining players are added to the queue
 		//This will be called from the main render loop on update. This will keep track of the state of the game.
 		//In other words, who is currently playing , update all their specific details like if they are currently casting a duration spell, need to update time spell has left
 		for (std::string name : playerListing) {

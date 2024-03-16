@@ -7,41 +7,7 @@
 #include <list>
 #include <chrono>
 #include "./Spells/Spell.h"
-
-struct Position {
-	double X;
-	double Y;
-	double Z;
-	long long pointTime;
-	//Populated constructor
-	Position(double x, double y, double z, long long pointTime)
-		:X(x), Y(y), Z(z), pointTime(pointTime) {};
-
-	//Empty constructor
-	Position():X(0.0),Y(0.0),Z(0.0),pointTime(getCurrentTimeInMillis()) {};
-};
-
-enum PlayerFields {
-	NAME,
-	POSITION,
-	HEALTH,
-	AC,
-	KEYPRESS,
-	MOVEMENTSPEED,
-};
-
-// Function to convert enum value to string
-std::string playerFieldEnumToString(PlayerFields value) {
-	switch (value) {
-	case PlayerFields::NAME: return "NAME";
-	case PlayerFields::POSITION: return "POSITION";
-	case PlayerFields::HEALTH: return "HEALTH";
-	case PlayerFields::AC: return "AC";
-	case PlayerFields::KEYPRESS: return "KEYPRESS";
-	case PlayerFields::MOVEMENTSPEED: return "MOVEMENTSPEED";
-	}
-}
-
+#include "./../../Common/Enums/PlayerFields.h"
 class Player {
 private:
 	std::vector<std::shared_ptr<Spell>> spells;
@@ -56,11 +22,19 @@ private:
 
 	bool isCurrentlyConcentrating;
 	std::shared_ptr<Spell> concentrationSpell;
+	float concentrationSpellLocationX;
+	float concentrationSpellLocationY;
 	int concentrationRoundsLeft;
 
 	bool isTurnReady;
 	bool isTurnComplete;
+	long long getCurrentTimeInMillis() {
+		// Get the current time point
+		auto now = std::chrono::system_clock::now();
 
+		// Convert time point to milliseconds since epoch
+		return static_cast<long long>(std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count());
+	}
 public:
 
 	//Constructor
@@ -136,6 +110,26 @@ public:
 	float getCurrentSpellShotCount() {
 		return currentSpellShotCount;
 	}
+	void setIsCurrentlyConcentrating(bool concentrating) {
+		isCurrentlyConcentrating = concentrating;
+	}
+	void setConcentrationSpell(std::shared_ptr<Spell> spell) {
+		concentrationSpell = spell;
+	}
+
+	void setConcentrationSpellLocationX(float x) {
+		concentrationSpellLocationX = x;
+	}
+	void setConcentrationSpellLocationY(float y) {
+		concentrationSpellLocationY = y;
+	}
+
+	float getConcentrationSpellLocationX() {
+		return concentrationSpellLocationX ;
+	}
+	float getConcentrationSpellLocationY() {
+		return concentrationSpellLocationY ;
+	}
 	void resetChangeState(bool changeState) {
 		spellChangedState = changeState;
 	}
@@ -160,6 +154,8 @@ public:
 			}
 			isCurrentlyConcentrating = true;
 			concentrationRoundsLeft = selectedSpell->getSpellDuration()/6000; //Divide by the time taken per round
+			concentrationSpellLocationX = targetX;
+			concentrationSpellLocationY = targetY;
 			concentrationSpell = selectedSpell;
 		}
 
@@ -210,6 +206,9 @@ public:
 		return spells;
 	}
 
+	std::shared_ptr<Spell> getCurrentConcentrationSpell() {
+		return concentrationSpell;
+	}
 	bool getIsTurnReady() {
 		return isTurnReady;
 	}
@@ -245,21 +244,26 @@ public:
 /*
 * ----------------------SERIZALIZE---------------------------------
 */
-	std::string serialize() const {
+	std::stringstream serialize() const {
 		std::stringstream ss;
-		ss << name << "|" << position.X << "|" <<position.Y << "|" <<position.Z<< "|" << health << "|" << AC;
-		return ss.str();
-	}
+		ss << name << "|" << position.X << "|" << position.Y << "|" << position.Z
+			<< "|" << health << "|" << AC << "|" << movementSpeed << "|"
+			<< "StartSpells"
+			<< "|";
+		for (std::shared_ptr<Spell> spell : spells) {
+			ss << spell->getName() << "|";
+		}
+		ss << "EndSpells" << "|";
+		if (selectedSpell != nullptr) {ss << selectedSpell->getName() << "|";}
+		else {ss << "None" << "|";}
 
-	static Player deserialize(const char* serializedData) {
-		std::stringstream ss(serializedData);
-		std::string name;
-		double posX, posY, posZ;
-		int health,AC;
-		char delimiter='|';
-		std::getline(ss, name, delimiter);
-		ss >> posX >> delimiter >> posY >> delimiter >> posZ>>delimiter >> health>>delimiter>>AC;
-		return Player(name,posX,posY,posZ,health,AC);
+		ss << spellChangedState << "|"
+			<< currentSpellShotCount << "|" << isCurrentlyConcentrating << "|";
+		if (concentrationSpell != nullptr) { ss << concentrationSpell->getName() << "|"; }
+		else { ss << "None" << "|"; }
+			ss<< concentrationRoundsLeft << "|" << concentrationSpellLocationX <<"|"<< concentrationSpellLocationY<<"|"
+			<< isTurnReady << "|" << isTurnComplete;
+		return ss;
 	}
 
 };
