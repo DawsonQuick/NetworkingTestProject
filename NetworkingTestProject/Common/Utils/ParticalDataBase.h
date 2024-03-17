@@ -7,8 +7,6 @@
 #include <list>
 #include <map>
 #include "./../Objects/Particles/Particle.h"
-#include "./../Objects/Particles/TestParticle.h"
-#include "./../Objects/Particles/ImplosionParticle.h"
 #include "./../../OpenGL/vendor/glm/glm.hpp"
 #include "./TextureManager.h"
 #include <algorithm>

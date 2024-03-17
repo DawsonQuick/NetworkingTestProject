@@ -707,6 +707,201 @@
     <ClInclude Include="Common\Utils\DamageCalcuator\DamageCalculator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\CharacterParticleFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Numbers\Particle_0.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Numbers\Particle_1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Numbers\Particle_2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Numbers\Particle_3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Numbers\Particle_4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Numbers\Particle_5.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Numbers\Particle_6.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Numbers\Particle_7.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Numbers\Particle_8.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Numbers\Particle_9.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\SpecialCharacters\Particle_Minus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\SpecialCharacters\Particle_Plus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_a.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_b.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_c.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_e.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_f.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_g.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_i.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_h.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_j.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_k.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_l.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_m.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_n.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_o.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_p.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_q.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_r.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_s.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_t.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_u.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_v.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_w.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_x.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_y.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\LowerCase\Particle_z.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_A.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_B.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_C.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_E.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_F.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_G.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_H.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_I.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_J.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_K.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_L.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_M.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_N.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_O.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_P.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_Q.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_R.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_S.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_T.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_U.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_V.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_W.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_X.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_Y.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_Z.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenGL\vendor\glm\detail\func_common.inl">

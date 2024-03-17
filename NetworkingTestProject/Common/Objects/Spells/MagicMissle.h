@@ -3,6 +3,7 @@
 #define MAGICMISSLE_H
 #include "./Spell.h"
 #include "./../Particles/ParticleFactory.h"
+#include "./../Particles/CharacterParticles/CharacterParticleFactory.h"
 #include <iostream>
 class MagicMissle : public Spell {
 private:
@@ -72,7 +73,10 @@ public:
                         
                         //Magic Missle has a 100% chance to hit so no need to calculate if hit happens
                             int currentPlayerHealth = player.second.getHealth();
-                            currentPlayerHealth -= calculateDamage(damageModifier, player.second.getPlayerDamageAttributes());
+                            int IncomingDamage = 0;
+                            IncomingDamage = calculateDamage(damageModifier, player.second.getPlayerDamageAttributes());
+                            currentPlayerHealth -= IncomingDamage;
+                            CharacterParticleFactory::getInstance().generateTextParticle(resultPosX, resultPosY, "-" + std::to_string(IncomingDamage));
                             PlayerDatabase::getInstance().getPlayer(player.first).setHealth(currentPlayerHealth);
 
                             MessageFactory factory;
@@ -89,7 +93,10 @@ public:
 
                             //Magic Missle has a 100% chance to hit so no need to calculate if hit happens
                             int currentPlayerHealth = player.second.getHealth();
-                            currentPlayerHealth -= calculateDamage(damageModifier, player.second.getPlayerDamageAttributes());
+                            int IncomingDamage = 0;
+                            IncomingDamage = calculateDamage(damageModifier, player.second.getPlayerDamageAttributes());
+                            currentPlayerHealth -= IncomingDamage;
+                            CharacterParticleFactory::getInstance().generateTextParticle(resultPosX, resultPosY, "-" + std::to_string(IncomingDamage));
                             PlayerDatabase::getInstance().getPlayer(player.first).setHealth(currentPlayerHealth);
 
                             MessageFactory factory;

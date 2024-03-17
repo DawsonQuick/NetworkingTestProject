@@ -3,6 +3,7 @@
 #define FIREBALL_H
 #include "./../Particles/GuidedParticle.h"
 #include "./../Particles/ParticleFactory.h"
+#include "./../Particles/CharacterParticles/CharacterParticleFactory.h"
 #include "./Spell.h"
 #include <iostream>
 class Fireball : public Spell {
@@ -80,10 +81,10 @@ public:
                             IncomingDamage = calculateDamage(damageModifier, player.second.getPlayerDamageAttributes());
                             
                             std::vector<int> tmpModifier = { 2 };
-                            if (doesTargetSave(14, tmpModifier)) { IncomingDamage = IncomingDamage / 2;  std::cout << "Player: " << player.first << " passed the saving throw!" << std::endl;
+                            if (doesTargetSave(14, tmpModifier)) { IncomingDamage = IncomingDamage / 2;   CharacterParticleFactory::getInstance().generateTextParticle(playerX, playerY, "Saved");
                             }
                             currentPlayerHealth -= IncomingDamage;
-                            
+                            CharacterParticleFactory::getInstance().generateTextParticle(resultPosX, resultPosY, "-"+ std::to_string(IncomingDamage));
                             PlayerDatabase::getInstance().getPlayer(player.first).setHealth(currentPlayerHealth);
 
                             MessageFactory factory;
@@ -103,8 +104,10 @@ public:
                             IncomingDamage = calculateDamage(damageModifier, player.second.getPlayerDamageAttributes());
 
                             std::vector<int> tmpModifier = { 2 };
-                            if (doesTargetSave(14, tmpModifier)) { IncomingDamage = IncomingDamage / 2; std::cout << "Player: " << player.first << " passed the saving throw!" << std::endl; }
+                            if (doesTargetSave(14, tmpModifier)) { IncomingDamage = IncomingDamage / 2;  CharacterParticleFactory::getInstance().generateTextParticle(playerX, playerY, "Saved");
+                            }
                             currentPlayerHealth -= IncomingDamage;
+                            CharacterParticleFactory::getInstance().generateTextParticle(playerX, playerY, "-" + std::to_string(IncomingDamage));
                             PlayerDatabase::getInstance().getPlayer(player.first).setHealth(currentPlayerHealth);
 
                             MessageFactory factory;
@@ -114,7 +117,6 @@ public:
                                 PlayerFields::HEALTH, player.first, std::move(ss)
                             ).serialize().c_str());
 
-                            //Add check for Saving throw to see if damage is halved
 
                     }
                 }

@@ -1,11 +1,12 @@
 #pragma once
 #ifndef PARTICLEFACTORY_H
 #define PARTICLEFACTORY_H
-#include "./Particle.h"
 #include "./GuidedParticle.h"
 #include "./TestParticle.h"
 #include "./ImplosionParticle.h"
 #include "./CloudOfDaggersParticle.h"
+
+#include "./../../Utils/ParticalDataBase.h"
 #include <memory>
 class ParticleFactory {
 
