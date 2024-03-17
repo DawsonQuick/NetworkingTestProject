@@ -1,0 +1,72 @@
+#pragma once
+#include "./../../Enums/AbilityType.h"
+#include "./../../Enums/Dice.h"
+#include "./../../Enums/DamageTypes.h"
+#include <map>
+#include <vector>
+#include <tuple>
+#include <cmath>
+
+bool doesAttackLand(std::vector<int> attackersModifiers, int armourClassToBeat) {
+	int initialAttackRoll = rollDice(1, DiceType::D20);
+	for (int modifier : attackersModifiers) {
+		initialAttackRoll += modifier;
+	}
+
+	return (initialAttackRoll >= armourClassToBeat);
+
+}
+
+bool doesTargetSave(int targetDcThrow, std::vector<int> modifiers) {
+	int initalSaveRoll = rollDice(1, DiceType::D20);
+	for (int modifier : modifiers) {
+		initalSaveRoll += modifier;
+	}
+
+	return (initalSaveRoll >= targetDcThrow);
+}
+
+int calculateInterationModifier(int currentDamage, DamageTypes type, std::map<DamageTypes, DamageInteraction> playerDamageAttributes) {
+	for (auto& playerAttribute : playerDamageAttributes) {
+
+				if (type == playerAttribute.first) {
+					switch (playerAttribute.second) {
+					case DamageInteraction::Immunity:
+						currentDamage = 0;
+						break;	
+					case DamageInteraction::Resistance:
+						currentDamage = std::floor(currentDamage /2);
+						break;	
+					case DamageInteraction::Vulnerability:
+						currentDamage = currentDamage * 2;
+						break;
+			}
+		}
+	}
+	return currentDamage;
+}
+
+int calculateDamage(std::vector<std::tuple<int, DiceType, DamageTypes>> allIncomingDamage,
+	std::map<DamageTypes, DamageInteraction> playerDamageAttributes) {
+
+	int totalDamage = 0;
+
+	for (std::tuple<int, DiceType, DamageTypes> damageRoll : allIncomingDamage) {
+
+		//If the DiceType is set to NONE, then the first entry in the tuple will be stright damage
+		if (std::get<1>(damageRoll) == DiceType::DICETYPE_NONE) {
+			totalDamage += calculateInterationModifier(std::get<0>(damageRoll), std::get<2>(damageRoll), playerDamageAttributes);
+			continue;
+		}
+		else {
+			int tmpDamage = rollDice(std::get<0>(damageRoll), std::get<1>(damageRoll));
+			if (std::get<2>(damageRoll) != DamageTypes::DAMAGETYPE_NONE) {
+				tmpDamage = calculateInterationModifier(tmpDamage, std::get<2>(damageRoll), playerDamageAttributes);
+			}
+			totalDamage += tmpDamage;
+		}
+	}
+
+	return totalDamage;
+
+}

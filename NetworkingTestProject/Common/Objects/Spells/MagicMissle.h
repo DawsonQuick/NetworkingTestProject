@@ -7,11 +7,17 @@
 class MagicMissle : public Spell {
 private:
     SpellType spellType = SpellType::INSTANTANEOUS;
-    int spellLevel = 1;
+    int spellLevel = 1; 
     float maxNumberofShots = 3.0f;
 
     //Number of grid cells
     float impactRadius = 0.0f;
+
+    //Per PlayerHandbook , Damage = 1d4 + 1 Force Damage
+    std::vector<std::tuple<int, DiceType, DamageTypes>> damageModifier = {
+        {1,DiceType::D4,DamageTypes::DAMAGETYPE_NONE},
+        {1,DiceType::DICETYPE_NONE,DamageTypes::FORCE},
+    };
 
     //Range is 120ft according to handbook 
     //Range / (ft per grid cell) = number of cells
@@ -63,33 +69,35 @@ public:
                 if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GOEMETRIC) {
                     //Circle:   PosX        PosY           Circle Radius # of Grid cells * Scale of cells      Player : Bottom-Left vertex position , Top-Right vertex position
                     if (RectangleVsCircle(resultPosX, resultPosY, impactRadius * (GlobalConfigurations::getInstance().getScale()), (playerX - 0.5f), (playerY - 0.5f), (playerX + 0.5f), (playerY + 0.5f))) {
-                        std::cout << "Player: " << player.first << " hit with magic missle" << std::endl;
-                        int currentPlayerHealth = player.second.getHealth();
-                        currentPlayerHealth -= 5.0; //Imaginary MagicMissleDamage
-                        PlayerDatabase::getInstance().getPlayer(player.first).setHealth(currentPlayerHealth);
+                        
+                        //Magic Missle has a 100% chance to hit so no need to calculate if hit happens
+                            int currentPlayerHealth = player.second.getHealth();
+                            currentPlayerHealth -= calculateDamage(damageModifier, player.second.getPlayerDamageAttributes());
+                            PlayerDatabase::getInstance().getPlayer(player.first).setHealth(currentPlayerHealth);
 
-                        MessageFactory factory;
-                        std::stringstream ss;
-                        ss << currentPlayerHealth;
-                        GlobalConfigurations::getInstance().sendMsg(factory.generateUpdatePlayerDataMessage(MessageType::UPDATEPLAYERDATA, 1, 0.0,
-                            PlayerFields::HEALTH, player.first, std::move(ss)
-                        ).serialize().c_str());
+                            MessageFactory factory;
+                            std::stringstream ss;
+                            ss << currentPlayerHealth;
+                            GlobalConfigurations::getInstance().sendMsg(factory.generateUpdatePlayerDataMessage(MessageType::UPDATEPLAYERDATA, 1, 0.0,
+                                PlayerFields::HEALTH, player.first, std::move(ss)
+                            ).serialize().c_str());
+                        
                     }
                 }
                 else if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GRID) {
                     if (SquareVsSquare(resultPosX, resultPosY, impactRadius * (GlobalConfigurations::getInstance().getScale()), playerX, playerY, 1.0f)) {
-                        std::cout << "Player: " << player.first << " hit with magic missle" << std::endl;
-                        int currentPlayerHealth = player.second.getHealth();
-                        currentPlayerHealth -= 5.0; //Imaginary MagicMissleDamage
-                        PlayerDatabase::getInstance().getPlayer(player.first).setHealth(currentPlayerHealth);
 
-                        MessageFactory factory;
-                        std::stringstream ss;
-                        ss << currentPlayerHealth;
-                        GlobalConfigurations::getInstance().sendMsg(factory.generateUpdatePlayerDataMessage(MessageType::UPDATEPLAYERDATA, 1, 0.0,
-                            PlayerFields::HEALTH, player.first, std::move(ss)
-                        ).serialize().c_str());
+                            //Magic Missle has a 100% chance to hit so no need to calculate if hit happens
+                            int currentPlayerHealth = player.second.getHealth();
+                            currentPlayerHealth -= calculateDamage(damageModifier, player.second.getPlayerDamageAttributes());
+                            PlayerDatabase::getInstance().getPlayer(player.first).setHealth(currentPlayerHealth);
 
+                            MessageFactory factory;
+                            std::stringstream ss;
+                            ss << currentPlayerHealth;
+                            GlobalConfigurations::getInstance().sendMsg(factory.generateUpdatePlayerDataMessage(MessageType::UPDATEPLAYERDATA, 1, 0.0,
+                                PlayerFields::HEALTH, player.first, std::move(ss)
+                            ).serialize().c_str());
                     }
                 }
             }

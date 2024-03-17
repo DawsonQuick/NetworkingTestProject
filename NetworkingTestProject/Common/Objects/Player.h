@@ -6,8 +6,12 @@
 #include <sstream>
 #include <list>
 #include <chrono>
+#include <tuple>
 #include "./Spells/Spell.h"
 #include "./../../Common/Enums/PlayerFields.h"
+#include "./../../Common/Enums/AbilityType.h"
+#include "./../../Common/Enums/Dice.h"
+#include "./../../Common/Enums/DamageTypes.h"
 class Player {
 private:
 	std::vector<std::shared_ptr<Spell>> spells;
@@ -17,7 +21,7 @@ private:
 	int AC;
 	double movementSpeed;
 	std::shared_ptr<Spell> selectedSpell;
-	bool spellChangedState; 
+	bool spellChangedState;
 	float currentSpellShotCount;
 
 	bool isCurrentlyConcentrating;
@@ -28,6 +32,13 @@ private:
 
 	bool isTurnReady;
 	bool isTurnComplete;
+
+	AbilityScore playerAbilityScore;
+
+	std::vector<int> additionalAttackModifiers;
+	std::vector<std::tuple<int, DiceType, DamageTypes>> additionalDamageModifiers;
+	std::map<DamageTypes, DamageInteraction> playerDamageAttributes;
+
 	long long getCurrentTimeInMillis() {
 		// Get the current time point
 		auto now = std::chrono::system_clock::now();
@@ -51,9 +62,9 @@ public:
 
 	//Default Constructor
 	Player()
-	: name("Frodo"),
-	  health(5),
-	  position(0.0,0.0,0.0, getCurrentTimeInMillis()),AC(10), movementSpeed(30.0) {}
+		: name("Frodo"),
+		health(5),
+		position(0.0, 0.0, 0.0, getCurrentTimeInMillis()), AC(10), movementSpeed(30.0) {}
 
 	~Player() {
 
@@ -62,9 +73,9 @@ public:
 
 	void addSpell(std::shared_ptr<Spell> spell) { spells.push_back(spell); }
 
-/*
-* -------------------------SETTERS--------------------------------
-*/
+	/*
+	* -------------------------SETTERS--------------------------------
+	*/
 	void setIsTurnReady(bool readyState) {
 		isTurnReady = readyState;
 	}
@@ -78,7 +89,7 @@ public:
 		health = tmpHealth;
 
 	}
-	void setPosition(double posX,double posY, double posZ , long long tmpPointTime) {
+	void setPosition(double posX, double posY, double posZ, long long tmpPointTime) {
 		position.X = posX;
 		position.Y = posY;
 		position.Z = posZ;
@@ -124,17 +135,39 @@ public:
 		concentrationSpellLocationY = y;
 	}
 
+	void setAbilityScore(AbilityScore tmpAbilityScore) {
+		playerAbilityScore = tmpAbilityScore;
+	}
+	void addAdditionalAttackModifier(int tmp) {
+		additionalAttackModifiers.push_back(tmp);
+	}
+	void addAdditionalDamageModifier(std::tuple<int, DiceType, DamageTypes> tmp){
+		additionalDamageModifiers.push_back(tmp);
+	}
+	void addPlayerDamageAttribute(DamageTypes type, DamageInteraction interaction) {
+		playerDamageAttributes[type] = interaction;
+	}
+
+
+	void setAbilityScore(int strength, int dexterity, int intelligence, int wisdom, int charisma) {
+		playerAbilityScore.Strength = strength;
+		playerAbilityScore.Dexterity = dexterity;
+		playerAbilityScore.Intelligence = intelligence;
+		playerAbilityScore.Wisdom = wisdom;
+		playerAbilityScore.Charisma = charisma;
+	}
+
 	float getConcentrationSpellLocationX() {
-		return concentrationSpellLocationX ;
+		return concentrationSpellLocationX;
 	}
 	float getConcentrationSpellLocationY() {
-		return concentrationSpellLocationY ;
+		return concentrationSpellLocationY;
 	}
 	void resetChangeState(bool changeState) {
 		spellChangedState = changeState;
 	}
 
-	bool hasSpellChanged(){
+	bool hasSpellChanged() {
 		return spellChangedState;
 	}
 
@@ -153,14 +186,14 @@ public:
 				DurationSpellManager::getInstance().removeConcentrationSpell(name, concentrationSpell->getName());
 			}
 			isCurrentlyConcentrating = true;
-			concentrationRoundsLeft = selectedSpell->getSpellDuration()/6000; //Divide by the time taken per round
+			concentrationRoundsLeft = selectedSpell->getSpellDuration() / 6000; //Divide by the time taken per round
 			concentrationSpellLocationX = targetX;
 			concentrationSpellLocationY = targetY;
 			concentrationSpell = selectedSpell;
 		}
 
-		
-		selectedSpell->castSpell(name,targetX, targetY);
+
+		selectedSpell->castSpell(name, targetX, targetY);
 	}
 
 	void cancelConcentration() {
@@ -175,9 +208,9 @@ public:
 	bool isPlayerCurrentlyConcentrating() {
 		return isCurrentlyConcentrating;
 	}
-/*
-* -------------------------GETTERS--------------------------------
-*/
+	/*
+	* -------------------------GETTERS--------------------------------
+	*/
 	std::string getName() {
 		return name;
 	}
@@ -226,6 +259,21 @@ public:
 	int getRoundsRemainingForConcentrationSpell() {
 		return concentrationRoundsLeft;
 	}
+	AbilityScore getAbilityScore() {
+		return playerAbilityScore;
+	}
+
+	std::vector<int> getAdditionalAttackModifiers(){
+		return additionalAttackModifiers;
+	}
+	std::vector<std::tuple<int, DiceType, DamageTypes>>  getAdditionalDamageModifiers() {
+		return additionalDamageModifiers;
+	}
+	std::map<DamageTypes, DamageInteraction> getPlayerDamageAttributes() {
+		return playerDamageAttributes;
+	}
+
+	
 
 /*
 * ----------------------DISPLAY STATS------------------------------

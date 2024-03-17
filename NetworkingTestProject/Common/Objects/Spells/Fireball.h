@@ -8,10 +8,18 @@
 class Fireball : public Spell {
 private:
     SpellType spellType = SpellType::INSTANTANEOUS;
+    
     float maxNumberofShots = 1;
+    
     int spellLevel = 3;
+
     //Number of grid cells
     float impactRadius = 20.0f / 5.0f;
+
+    //8d6 Fire Damage
+    std::vector<std::tuple<int, DiceType, DamageTypes>> damageModifier = {
+        {8,DiceType::D6,DamageTypes::FIRE},
+    };
 
     //Range is 120ft according to handbook 
     //Range / (ft per grid cell) = number of cells
@@ -55,8 +63,11 @@ public:
         std::cout << "Fireball impacted at X: " << resultPosX << " Y: " << resultPosY << std::endl;
 
         for (int i = 0; i < 100; i++) { ParticleDatabase::getInstance().addParticle("Test" + std::to_string(i), ParticleFactory::getInstance().createTestParticle(resultPosX,resultPosY,0.0f,0.0f,0.2f)); }
-        //Sample hit detection
+
+        //Example of chaining particles
+        //for (int i = 0; i < 100; i++) {ParticleDatabase::getInstance().addParticle("Test" + std::to_string(i), ParticleFactory::getInstance().createImplosionParticle(resultPosX, resultPosY,0.3f));}
         if (playerName == GlobalConfigurations::getInstance().getPlayerName()) {
+            //Sample hit detection
             for (auto& player : PlayerDatabase::getInstance().getPlayers()) {
                 float playerX = player.second.getPositionX();
                 float playerY = player.second.getPositionY();
@@ -64,33 +75,46 @@ public:
                 if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GOEMETRIC) {
                     //Circle:   PosX        PosY           Circle Radius # of Grid cells * Scale of cells      Player : Bottom-Left vertex position , Top-Right vertex position
                     if (RectangleVsCircle(resultPosX, resultPosY, impactRadius * (GlobalConfigurations::getInstance().getScale()), (playerX - 0.5f), (playerY - 0.5f), (playerX + 0.5f), (playerY + 0.5f))) {
-                        std::cout << "Player: " << player.first << " hit with Fireball" << std::endl;
-                        int currentPlayerHealth = player.second.getHealth();
-                        currentPlayerHealth -= 5.0; //Imaginary MagicMissleDamage
-                        PlayerDatabase::getInstance().getPlayer(player.first).setHealth(currentPlayerHealth);
+                            int currentPlayerHealth = player.second.getHealth();
+                            int IncomingDamage = 0;
+                            IncomingDamage = calculateDamage(damageModifier, player.second.getPlayerDamageAttributes());
+                            
+                            std::vector<int> tmpModifier = { 2 };
+                            if (doesTargetSave(14, tmpModifier)) { IncomingDamage = IncomingDamage / 2;  std::cout << "Player: " << player.first << " passed the saving throw!" << std::endl;
+                            }
+                            currentPlayerHealth -= IncomingDamage;
+                            
+                            PlayerDatabase::getInstance().getPlayer(player.first).setHealth(currentPlayerHealth);
 
-                        MessageFactory factory;
-                        std::stringstream ss;
-                        ss << currentPlayerHealth;
-                        GlobalConfigurations::getInstance().sendMsg(factory.generateUpdatePlayerDataMessage(MessageType::UPDATEPLAYERDATA, 1, 0.0,
-                            PlayerFields::HEALTH, player.first, std::move(ss)
-                        ).serialize().c_str());
+                            MessageFactory factory;
+                            std::stringstream ss;
+                            ss << currentPlayerHealth;
+                            GlobalConfigurations::getInstance().sendMsg(factory.generateUpdatePlayerDataMessage(MessageType::UPDATEPLAYERDATA, 1, 0.0,
+                                PlayerFields::HEALTH, player.first, std::move(ss)
+                            ).serialize().c_str());
+                        
 
                     }
                 }
                 else if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GRID) {
                     if (SquareVsSquare(resultPosX, resultPosY, impactRadius * (GlobalConfigurations::getInstance().getScale()), playerX, playerY, 1.0f)) {
-                        std::cout << "Player: " << player.first << " hit with Fireball" << std::endl;
-                        int currentPlayerHealth = player.second.getHealth();
-                        currentPlayerHealth -= 5.0; //Imaginary MagicMissleDamage
-                        PlayerDatabase::getInstance().getPlayer(player.first).setHealth(currentPlayerHealth);
+                            int currentPlayerHealth = player.second.getHealth();
+                            int IncomingDamage = 0;
+                            IncomingDamage = calculateDamage(damageModifier, player.second.getPlayerDamageAttributes());
 
-                        MessageFactory factory;
-                        std::stringstream ss;
-                        ss << currentPlayerHealth;
-                        GlobalConfigurations::getInstance().sendMsg(factory.generateUpdatePlayerDataMessage(MessageType::UPDATEPLAYERDATA, 1, 0.0,
-                            PlayerFields::HEALTH, player.first, std::move(ss)
-                        ).serialize().c_str());
+                            std::vector<int> tmpModifier = { 2 };
+                            if (doesTargetSave(14, tmpModifier)) { IncomingDamage = IncomingDamage / 2; std::cout << "Player: " << player.first << " passed the saving throw!" << std::endl; }
+                            currentPlayerHealth -= IncomingDamage;
+                            PlayerDatabase::getInstance().getPlayer(player.first).setHealth(currentPlayerHealth);
+
+                            MessageFactory factory;
+                            std::stringstream ss;
+                            ss << currentPlayerHealth;
+                            GlobalConfigurations::getInstance().sendMsg(factory.generateUpdatePlayerDataMessage(MessageType::UPDATEPLAYERDATA, 1, 0.0,
+                                PlayerFields::HEALTH, player.first, std::move(ss)
+                            ).serialize().c_str());
+
+                            //Add check for Saving throw to see if damage is halved
 
                     }
                 }

@@ -155,6 +155,9 @@
     <ClInclude Include="client\ClientMrg.h" />
     <ClInclude Include="client\ImGuiRenderContent.h" />
     <ClInclude Include="client\OnUpdate.h" />
+    <ClInclude Include="Common\Enums\AbilityType.h" />
+    <ClInclude Include="Common\Enums\DamageTypes.h" />
+    <ClInclude Include="Common\Enums\Dice.h" />
     <ClInclude Include="Common\Enums\MessageTypes.h" />
     <ClInclude Include="Common\Enums\PlayerFields.h" />
     <ClInclude Include="Common\Enums\SpellType.h" />
@@ -183,6 +186,7 @@
     <ClInclude Include="Common\Objects\Spells\MagicMissle.h" />
     <ClInclude Include="Common\Objects\Spells\Spell.h" />
     <ClInclude Include="Common\Objects\Spells\SpellFactory.h" />
+    <ClInclude Include="Common\Utils\DamageCalcuator\DamageCalculator.h" />
     <ClInclude Include="Common\Utils\MainGameLoop\MainGameLoop.h" />
     <ClInclude Include="Common\Utils\TestGlobalClientInstance.h" />
     <ClInclude Include="Common\Utils\TileManager\AStartPathFinding.h" />

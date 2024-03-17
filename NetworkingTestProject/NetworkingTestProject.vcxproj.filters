@@ -695,6 +695,18 @@
     <ClInclude Include="Common\Enums\PlayerFields.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Common\Enums\AbilityType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Enums\Dice.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Enums\DamageTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Utils\DamageCalcuator\DamageCalculator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenGL\vendor\glm\detail\func_common.inl">
