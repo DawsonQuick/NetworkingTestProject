@@ -71,40 +71,49 @@ public:
                     //Circle:   PosX        PosY           Circle Radius # of Grid cells * Scale of cells      Player : Bottom-Left vertex position , Top-Right vertex position
                     if (RectangleVsCircle(resultPosX, resultPosY, impactRadius * (GlobalConfigurations::getInstance().getScale()), (playerX - 0.5f), (playerY - 0.5f), (playerX + 0.5f), (playerY + 0.5f))) {
                         
-                        //Magic Missle has a 100% chance to hit so no need to calculate if hit happens
-                            int currentPlayerHealth = player.second.getHealth();
-                            int IncomingDamage = 0;
-                            IncomingDamage = calculateDamage(damageModifier, player.second.getPlayerDamageAttributes());
-                            currentPlayerHealth -= IncomingDamage;
-                            CharacterParticleFactory::getInstance().generateTextParticle(resultPosX, resultPosY, "-" + std::to_string(IncomingDamage));
-                            PlayerDatabase::getInstance().getPlayer(player.first).setHealth(currentPlayerHealth);
+                        int currentPlayerHealth = player.second.getHealth();
+                        std::vector<std::tuple<int, DamageTypes>> incomingDamage;
+                        incomingDamage = calculateDamage(damageModifier, player.second.getPlayerDamageAttributes());
+                        for (std::tuple<int, DamageTypes> damage : incomingDamage) {
+                            int tmpDamage = std::get<0>(damage);
+                            CharacterParticleFactory::getInstance().generateTextParticle(playerX, playerY, "-" + std::to_string(tmpDamage), std::get<1>(damage));
+                            currentPlayerHealth -= tmpDamage;
+                        }
+                        PlayerDatabase::getInstance().getPlayer(player.first).setHealth(currentPlayerHealth);
 
-                            MessageFactory factory;
-                            std::stringstream ss;
-                            ss << currentPlayerHealth;
-                            GlobalConfigurations::getInstance().sendMsg(factory.generateUpdatePlayerDataMessage(MessageType::UPDATEPLAYERDATA, 1, 0.0,
-                                PlayerFields::HEALTH, player.first, std::move(ss)
-                            ).serialize().c_str());
+                        MessageFactory factory;
+                        std::stringstream ss;
+                        ss << currentPlayerHealth;
+                        GlobalConfigurations::getInstance().sendMsg(factory.generateUpdatePlayerDataMessage(MessageType::UPDATEPLAYERDATA, 1, 0.0,
+                            PlayerFields::HEALTH, player.first, std::move(ss)
+                        ).serialize().c_str());
+
+
+                    
                         
                     }
                 }
                 else if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GRID) {
                     if (SquareVsSquare(resultPosX, resultPosY, impactRadius * (GlobalConfigurations::getInstance().getScale()), playerX, playerY, 1.0f)) {
 
-                            //Magic Missle has a 100% chance to hit so no need to calculate if hit happens
-                            int currentPlayerHealth = player.second.getHealth();
-                            int IncomingDamage = 0;
-                            IncomingDamage = calculateDamage(damageModifier, player.second.getPlayerDamageAttributes());
-                            currentPlayerHealth -= IncomingDamage;
-                            CharacterParticleFactory::getInstance().generateTextParticle(resultPosX, resultPosY, "-" + std::to_string(IncomingDamage));
-                            PlayerDatabase::getInstance().getPlayer(player.first).setHealth(currentPlayerHealth);
+                        int currentPlayerHealth = player.second.getHealth();
+                        std::vector<std::tuple<int, DamageTypes>> incomingDamage;
+                        incomingDamage = calculateDamage(damageModifier, player.second.getPlayerDamageAttributes());
+                        for (std::tuple<int, DamageTypes> damage : incomingDamage) {
+                            int tmpDamage = std::get<0>(damage);
+                            CharacterParticleFactory::getInstance().generateTextParticle(playerX, playerY, "-" + std::to_string(tmpDamage), std::get<1>(damage));
+                            currentPlayerHealth -= tmpDamage;
+                        }
+                        PlayerDatabase::getInstance().getPlayer(player.first).setHealth(currentPlayerHealth);
 
-                            MessageFactory factory;
-                            std::stringstream ss;
-                            ss << currentPlayerHealth;
-                            GlobalConfigurations::getInstance().sendMsg(factory.generateUpdatePlayerDataMessage(MessageType::UPDATEPLAYERDATA, 1, 0.0,
-                                PlayerFields::HEALTH, player.first, std::move(ss)
-                            ).serialize().c_str());
+                        MessageFactory factory;
+                        std::stringstream ss;
+                        ss << currentPlayerHealth;
+                        GlobalConfigurations::getInstance().sendMsg(factory.generateUpdatePlayerDataMessage(MessageType::UPDATEPLAYERDATA, 1, 0.0,
+                            PlayerFields::HEALTH, player.first, std::move(ss)
+                        ).serialize().c_str());
+
+
                     }
                 }
             }

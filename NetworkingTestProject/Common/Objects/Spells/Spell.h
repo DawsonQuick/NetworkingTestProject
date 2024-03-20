@@ -9,7 +9,7 @@
 #include "./../../Enums/Dice.h"
 #include "./../../Enums/DamageTypes.h"
 #include "./../../Utils/DamageCalcuator/DamageCalculator.h"
-
+#include <cmath>
 #include <iostream>
 
 class Spell {

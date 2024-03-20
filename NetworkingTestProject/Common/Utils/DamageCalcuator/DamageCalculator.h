@@ -46,27 +46,36 @@ int calculateInterationModifier(int currentDamage, DamageTypes type, std::map<Da
 	return currentDamage;
 }
 
-int calculateDamage(std::vector<std::tuple<int, DiceType, DamageTypes>> allIncomingDamage,
-	std::map<DamageTypes, DamageInteraction> playerDamageAttributes) {
 
-	int totalDamage = 0;
+//Todo return a some sort of tuple/pair for damage and type instead of adding it all together here.
+//That way the caller can then generate the Text particle for each type and that way you can tie a color 
+//To the text based on the damage type
+std::vector<std::tuple<int, DamageTypes>> calculateDamage(std::vector<std::tuple<int, DiceType, DamageTypes>> allIncomingDamage,
+	std::map<DamageTypes, DamageInteraction> playerDamageAttributes) {
+	std::vector<std::tuple<int, DamageTypes>> returnDamage;
 
 	for (std::tuple<int, DiceType, DamageTypes> damageRoll : allIncomingDamage) {
 
 		//If the DiceType is set to NONE, then the first entry in the tuple will be stright damage
 		if (std::get<1>(damageRoll) == DiceType::DICETYPE_NONE) {
-			totalDamage += calculateInterationModifier(std::get<0>(damageRoll), std::get<2>(damageRoll), playerDamageAttributes);
+			int tmpDamage = 0;
+			tmpDamage = calculateInterationModifier(std::get<0>(damageRoll), std::get<2>(damageRoll), playerDamageAttributes);
+
+			std::tuple<int, DamageTypes> tmp = std::make_tuple(tmpDamage, std::get<2>(damageRoll));
+			returnDamage.push_back(tmp);
 			continue;
 		}
 		else {
 			int tmpDamage = rollDice(std::get<0>(damageRoll), std::get<1>(damageRoll));
 			if (std::get<2>(damageRoll) != DamageTypes::DAMAGETYPE_NONE) {
 				tmpDamage = calculateInterationModifier(tmpDamage, std::get<2>(damageRoll), playerDamageAttributes);
+
 			}
-			totalDamage += tmpDamage;
+			std::tuple<int, DamageTypes> tmp = std::make_tuple(tmpDamage, std::get<2>(damageRoll));
+			returnDamage.push_back(tmp);
 		}
 	}
 
-	return totalDamage;
+	return returnDamage;
 
 }

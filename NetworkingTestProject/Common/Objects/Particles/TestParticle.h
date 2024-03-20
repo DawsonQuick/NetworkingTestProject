@@ -88,6 +88,9 @@ public:
 	bool isComplete() const override {
 		return (lifetime <= 0);
 	}
+	glm::vec4 getColor() const override {
+		return glm::vec4(1.0);
+	}
 
 
 	void onUpdate(float deltaTime) override{

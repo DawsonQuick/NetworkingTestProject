@@ -902,6 +902,123 @@
     <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_Z.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\Weapon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Enums\WeaponType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\WeaponFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\SimpleMeleeWeapons\Club.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\SimpleMeleeWeapons\Dagger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\SimpleMeleeWeapons\Greatclub.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\SimpleMeleeWeapons\Handaxe.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\SimpleMeleeWeapons\Javelin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\SimpleMeleeWeapons\Lighthammer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\SimpleMeleeWeapons\Mace.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\SimpleMeleeWeapons\Quarterstaff.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\SimpleMeleeWeapons\Sickle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\SimpleMeleeWeapons\Spear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\SimpleRangedWeapons\LightCrossbow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\SimpleRangedWeapons\Dart.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\SimpleRangedWeapons\Shortbow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\SimpleRangedWeapons\Sling.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\MartialMeleeWeapons\Battleaxe.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\MartialMeleeWeapons\Flail.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\MartialMeleeWeapons\Glaive.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\MartialMeleeWeapons\Greatsword.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\MartialMeleeWeapons\Halberd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\MartialMeleeWeapons\Lance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\MartialMeleeWeapons\Longsword.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\MartialMeleeWeapons\Maul.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\MartialMeleeWeapons\Morningstar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\MartialMeleeWeapons\Pike.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\MartialMeleeWeapons\Rapier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\MartialMeleeWeapons\Scimitar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\MartialMeleeWeapons\Shortsword.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\MartialMeleeWeapons\Trident.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\MartialMeleeWeapons\Warpick.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\MartialMeleeWeapons\Warhammer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\MartialMeleeWeapons\Whip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\MartialRangedWeapons\Blowgun.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\MartialRangedWeapons\Handcrossbow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\MartialRangedWeapons\Heavycrossbow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\MartialRangedWeapons\Longbow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\MartialRangedWeapons\Sling.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenGL\vendor\glm\detail\func_common.inl">

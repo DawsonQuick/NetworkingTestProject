@@ -9,6 +9,8 @@ private:
 	float velX;
 	float velY;
 	float lifetime;
+	glm::vec4 color;
+
 	glm::mat4x2 texturePos = TextureManager::getInstance().getTextureInfo(typeid(Particle_1));
 
 	glm::mat4x3 vertexPos = {
@@ -21,7 +23,7 @@ public:
 
 	//This constructor does not have a carry velocity , therefore it acts more as an explosions
 	//Disriputes particales in all directs randomly
-	Particle_1(float posX, float posY, float scale) : posX(posX), posY(posY) {
+	Particle_1(float posX, float posY, float scale, glm::vec4 tmpColor) : posX(posX), posY(posY), color(tmpColor) {
 		velX = 0.0;
 		velY = 0.001;
 		lifetime = 2000; //2 Seconds
@@ -59,6 +61,9 @@ public:
 
 	bool isComplete() const override {
 		return (lifetime <= 0);
+	}
+	glm::vec4 getColor() const override {
+		return color;
 	}
 
 

@@ -1,0 +1,15 @@
+#pragma once
+enum WeaponType {
+	SIMPLE_MELEE_WEAPON,
+	SIMPLE_RANGED_WEAPON,
+	MARTIAL_MELEE_WEAPON,
+	MARTIAL_RANGED_WEAPON,
+};
+
+enum WeaponProperties {
+	LIGHT,
+	THROWN,
+	FINESSE,
+	VERSATILE,
+	TWO_HANDED,
+};

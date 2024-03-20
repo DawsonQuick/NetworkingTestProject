@@ -4,9 +4,10 @@
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 texture;
 layout (location = 2) in vec3 translation; // Assuming translation is a 3D vector
+layout (location = 3) in vec4 color;
 
 out vec3 v_TexCoord;
-
+out vec4 v_Color;
 uniform mat4 projection;
 uniform mat4 view;
 
@@ -20,6 +21,7 @@ void main()
 
     // Pass texture coordinates to fragment shader
     v_TexCoord = texture;
+    v_Color = color;
 }
 
 #shader fragment
@@ -27,10 +29,13 @@ void main()
 
 layout (location = 0) out vec4 color;
 in vec3 v_TexCoord;
+in vec4 v_Color;
 out vec4 FragColor;
 uniform sampler2D u_Texture;
 void main()
 {
+
 	vec4 color = texture(u_Texture,v_TexCoord.xy);
+    color = color * v_Color;
 	FragColor = vec4(color.r,color.g, color.b, color.a);
 }

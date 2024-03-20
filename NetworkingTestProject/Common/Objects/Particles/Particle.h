@@ -16,6 +16,7 @@ public:
 	virtual float getPositionY() const = 0;
 	virtual glm::mat4x3 getVertexPos() const = 0;
 	virtual glm::mat4x2 getTexturePos() const = 0;
+	virtual glm::vec4 getColor() const = 0;
 	virtual ~Particle() {};
 };
 #endif

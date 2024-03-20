@@ -83,6 +83,9 @@ public:
 	glm::mat4x2 getTexturePos() const override {
 		return texturePos;
 	}
+	glm::vec4 getColor() const override {
+		return glm::vec4(1.0);
+	}
 
 	bool isComplete() const override {
 		return (lifetime <= 0);

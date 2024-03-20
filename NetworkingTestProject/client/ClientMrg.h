@@ -27,6 +27,7 @@
 #include "./../OpenGL/vendor/imgui/imgui_impl_glfw_gl3.h"
 #include "./../Common/Utils/GlobalConfigurations.h"
 #include "./../Common/Objects/Spells/SpellFactory.h"
+#include "./../Common/Objects/Weapons/WeaponFactory.h"
 // Window dimensions
 
 GLFWwindow* window;
@@ -261,11 +262,12 @@ public:
 
         int numOfParticles = 8000;
         m_VAO = std::make_unique<VertexArray>();
-        m_VertexBuffer = std::make_unique<VertexBuffer>(nullptr, ((numOfParticles)*(16)) * sizeof(float));
+        m_VertexBuffer = std::make_unique<VertexBuffer>(nullptr, ((numOfParticles)*(12 * 4)) * sizeof(float));
         VertexBufferLayout layout;
         layout.Push<float>(3); //Position
         layout.Push<float>(2); //Texture Coords
         layout.Push<float>(3); //Translation
+        layout.Push<float>(4); //Color
         m_VAO->AddBuffer(*m_VertexBuffer, layout);
         m_IndexBuffer = std::make_unique<IndexBuffer>(nullptr, ((numOfParticles)*(6)));
 

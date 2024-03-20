@@ -74,7 +74,7 @@ public:
 			tmpVecRAW.push_back(pair.second->getPositionX());
 			tmpVecRAW.push_back(pair.second->getPositionY());
 			tmpVecRAW.push_back(0.0f);
-			generateBufferData(pair.second->getPositionX(), pair.second->getPositionY(),pair.second->getVertexPos(), index, pair.second->getTexturePos());
+			generateBufferData(pair.second->getPositionX(), pair.second->getPositionY(),pair.second->getVertexPos(), index, pair.second->getTexturePos(),pair.second->getColor());
 			index+=4;
 
 		}
@@ -107,7 +107,7 @@ public:
 		return std::vector<unsigned int>(indiceData);
 	}
 
-	void generateBufferData(float transX, float transY, glm::mat4x3 vertexPos , unsigned int index , glm::mat4x2 texture) {
+	void generateBufferData(float transX, float transY, glm::mat4x3 vertexPos , unsigned int index , glm::mat4x2 texture , glm::vec4 color) {
 		verticeData.push_back(vertexPos[0][0]);										//PosX
 		verticeData.push_back(vertexPos[0][1]);										//PosY
 		verticeData.push_back(vertexPos[0][2]);										//PosZ
@@ -116,6 +116,11 @@ public:
 		verticeData.push_back(transX);												//TransformX
 		verticeData.push_back(transY);												//TransformY
 		verticeData.push_back(0.0f);												//TransformZ
+		verticeData.push_back(color.r);												//Color.R
+		verticeData.push_back(color.g);												//Color.G
+		verticeData.push_back(color.b);												//Color.B
+		verticeData.push_back(color.a);												//Color.A
+
 
 		verticeData.push_back(vertexPos[1][0]);										//PosX
 		verticeData.push_back(vertexPos[1][1]);										//PosY
@@ -125,6 +130,10 @@ public:
 		verticeData.push_back(transX);												//TransformX
 		verticeData.push_back(transY);												//TransformY
 		verticeData.push_back(0.0f);												//TransformZ
+		verticeData.push_back(color.r);												//Color.R
+		verticeData.push_back(color.g);												//Color.G
+		verticeData.push_back(color.b);												//Color.B
+		verticeData.push_back(color.a);												//Color.A
 
 		verticeData.push_back(vertexPos[2][0]);										//PosX
 		verticeData.push_back(vertexPos[2][1]);										//PosY
@@ -134,6 +143,10 @@ public:
 		verticeData.push_back(transX);												//TransformX
 		verticeData.push_back(transY);												//TransformY
 		verticeData.push_back(0.0f);												//TransformZ
+		verticeData.push_back(color.r);												//Color.R
+		verticeData.push_back(color.g);												//Color.G
+		verticeData.push_back(color.b);												//Color.B
+		verticeData.push_back(color.a);												//Color.A
 
 		verticeData.push_back(vertexPos[3][0]);										//PosX
 		verticeData.push_back(vertexPos[3][1]);										//PosY
@@ -143,6 +156,10 @@ public:
 		verticeData.push_back(transX);												//TransformX
 		verticeData.push_back(transY);												//TransformY
 		verticeData.push_back(0.0f);												//TransformZ
+		verticeData.push_back(color.r);												//Color.R
+		verticeData.push_back(color.g);												//Color.G
+		verticeData.push_back(color.b);												//Color.B
+		verticeData.push_back(color.a);												//Color.A
 
 		indiceData.push_back(index);
 		indiceData.push_back(index+ (unsigned int)1);
