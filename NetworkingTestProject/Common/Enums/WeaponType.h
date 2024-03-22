@@ -12,4 +12,6 @@ enum WeaponProperties {
 	FINESSE,
 	VERSATILE,
 	TWO_HANDED,
+	HEAVY,
+	REACH,
 };

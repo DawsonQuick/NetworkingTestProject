@@ -8,6 +8,7 @@
 #include <chrono>
 #include <tuple>
 #include "./Spells/Spell.h"
+#include "./Weapons/Weapon.h"
 #include "./../../Common/Enums/PlayerFields.h"
 #include "./../../Common/Enums/AbilityType.h"
 #include "./../../Common/Enums/Dice.h"
@@ -15,12 +16,14 @@
 class Player {
 private:
 	std::vector<std::shared_ptr<Spell>> spells;
+	std::vector<std::shared_ptr<Weapon>> weapons;
 	std::string name;
 	Position position;
 	int health;
 	int AC;
 	double movementSpeed;
 	std::shared_ptr<Spell> selectedSpell;
+	std::shared_ptr<Weapon> selectedWeapon;
 	bool spellChangedState;
 	float currentSpellShotCount;
 
@@ -72,6 +75,7 @@ public:
 
 
 	void addSpell(std::shared_ptr<Spell> spell) { spells.push_back(spell); }
+	void addWeapon(std::shared_ptr<Weapon> weapon) { weapons.push_back(weapon); }
 
 	/*
 	* -------------------------SETTERS--------------------------------
@@ -114,6 +118,9 @@ public:
 		currentSpellShotCount = 1.0f; //reset shot count for change in spell
 		spellChangedState = true;
 		selectedSpell = spell;
+	}
+	void setSelectedWeapon(std::shared_ptr<Weapon> weapon) {
+		selectedWeapon = weapon;
 	}
 	void setCurrentSpellShotCount(float count) {
 		currentSpellShotCount = count;
@@ -175,6 +182,9 @@ public:
 	std::shared_ptr<Spell> getSelectedSpell() {
 		return selectedSpell;
 	}
+	std::shared_ptr<Weapon> getSelectedWeapon() {
+		return selectedWeapon;
+	}
 	void castSpell(float targetX, float targetY) {
 		//Do upkeep spell tracking here before casting, if current casting spell is concentration , check to see if another concentration spell
 		//is currently active , if so then need to stop that spell and replace with this one.
@@ -194,6 +204,10 @@ public:
 
 
 		selectedSpell->castSpell(name, targetX, targetY);
+	}
+
+	void makeWeaponAttack(float targetX, float targetY) {
+		selectedWeapon->attack(name, targetX, targetY);
 	}
 
 	void cancelConcentration() {
@@ -237,6 +251,10 @@ public:
 	}
 	std::vector<std::shared_ptr<Spell>> getAvailableSpells() {
 		return spells;
+	}
+
+	std::vector<std::shared_ptr<Weapon>> getAvailableWeapons() {
+		return weapons;
 	}
 
 	std::shared_ptr<Spell> getCurrentConcentrationSpell() {

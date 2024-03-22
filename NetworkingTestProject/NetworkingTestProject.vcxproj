@@ -273,7 +273,6 @@
     <ClInclude Include="Common\Objects\Weapons\MartialRangedWeapons\Handcrossbow.h" />
     <ClInclude Include="Common\Objects\Weapons\MartialRangedWeapons\Heavycrossbow.h" />
     <ClInclude Include="Common\Objects\Weapons\MartialRangedWeapons\Longbow.h" />
-    <ClInclude Include="Common\Objects\Weapons\MartialRangedWeapons\Sling.h" />
     <ClInclude Include="Common\Objects\Weapons\SimpleMeleeWeapons\Club.h" />
     <ClInclude Include="Common\Objects\Weapons\SimpleMeleeWeapons\Dagger.h" />
     <ClInclude Include="Common\Objects\Weapons\SimpleMeleeWeapons\Greatclub.h" />

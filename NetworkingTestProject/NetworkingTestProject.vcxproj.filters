@@ -902,13 +902,7 @@
     <ClInclude Include="Common\Objects\Particles\CharacterParticles\Characters\UpperCase\Particle_Z.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Common\Objects\Weapons\Weapon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Common\Enums\WeaponType.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\Objects\Weapons\WeaponFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\Objects\Weapons\SimpleMeleeWeapons\Club.h">
@@ -939,18 +933,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\Objects\Weapons\SimpleMeleeWeapons\Spear.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\Objects\Weapons\SimpleRangedWeapons\LightCrossbow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\Objects\Weapons\SimpleRangedWeapons\Dart.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\Objects\Weapons\SimpleRangedWeapons\Shortbow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\Objects\Weapons\SimpleRangedWeapons\Sling.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\Objects\Weapons\MartialMeleeWeapons\Battleaxe.h">
@@ -995,10 +977,10 @@
     <ClInclude Include="Common\Objects\Weapons\MartialMeleeWeapons\Trident.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Common\Objects\Weapons\MartialMeleeWeapons\Warpick.h">
+    <ClInclude Include="Common\Objects\Weapons\MartialMeleeWeapons\Warhammer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Common\Objects\Weapons\MartialMeleeWeapons\Warhammer.h">
+    <ClInclude Include="Common\Objects\Weapons\MartialMeleeWeapons\Warpick.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\Objects\Weapons\MartialMeleeWeapons\Whip.h">
@@ -1016,7 +998,22 @@
     <ClInclude Include="Common\Objects\Weapons\MartialRangedWeapons\Longbow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Common\Objects\Weapons\MartialRangedWeapons\Sling.h">
+    <ClInclude Include="Common\Objects\Weapons\SimpleRangedWeapons\Dart.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\SimpleRangedWeapons\LightCrossbow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\SimpleRangedWeapons\Shortbow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\SimpleRangedWeapons\Sling.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\Weapon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Objects\Weapons\WeaponFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

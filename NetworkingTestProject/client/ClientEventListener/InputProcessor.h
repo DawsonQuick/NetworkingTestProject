@@ -257,10 +257,19 @@ void processClick(float posX, float posY) {
                 }
 
             }
-
-
-
-
+        }
+        if (action == "Use Weapon") {
+            std::shared_ptr<Weapon> weapon = PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).getSelectedWeapon();
+            if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GOEMETRIC) {
+                if (pointInsideCircle(posX, posY, PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).getPositionX(), PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).getPositionY(), (weapon->getRange() * (GlobalConfigurations::getInstance().getScale())))) {
+                    PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).makeWeaponAttack(posX, posY);
+                }
+            }
+            else if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GRID) {
+                if (pointInsideSquare(posX, posY, PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).getPositionX(), PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).getPositionY(), (weapon->getRange() * (GlobalConfigurations::getInstance().getScale()) + (GlobalConfigurations::getInstance().getScale() / 2.0f)))) {
+                    PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).makeWeaponAttack(posX, posY);
+                }
+            }
         }
     }
 }
@@ -357,6 +366,16 @@ void calculateCursor(float posX,float posY,std::vector<float>& vertices) {
         
         
     }
+    if (action == "Use Weapon") {
+        std::shared_ptr<Weapon> weapon = PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).getSelectedWeapon();
+        if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GOEMETRIC) {
+            drawCircle(posX, posY, (weapon->getImpactRadius() * (GlobalConfigurations::getInstance().getScale())), 50, vertices);
+        }
+        else if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GRID) {
+            drawSquare(posX, posY, (weapon->getImpactRadius() * (GlobalConfigurations::getInstance().getScale()) + (GlobalConfigurations::getInstance().getScale() / 2.0f)), vertices);
+        }
+
+    }
     
     //Save the current cursor vector data, used for multi-target spell/projectile selection
     currentCursorPos = vertices;
@@ -392,9 +411,15 @@ void calculateRange(std::vector<float>& vertices) {
         else if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GRID) {
             drawSquare(posX, posY, (spell->getRange() * (GlobalConfigurations::getInstance().getScale()) + (GlobalConfigurations::getInstance().getScale() / 2.0f)), vertices);
         }
-        
-
-
+    }
+    if (action == "Use Weapon") {
+        std::shared_ptr<Weapon> weapon = PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).getSelectedWeapon();
+        if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GOEMETRIC) {
+            drawCircle(posX, posY, (weapon->getRange() * (GlobalConfigurations::getInstance().getScale())), 50, vertices);
+        }
+        else if (GlobalConfigurations::getInstance().getCurrentMeasurmentSystem() == MeasurmentSystem::GRID) {
+            drawSquare(posX, posY, (weapon->getRange() * (GlobalConfigurations::getInstance().getScale()) + (GlobalConfigurations::getInstance().getScale() / 2.0f)), vertices);
+        }
     }
 }
 #endif

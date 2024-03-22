@@ -170,7 +170,16 @@ public:
         PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).addSpell(SpellFactory::getInstance().createMagicMissle());
         PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).addSpell(SpellFactory::getInstance().createFireball());
         PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).addSpell(SpellFactory::getInstance().createCloudOfDaggers());
-
+        PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).addWeapon(WeaponFactory::getInstance().createClub());
+        PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).addWeapon(WeaponFactory::getInstance().createDagger());
+        PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).addWeapon(WeaponFactory::getInstance().createGreatclub());
+        PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).addWeapon(WeaponFactory::getInstance().createHandaxe());
+        PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).addWeapon(WeaponFactory::getInstance().createJavelin());
+        PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).addWeapon(WeaponFactory::getInstance().createLighthammer());
+        PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).addWeapon(WeaponFactory::getInstance().createMace());
+        PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).addWeapon(WeaponFactory::getInstance().createQuarterstaff());
+        PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).addWeapon(WeaponFactory::getInstance().createSickle());
+        PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).addWeapon(WeaponFactory::getInstance().createSpear());
         // Init GLFW
         glfwInit();
         // Set all the required options for GLFW

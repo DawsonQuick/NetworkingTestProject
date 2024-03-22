@@ -167,11 +167,12 @@ void imGuiRender(GLFWwindow* window ,int &dynamicLightingFlag, ClientEventListen
     
     static std::string currentSelected = "Move"; // Set to "Move" by default
     static std::string currentSpellName;
+    static std::string currentWeaponName;
 
     // Begin a column
-    ImGui::Columns(2, "PlayerInfoColumns", false); // 2 columns, don't auto-fit columns
+    ImGui::Columns(3, "PlayerInfoColumns", false); // 2 columns, don't auto-fit columns
     ImGui::Text("List of available basic actions");
-    ImGui::SetColumnWidth(0, display_w / 2);
+    ImGui::SetColumnWidth(0, display_w / 3);
     if (!PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).getIsTurnReady()) {
         ImGui::Text("Player's turn is not ready"); // Show a message instead of the "Move" option
         currentSelected = "NONE";
@@ -180,11 +181,27 @@ void imGuiRender(GLFWwindow* window ,int &dynamicLightingFlag, ClientEventListen
         if (ImGui::Selectable("Move", currentSelected == "Move")) {
             currentSelected = "Move";
             currentSpellName = ""; // Reset the selected spell
+            currentWeaponName = "";
         }
     }
     ImGui::NextColumn();
-
-    ImGui::SetColumnWidth(1, display_w / 2);
+    ImGui::SetColumnWidth(1, display_w / 3);
+    if (!PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).getIsTurnReady()) {
+        ImGui::Text("Player's turn is not ready"); // Show a message instead of the "Move" option
+        currentSelected = "NONE";
+    }
+    else {
+        for (std::shared_ptr<Weapon> weapon : PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).getAvailableWeapons()) {
+            if (ImGui::Selectable(weapon->getName().c_str(), currentWeaponName == weapon->getName())) {
+                currentWeaponName = weapon->getName();
+                currentSelected = "Use Weapon";
+                currentSpellName = ""; // Reset the selected spell
+                PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).setSelectedWeapon(weapon);
+            }
+        }
+    }
+    ImGui::NextColumn();
+    ImGui::SetColumnWidth(2, display_w / 3);
     ImGui::Text("List of available spells");
     if (!PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).getIsTurnReady()) {
         ImGui::Text("Player's turn is not ready"); // Show a message instead of the list of spells
@@ -194,6 +211,7 @@ void imGuiRender(GLFWwindow* window ,int &dynamicLightingFlag, ClientEventListen
             if (ImGui::Selectable(spell->getName().c_str(), currentSpellName == spell->getName())) {
                 currentSpellName = spell->getName();
                 currentSelected = "Cast Spell";
+                currentWeaponName = "";
                 PlayerDatabase::getInstance().getPlayer(GlobalConfigurations::getInstance().getPlayerName()).setSelectedSpell(spell);
                 MessageFactory factory;
                 std::stringstream ss;
