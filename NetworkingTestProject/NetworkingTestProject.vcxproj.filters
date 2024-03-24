@@ -63,6 +63,15 @@
     <ClCompile Include="Common\Utils\TileManager\TileTranformationUtils.h">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SoundEngine\Utils\Sources\SoundBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundEngine\Utils\Sources\SoundDevice.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundEngine\Utils\Sources\SoundSource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Messages\HandShakeMessage.h">
@@ -605,7 +614,7 @@
     <ClInclude Include="Common\Utils\TileManager\MapAndGridGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="client\ImGuiRenderContent.h">
+    <ClInclude Include="client\ImGuiContent\ImGuiRenderContent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="client\OnUpdate.h">
@@ -1016,6 +1025,36 @@
     <ClInclude Include="Common\Objects\Weapons\WeaponFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SoundEngine\Utils\Headers\SoundSource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundEngine\Utils\Headers\SoundBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundEngine\Utils\Headers\SoundDevice.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundEngine\SoundManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundEngine\SoundMap\SoundMapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="client\ImGuiContent\SessionInfo\SessionInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="client\ImGuiContent\GeneralControlsWindow\GeneralControlsWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="client\ImGuiContent\PlayerInformationWindow\PlayerInformationWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundEngine\SoundMap\WeaponSoundMapper\WeaponSoundMapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundEngine\SoundMap\SpellSoundMapper\SpellSoundMapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenGL\vendor\glm\detail\func_common.inl">
@@ -1365,5 +1404,14 @@
     <Image Include="OpenGL\resources\Map.jpg">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="SoundEngine\Resources\Spells\CloudOfDaggers\CloudOfDaggerSpawn.mp3" />
+    <Media Include="SoundEngine\Resources\Spells\Fireball\Fireball.mp3" />
+    <Media Include="SoundEngine\Resources\FireballWoosh.mp3" />
+    <Media Include="SoundEngine\Resources\Spells\MagicMissile\MMImpact.mp3" />
+    <Media Include="SoundEngine\Resources\Weapons\SimpleMeleeWeapons\Lighthammer\WeaponHit.mp3" />
+    <Media Include="SoundEngine\Resources\Weapons\SimpleMeleeWeapons\Lighthammer\WeaponMiss.mp3" />
+    <Media Include="SoundEngine\Resources\Spells\Fireball\FireballCast.mp3" />
   </ItemGroup>
 </Project>

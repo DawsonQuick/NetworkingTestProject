@@ -38,6 +38,7 @@ public:
                       int currentPlayerHealth = player.second.getHealth();
                       std::vector<int> attackersModifiers = { 2 };
                       if (doesAttackLand(attackersModifiers, player.second.getAC())) {
+                          SoundManager::getInstance().playSound(typeid(Lighthammer), SoundTriggers::HIT);
                           std::vector<std::tuple<int, DamageTypes>> incomingDamage;
                           incomingDamage = calculateDamage(damageModifier, player.second.getPlayerDamageAttributes());
                           for (std::tuple<int, DamageTypes> damage : incomingDamage) {
@@ -47,6 +48,7 @@ public:
                           }
                       }
                       else {
+                          SoundManager::getInstance().playSound(typeid(Lighthammer), SoundTriggers::MISS);
                           CharacterParticleFactory::getInstance().generateTextParticle(playerX, playerY, "Missed", DamageTypes::DAMAGETYPE_NONE);
                       }
                       PlayerDatabase::getInstance().getPlayer(player.first).setHealth(currentPlayerHealth);
@@ -66,6 +68,7 @@ public:
                       int currentPlayerHealth = player.second.getHealth();
                       std::vector<int> attackersModifiers = { 2 };
                       if (doesAttackLand(attackersModifiers, player.second.getAC())) {
+                          SoundManager::getInstance().playSound(typeid(Lighthammer), SoundTriggers::HIT);
                           std::vector<std::tuple<int, DamageTypes>> incomingDamage;
                           incomingDamage = calculateDamage(damageModifier, player.second.getPlayerDamageAttributes());
                           for (std::tuple<int, DamageTypes> damage : incomingDamage) {
@@ -75,6 +78,7 @@ public:
                           }
                       }
                       else {
+                          SoundManager::getInstance().playSound(typeid(Lighthammer), SoundTriggers::MISS);
                           CharacterParticleFactory::getInstance().generateTextParticle(playerX, playerY, "Missed", DamageTypes::DAMAGETYPE_NONE);
                       }
 

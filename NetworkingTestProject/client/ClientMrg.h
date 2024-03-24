@@ -9,7 +9,7 @@
 #include "./ClientConnection.h"
 #include "./OnUpdate.h"
 #include "./ClientEventListener/ClientEventListener.h"
-#include "./ImGuiRenderContent.h"
+#include "./ImGuiContent/ImGuiRenderContent.h"
 #include "./../Common/Utils/Logger.h"
 #include "./../Common/Utils/TileManager/MapAndGridGenerator.h"
 #include "./../Common/Utils/MainGameLoop/MainGameLoop.h"

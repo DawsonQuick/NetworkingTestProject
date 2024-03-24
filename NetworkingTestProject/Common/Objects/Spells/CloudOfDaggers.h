@@ -62,7 +62,7 @@ public:
 
         float sideLength = (impactRadius * (GlobalConfigurations::getInstance().getScale()) + (GlobalConfigurations::getInstance().getScale() / 2.0f));
         DurationSpellManager::getInstance().addSpell(tmpPlayerName,getName(), spellType ,duration, updateRate, sideLength, glm::vec2(targetPosX, targetPosY), [this](float targetPosX, float targetPosY,std::string playerName) { this->onUpdate(targetPosX, targetPosY,playerName); });
-
+        SoundManager::getInstance().playSound(typeid(CloudOfDaggers), SoundTriggers::NO_TRIGGER);
     }
 
     void onUpdate(float originX,float originY, std::string playerName) {

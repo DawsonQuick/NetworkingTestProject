@@ -147,13 +147,19 @@
     <ClCompile Include="OpenGL\vendor\imgui\imgui_draw.cpp" />
     <ClCompile Include="OpenGL\vendor\imgui\imgui_impl_glfw_gl3.cpp" />
     <ClCompile Include="OpenGL\vendor\imgui\main.cpp" />
+    <ClCompile Include="SoundEngine\Utils\Sources\SoundBuffer.cpp" />
+    <ClCompile Include="SoundEngine\Utils\Sources\SoundDevice.cpp" />
+    <ClCompile Include="SoundEngine\Utils\Sources\SoundSource.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="client\ClientConnection.h" />
     <ClInclude Include="client\ClientEventListener\ClientEventListener.h" />
     <ClInclude Include="client\ClientEventListener\InputProcessor.h" />
     <ClInclude Include="client\ClientMrg.h" />
-    <ClInclude Include="client\ImGuiRenderContent.h" />
+    <ClInclude Include="client\ImGuiContent\GeneralControlsWindow\GeneralControlsWindow.h" />
+    <ClInclude Include="client\ImGuiContent\ImGuiRenderContent.h" />
+    <ClInclude Include="client\ImGuiContent\PlayerInformationWindow\PlayerInformationWindow.h" />
+    <ClInclude Include="client\ImGuiContent\SessionInfo\SessionInfo.h" />
     <ClInclude Include="client\OnUpdate.h" />
     <ClInclude Include="Common\Enums\AbilityType.h" />
     <ClInclude Include="Common\Enums\DamageTypes.h" />
@@ -466,6 +472,13 @@
     <ClInclude Include="OpenGL\vendor\imgui\stb_textedit.h" />
     <ClInclude Include="OpenGL\vendor\imgui\stb_truetype.h" />
     <ClInclude Include="server\ServerConnection.h" />
+    <ClInclude Include="SoundEngine\SoundMap\SpellSoundMapper\SpellSoundMapper.h" />
+    <ClInclude Include="SoundEngine\SoundMap\WeaponSoundMapper\WeaponSoundMapper.h" />
+    <ClInclude Include="SoundEngine\Utils\Headers\SoundBuffer.h" />
+    <ClInclude Include="SoundEngine\Utils\Headers\SoundDevice.h" />
+    <ClInclude Include="SoundEngine\Utils\Headers\SoundSource.h" />
+    <ClInclude Include="SoundEngine\SoundMap\SoundMapper.h" />
+    <ClInclude Include="SoundEngine\SoundManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenGL\resources\Basic.shader" />
@@ -589,6 +602,15 @@
   <ItemGroup>
     <Image Include="OpenGL\resources\Map.jpg" />
     <Image Include="OpenGL\resources\PixelArtTest2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="SoundEngine\Resources\Spells\CloudOfDaggers\CloudOfDaggerSpawn.mp3" />
+    <Media Include="SoundEngine\Resources\Spells\Fireball\FireballCast.mp3" />
+    <Media Include="SoundEngine\Resources\Spells\Fireball\Fireball.mp3" />
+    <Media Include="SoundEngine\Resources\FireballWoosh.mp3" />
+    <Media Include="SoundEngine\Resources\Spells\MagicMissile\MMImpact.mp3" />
+    <Media Include="SoundEngine\Resources\Weapons\SimpleMeleeWeapons\Lighthammer\WeaponHit.mp3" />
+    <Media Include="SoundEngine\Resources\Weapons\SimpleMeleeWeapons\Lighthammer\WeaponMiss.mp3" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

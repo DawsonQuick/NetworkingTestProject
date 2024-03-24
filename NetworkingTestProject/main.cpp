@@ -9,20 +9,22 @@
 #include "./Common/Objects/Spells/MagicMissle.h"
 #include "./Common/Objects/Spells/FireBall.h"
 #include "./Common/Objects/Armour/BreastPlate.h"
-#include "./Common/Utils/TextureMapping.h"
+
 #include "./Common/Utils/json.hpp"
 #include "./client/ClientEventListener/ClientEventListener.h"
 #include "./Common/Objects/Spells/SpellFactory.h"
 
-#include "AL/al.h"
-#include "sndfile.h"
+#include "./Common/Utils/TextureMapping.h"
+#include "./SoundEngine/SoundMap/SoundMapper.h"
+
 
 SOCKET serverSocket;
 const int BUFFER_SIZE = 1024;
 
 // main.cpp
 int main() {
-    setPositions();
+    setPositions(); //Sets partical texture mappings
+    setSounds();    //Sets sounds mappings
     int choice;
     std::cout << "Enter 0 for server or 1 for client: ";
     std::cin >> choice;
@@ -65,6 +67,6 @@ int main() {
     else {
         
     }
-   
+
     return 0;
 }

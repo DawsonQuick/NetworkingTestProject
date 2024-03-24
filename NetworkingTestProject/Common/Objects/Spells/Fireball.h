@@ -53,6 +53,7 @@ public:
     }
     void castSpell(std::string tmpPlayerName, float targetPosX, float targetPosY) override {
         playerName = tmpPlayerName;
+        SoundManager::getInstance().playSound(typeid(Fireball), SoundTriggers::CAST);
         //TODO: Send a message when casting starts saying that this spell has been cast to start the partical animation on other players screens
         ParticleDatabase::getInstance().addParticle("Fireball", ParticleFactory::getInstance().createGuidedParticle(PlayerDatabase::getInstance().getPlayer(tmpPlayerName).getPositionX(), PlayerDatabase::getInstance().getPlayer(tmpPlayerName).getPositionY(),
             targetPosX, targetPosY, 1.0f, [this](float resultPosX, float resultPoxY) { this->onComplete(resultPosX, resultPoxY); }));
@@ -62,7 +63,7 @@ public:
 
         //TODO: Send another message when spell cast is finished letting other players know the resulting effects
         std::cout << "Fireball impacted at X: " << resultPosX << " Y: " << resultPosY << std::endl;
-
+        SoundManager::getInstance().playSound(typeid(Fireball), SoundTriggers::HIT);
         for (int i = 0; i < 100; i++) { ParticleDatabase::getInstance().addParticle("Test" + std::to_string(i), ParticleFactory::getInstance().createTestParticle(resultPosX,resultPosY,0.0f,0.0f,0.2f)); }
 
         //Example of chaining particles

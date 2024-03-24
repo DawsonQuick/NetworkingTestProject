@@ -9,6 +9,7 @@
 #include "./../../Enums/DamageTypes.h"
 #include "./../../Enums/WeaponType.h"
 #include "./../../Utils/DamageCalcuator/DamageCalculator.h"
+#include "./../../../SoundEngine/SoundManager.h"
 #include <cmath>
 #include <iostream>
 #include <functional>

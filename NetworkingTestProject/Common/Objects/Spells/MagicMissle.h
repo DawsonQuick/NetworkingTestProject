@@ -58,7 +58,7 @@ public:
 
     void onComplete(float resultPosX, float resultPosY) {
         std::cout << "MagicMissle impacted at X: " << resultPosX << " Y: " << resultPosY << std::endl;
-
+        SoundManager::getInstance().playSound(typeid(MagicMissle), SoundTriggers::HIT);
         //Example of chaining particles
         //for (int i = 0; i < 100; i++) {ParticleDatabase::getInstance().addParticle("Test" + std::to_string(i), ParticleFactory::getInstance().createImplosionParticle(resultPosX, resultPosY,0.3f));}
         if (playerName == GlobalConfigurations::getInstance().getPlayerName()) {
